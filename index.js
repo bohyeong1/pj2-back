@@ -6,10 +6,12 @@ const mongoose = require('mongoose')
 const axios = require('axios')
 const config = require('./config')
 
-
+// const Category = require('./src/models/Category')
 
 //////////////////////// 라우터
 const userRouter = require('./src/routes/userRt')
+const registerRouter = require('./src/routes/registerRt')
+const commonRouter = require('./src/routes/commonRt')
 
 //////////////////////////프론트와 포트 연결 설정
 const corsOption = {
@@ -29,6 +31,8 @@ app.use(logger('tiny'))
 
 //////////////////////////////////////라우터 연결
 app.use('/api/users', userRouter)
+app.use('/api/accomodation', registerRouter)
+app.use('/api/common', commonRouter)
 
 /////////////////////////////////////서버 연결 확인 절차
 app.get('/hello', (req, res)=>{
