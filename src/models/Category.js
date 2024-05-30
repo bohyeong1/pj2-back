@@ -8,8 +8,11 @@ const categorySchema = new Schema({
         require:true
     },
     main_img : {
-        type : String,
-        require:true
+        type : String
+    },
+    count : {
+        type : Number,
+        require : true
     }
 })
 

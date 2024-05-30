@@ -12,37 +12,79 @@ const storage = multer.memoryStorage();
 
 const upload = multer({ storage })
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////라우터
-//////////////숙소등록
+//////////////숙소초기 등록
 router.post('/register',expressAsyncHandler(async(req,res,next)=>{
+
     try{
         const accomodation = new Accomodation({
-            main_img : req.body.main_img,
-            img_inv : req.body.img_inv,
-            title : req.body.title,
-            cityName : req.body.cityName,
-            price : req.body.price,
-            adress : req.body.adress,
-            category : req.body.category,
-            grade : req.body.grade,
-            summary : req.body.summary,
-            base_facility : req.body.base_facility, 
-            service_facility : req.body.service_facility,
-            discount:req.body.discount,
-            keyword:req.body.keyword
+          seller:req.body.seller         
         })
-
         const newAccomodation = await accomodation.save()
-        const {title, cityName, price, adress, category, summary,keyword} = newAccomodation
-        res.json({
+        console.log(newAccomodation)
+        if(newAccomodation){
+          res.json({
             code:200,
-            title,cityName, price, adress, category, summary,keyword
-        })
+            message:'숙소 등록 완료'
+          })
+        }else{
+          res.status(401).json({
+            code:401,
+            message:'에러발생'
+          })
+        }
+
     }catch(e){
         res.status(401).json('에러발생')
     }
+}))
+
+
+
+//////////////////숙소 등록 후 업데이트
+router.put('/register/update',expressAsyncHandler(async(req,res,next)=>{
+  console.log(req.body)
+  try{
+    const accomodation = await Accomodation.findOne({
+      seller:req.body.seller
+    })
+
+    console.log(accomodation)
+
+    if(!accomodation){
+      res.status(404).json({ code: 404, message: '숙소 정보를 찾을 수 없습니다.'})
+    }else{
+
+      accomodation.title = req.body.title || accomodation.title
+      accomodation.main_img = req.body.main_img || accomodation.main_img
+      accomodation.sub_img = req.body.sub_img || accomodation.sub_img
+      accomodation.main_adress = req.body.main_adress || accomodation.main_adress
+      accomodation.sub_adress = req.body.sub_adress || accomodation.sub_adress
+      accomodation.category = req.body.category || accomodation.category
+      accomodation.price = req.body.price || accomodation.price
+      accomodation.space_category = req.body.space_category || accomodation.space_category
+      accomodation.base_facility = req.body.base_facility || accomodation.base_facility
+      accomodation.service_facility = req.body.service_facility || accomodation.service_facility
+      accomodation.keywords = req.body.keywords || accomodation.keywords
+      accomodation.capacity = req.body.capacity || accomodation.capacity
+      accomodation.summary = req.body.summary || accomodation.summary
+      accomodation.rules = req.body.rules || accomodation.rules
+      accomodation.discount = req.body.discount || accomodation.discount
+      accomodation.sellState = req.body.sellState || accomodation.sellState
+
+
+      const updatedaccomodation = await accomodation.save()
+      
+      console.log(updatedaccomodation)
+
+      res.json({
+        code:200,
+        updatedaccomodation
+      })
+    }
+  }catch(e){
+      res.status(401).json(e)
+  }
 }))
 
 

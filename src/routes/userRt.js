@@ -52,12 +52,18 @@ router.post('/login', expressAsyncHandler(async (req, res, next)=>{
         res.status(401).json({code:401, message : '아이디 또는 비밀번호를 잘못 입력했습니다.'})
     }else{
         if(loginUser.isAdmin){                  ////////////////관리자 로그인
-         console.log('관리자 로그인')                                                                                                                                                                              
-        }else{
             const {name, email, userId, isAdmin, createdAt} = loginUser
             res.json({
                 code:200,
                 name, email, userId, isAdmin, createdAt,
+                token : generateToken(loginUser),
+                message : '관리자 로그인'
+            })                                                                                                                                                                              
+        }else{
+            const {name, email, userId, isAdmin, createdAt, _id} = loginUser
+            res.json({
+                code:200,
+                name, email, userId, isAdmin, createdAt,_id,
                 token : generateToken(loginUser)
             })
         }       

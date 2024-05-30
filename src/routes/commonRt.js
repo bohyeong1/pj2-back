@@ -23,7 +23,6 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
         })
 
     }
-
 }))
 /////////////////////////////// 숙소 카테고리(도시 지역)별 분류
 router.get('/cityName', expressAsyncHandler(async(req,res,next)=>{
