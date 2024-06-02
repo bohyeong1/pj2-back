@@ -3,7 +3,7 @@ const app = express()
 const cors = require('cors')
 const logger = require('morgan')
 const mongoose = require('mongoose')
-const axios = require('axios')
+// const axios = require('axios')
 const config = require('./config')
 
 // const Category = require('./src/models/Category')
@@ -12,6 +12,8 @@ const config = require('./config')
 const userRouter = require('./src/routes/userRt')
 const registerRouter = require('./src/routes/registerRt')
 const commonRouter = require('./src/routes/commonRt')
+const reservRouter = require('./src/routes/reserveRt')
+const evaluRouter = require('./src/routes/evaluateRt')
 
 //////////////////////////프론트와 포트 연결 설정
 const corsOption = {
@@ -33,6 +35,8 @@ app.use(logger('tiny'))
 app.use('/api/users', userRouter)
 app.use('/api/accomodation', registerRouter)
 app.use('/api/common', commonRouter)
+app.use('/api/reserv', reservRouter)
+app.use('/api/evalu', evaluRouter)
 
 /////////////////////////////////////서버 연결 확인 절차
 app.get('/hello', (req, res)=>{

@@ -23,10 +23,10 @@ router.post('/register', expressAsyncHandler(async(req,res,next)=>{
 
         console.log(newUser)
 
-        const {name, email, userId, password} = newUser
+        const {name, email, userId, password, cashInv} = newUser
         res.json({
             code:200,
-            name, email, userId, password
+            name, email, userId, password, cashInv
         })
     }catch(e){
         res.status(401).json({
@@ -52,18 +52,18 @@ router.post('/login', expressAsyncHandler(async (req, res, next)=>{
         res.status(401).json({code:401, message : '아이디 또는 비밀번호를 잘못 입력했습니다.'})
     }else{
         if(loginUser.isAdmin){                  ////////////////관리자 로그인
-            const {name, email, userId, isAdmin, createdAt} = loginUser
+            const {name, email, userId, isAdmin, createdAt, cashInv} = loginUser
             res.json({
                 code:200,
-                name, email, userId, isAdmin, createdAt,
+                name, email, userId, isAdmin, createdAt, cashInv,
                 token : generateToken(loginUser),
                 message : '관리자 로그인'
             })                                                                                                                                                                              
         }else{
-            const {name, email, userId, isAdmin, createdAt, _id} = loginUser
+            const {name, email, userId, isAdmin, createdAt, _id, cashInv} = loginUser
             res.json({
                 code:200,
-                name, email, userId, isAdmin, createdAt,_id,
+                name, email, userId, isAdmin, createdAt,_id, cashInv,
                 token : generateToken(loginUser)
             })
         }       

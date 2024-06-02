@@ -31,6 +31,14 @@ const userSchema = new Schema({
     lastModifiedAt:{
         type:Date,
         default:Date.now()
+    },
+    cashInv:{
+        type:Number,
+        default:2000000
+    },
+    profileImg:{
+        type:String,
+        default:''
     }
 })
 

@@ -41,14 +41,21 @@ const accomodationSchema = new Schema({
     ],
 
 
-    ////주소 메인&서브로 분할 메인주소 => 필터에서 분류할때 필요함
+    ////주소 메인&서브로 분할 메인주소 => 서브주소까지는 예약 확정된 후 보여주기
+    ///////////////////////// 검색창에서 필터할때 적합한 검색어 만들기 위해서 filer_adress로 데이터 가공 해보기 ㅇㅇ
     // 도시 분류   
     main_adress:{
-        type:String
+        name:{type:String},
+        coor:[{type:Number}]
     },
     sub_adress:{
+        name:{type:String},
+        coor:[{type:Number}]
+    },
+    search_adress:{
         type:String
     },
+    
 
     ////////숙소 카테고리
     category:{
@@ -64,6 +71,9 @@ const accomodationSchema = new Schema({
     price:{
         type:Number
     },
+    addPrice:{
+        type:Number
+    },
 
     ///평가
     evalueation:{
@@ -75,24 +85,24 @@ const accomodationSchema = new Schema({
         name:{
             type:String
         },
-        img:{
+        url:{
             type:String
         }
     },
 
     ///////기본 시설
     base_facility:[
-        {name:{type:String}, quanity:{type:Number}, img:{type:String}}
+        {name:{type:String}, counts:{type:Number}, url:{type:String}}
     ],
 
     // /////////////서비스 시설
     service_facility:[
-        {name:{type:String}, img:{type:String}}
+        {name:{type:String}, url:{type:String}}
     ],
 
     // /////////// 키워드 
     keywords:[
-        {name:{type:String}, img:{type:String}}
+        {name:{type:String}, url:{type:String}}
     ],
 
     // ////수용 인원
@@ -135,7 +145,7 @@ const accomodationSchema = new Schema({
             summary:''}]
         },
 
-    ////숙소 할인
+    ////숙소 할인                 //// price값을 바꾸기 보단 aggregate로 파이프라인만들어서 프론트에 보내야 할듯
     discount:{
         type:Number
     },

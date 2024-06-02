@@ -24,6 +24,28 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
 
     }
 }))
+
+/////////////////////////////////////숙소 한개 
+router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
+    console.log(req.body._id)
+
+    try{
+        const accomodations = await Accomodation.find({_id:req.body._id})
+        console.log(accomodations)
+            res.json({
+            code:200,
+            accomodations})
+
+    }catch(e){
+        console.log(e)
+        res.status(429).json({
+            code:429,
+            message:'서버로 부터 데이터를 받는데 실패하였습니다.'
+        })
+
+    }
+}))
+
 /////////////////////////////// 숙소 카테고리(도시 지역)별 분류
 router.get('/cityName', expressAsyncHandler(async(req,res,next)=>{
     try{
