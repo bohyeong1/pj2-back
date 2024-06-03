@@ -23,10 +23,10 @@ const accomodationSchema = new Schema({
     },
 
     // ///////구매자
-    buyer:[{
+    buyer:{
         type:ObjectId,
         ref:'User'
-    }],
+    },
 
     /////////////제목
     title:{

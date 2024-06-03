@@ -20,10 +20,10 @@ const reservaitonSchema = new Schema({
     },
 
     // ///////구매자
-    buyer:[{
+    buyer:{
         type:ObjectId,
         ref:'User'
-    }],  
+    },  
 
     ////////////해당숙소
     accomodation:{
@@ -105,6 +105,13 @@ const reservaitonSchema = new Schema({
             state:false,
             summary:''}]
         },
+
+        ////////////이용완료/이용중 state값
+        useState:{
+            type:Boolean,
+            default:false,
+            require:true
+        }
 })
 
 const Reservaiton = mongoose.model('Reservation', reservaitonSchema)
