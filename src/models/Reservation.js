@@ -111,7 +111,16 @@ const reservaitonSchema = new Schema({
             type:Boolean,
             default:false,
             require:true
-        }
+        },
+        ////예약일시
+        createAt:{
+            type:Date,
+            default:Date.now()
+        },
+        lastModifiedAt:{
+            type:Date,
+            default:Date.now()
+        },
 })
 
 const Reservaiton = mongoose.model('Reservation', reservaitonSchema)
