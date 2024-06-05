@@ -43,7 +43,8 @@ router.post('/regist', expressAsyncHandler(async(req,res,next)=>{
                 sellerid : seller._id,
                 homeid : req.body.homeid,
                 evaluation : req.body.evaluation,
-                text : req.body.text
+                text : req.body.text,
+                totalGrade : req.body.totalGrade
             })
             const newEvaluation = await evaluation.save()
             if(newEvaluation){

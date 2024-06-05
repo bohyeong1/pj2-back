@@ -5,12 +5,15 @@ const User = require('../models/User')
 const Evaluation = require('../models/Evaluation')
 const Category = require('../models/Category')
 const expressAsyncHandler = require('express-async-handler')
+const { isObjectIdOrHexString } = require('mongoose')
 const router = express.Router()
+const mongoose = require('mongoose')
+const { Types: { ObjectId } } = mongoose
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////라우터
 ////////////////////////숙소 리스트 
 router.post('/',expressAsyncHandler(async(req,res,next)=>{
-    console.log(req.body.query)
+    // console.log(req.body.query)
     try{
         const accomodations = await Accomodation.find({...req.body.query})
             res.json({
@@ -32,21 +35,34 @@ router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
     console.log(req.body._id)
 
     try{
-        const accomodations = await Accomodation.findOne({_id:req.body._id})
+        const accomodations = await Accomodation.findOne({_id:req.body._id}).populate('seller')  //숙소 data
+        const seller = accomodations.seller 
 
-        const seller = await User.findOne({_id:accomodations.seller})
-
-        const evaluation = await Evaluation.find({
-            sellerid : seller._id,
+        //평가 data
+        const evaluations = await Evaluation.find({
             homeid : req.body._id
-        })
+        }).populate('writerid')
 
-        console.log(accomodations)
+        console.log("평점", evaluations)
+
+        // 총 데이터의 평균 평점 집계하기
+        const aggreEvalu = await Evaluation.aggregate([
+            {$match : {homeid: new ObjectId(req.body._id) }},
+            { $unwind : "$evaluation" },
+            {$group : {
+                _id : {title: '$evaluation.title', url: '$evaluation.url'},
+                average : {$avg : "$evaluation.grade"},
+                count : {$sum : 1},
+            }},
+           
+        ])
+
+        // console.log(aggreEvalu)
 
         if(accomodations && seller){
             res.json({
                 code:200,
-                accomodations, seller, evaluation})
+                accomodations, seller, evaluations, aggreEvalu  })
         }else{
             throw new Error('서버로 부터 데이터를 받는데 실패하였습니다.')
         }

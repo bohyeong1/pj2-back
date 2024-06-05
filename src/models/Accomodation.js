@@ -155,7 +155,17 @@ const accomodationSchema = new Schema({
         type:Boolean,
         default:false,
         require:true
-    }
+    },
+
+    ////호스팅날짜
+    createAt:{
+        type:Date,
+        default:Date.now()
+    },
+        lastModifiedAt:{
+        type:Date,
+        default:Date.now()
+    },
 
 })
 
