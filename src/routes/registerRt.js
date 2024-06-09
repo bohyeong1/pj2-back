@@ -1,5 +1,6 @@
 const express = require('express')
 const Accomodation = require('../models/Accomodation')
+const Search = require('../models/Search')
 const expressAsyncHandler = require('express-async-handler')
 const router = express.Router()
 const multer = require('multer')
@@ -12,7 +13,8 @@ const { Types: { ObjectId } } = mongoose
 const storage = multer.memoryStorage();
 
 const upload = multer({ storage })
-const multiImg = upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'subImg', maxCount: 4 },{name:'userData', maxCount:100}]) ////////main sub 이미지 동시에 받기
+const multiImg = upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'subImg', maxCount: 4 },
+                              {name:'userData', maxCount:100},{name:'homeid', maxCount:100}]) ////////main sub 이미지 동시에 받기
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////라우터
@@ -27,7 +29,8 @@ router.post('/register',expressAsyncHandler(async(req,res,next)=>{
         if(newAccomodation){
           res.json({
             code:200,
-            message:'숙소 등록 완료'
+            message:'숙소 등록 완료',
+            newAccomodation
           })
         }else{
           res.status(401).json({
@@ -45,12 +48,22 @@ router.post('/register',expressAsyncHandler(async(req,res,next)=>{
 
 //////////////////숙소 등록 후 업데이트
 router.put('/register/update',expressAsyncHandler(async(req,res,next)=>{
-  console.log(req.body)
+  console.log(req.body._id)
   try{
     const accomodation = await Accomodation.findOne({
-      seller:req.body.seller
+      seller:req.body.seller,
+      _id : req.body._id
     })
 
+    if(req.body.city){
+      const search = await Search.updateOne({city:req.body.city},{
+        $inc:{
+          regist_counts : +1
+        }},
+        {upsert:true}        
+      )
+      console.log(search)
+    }
     // console.log(accomodation)
 
     if(!accomodation){
@@ -130,12 +143,16 @@ router.post('/img',upload.single('homeImage') ,expressAsyncHandler(async(req,res
 
 ///////////////////////이미지 여러개 날리기/ 초기 등록 5개로 제한
 router.post('/imgs',multiImg ,expressAsyncHandler(async(req,res,next)=>{
+
+  console.log(req.files)
   const text = await new Response(req.files.userData[0].buffer).text()     ///id 값   
-  const parsingText = JSON.parse(text)         
+  const parsingText = JSON.parse(text)
+  
+  const home_id = await new Response(req.files.homeid[0].buffer).text()
+  const parsingHome_id = JSON.parse(home_id)
   // console.log(JSON.parse(text))
-
-  console.log(req.files.mainImg[0])
-
+  // // console.log(req.files.mainImg[0])
+  // console.log(parsingHome_id)
 
   // 네이버 오브젝트 스토리지에 이미지 저장 링크문자데이터만 db에 저장하기 
   const S3 = new AWS.S3({
@@ -186,7 +203,8 @@ router.post('/imgs',multiImg ,expressAsyncHandler(async(req,res,next)=>{
     // 문자 url db에 저장하기 ㅇ
     try{
       const accomodation = await Accomodation.findOne({
-        seller:parsingText
+        seller:parsingText,
+        _id : parsingHome_id
       })
 
     if(!accomodation){

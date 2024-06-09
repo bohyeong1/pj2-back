@@ -5,7 +5,6 @@ const User = require('../models/User')
 const Evaluation = require('../models/Evaluation')
 const Category = require('../models/Category')
 const expressAsyncHandler = require('express-async-handler')
-const { isObjectIdOrHexString } = require('mongoose')
 const router = express.Router()
 const mongoose = require('mongoose')
 const { Types: { ObjectId } } = mongoose
@@ -30,9 +29,30 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
     }
 }))
 
+/////////////host페이지 등록 숙소
+router.post('/host', expressAsyncHandler(async(req,res,next)=>{
+    try{
+        const accomodations = await Accomodation.find({
+            seller : req.body.sellerid
+        })
+        console.log(accomodations)
+            res.json({
+            code:200,
+            accomodations})
+
+    }catch(e){
+        console.log(e)
+        res.status(429).json({
+            code:429,
+            message:'서버로 부터 데이터를 받는데 실패하였습니다.'
+        })
+
+    }
+}))
+
 /////////////////////////////////////숙소 한개 
 router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
-    console.log(req.body._id)
+    // console.log(req.body._id)
 
     try{
         const accomodations = await Accomodation.findOne({_id:req.body._id}).populate('seller')  //숙소 data
@@ -43,7 +63,7 @@ router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
             homeid : req.body._id
         }).populate('writerid')
 
-        console.log("평점", evaluations)
+        // console.log("평점", evaluations)
 
         // 총 데이터의 평균 평점 집계하기
         const aggreEvalu = await Evaluation.aggregate([
@@ -54,10 +74,12 @@ router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
                 average : {$avg : "$evaluation.grade"},
                 count : {$sum : 1},
             }},
-           
+            {
+                $sort : {"_id.title" : -1}
+            }           
         ])
 
-        // console.log(aggreEvalu)
+        console.log(aggreEvalu)
 
         if(accomodations && seller){
             res.json({
@@ -66,7 +88,6 @@ router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
         }else{
             throw new Error('서버로 부터 데이터를 받는데 실패하였습니다.')
         }
-
 
     }catch(e){
 

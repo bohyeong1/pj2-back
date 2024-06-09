@@ -14,7 +14,7 @@ const router = express.Router()
 /////////////예약 등록
 router.post('/reserv', expressAsyncHandler(async(req,res,next)=>{
 
-    console.log(req.body.buyerid)
+    console.log(req.body.homeid)
     
     await Accomodation.updateOne({_id : req.body.homeid},{
         $set:{
@@ -23,6 +23,8 @@ router.post('/reserv', expressAsyncHandler(async(req,res,next)=>{
     }) 
 
     const accomodation = await Accomodation.findOne({_id : req.body.homeid})
+
+    console.log(accomodation)
 
     const seller = await User.updateOne({_id: accomodation.seller},{
         $inc:{
@@ -56,7 +58,7 @@ router.post('/reserv', expressAsyncHandler(async(req,res,next)=>{
               })
 
               const newReservationInfo = await reservationInfo.save()
-              console.log(newReservationInfo)
+            //   console.log(newReservationInfo)
               if(newReservationInfo){
                 res.json({
                   code:200,
@@ -83,10 +85,10 @@ router.post('/reserv', expressAsyncHandler(async(req,res,next)=>{
 
 ////////////예약 리스트 얻기
 router.post('/', expressAsyncHandler(async(req,res,next)=>{
-    const reservation = await Reservaiton.findOne({
+    const reservation = await Reservaiton.find({
         buyer : req.body.userId
     })
-    // console.log(reservation)
+    console.log(reservation)
     res.json(reservation)
 }))
 

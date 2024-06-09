@@ -39,6 +39,10 @@ const userSchema = new Schema({
     profileImg:{
         type:String,
         default:''
+    },
+    nickname:{
+        type:String,
+        require:true
     }
 })
 
