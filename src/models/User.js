@@ -43,6 +43,9 @@ const userSchema = new Schema({
     nickname:{
         type:String,
         require:true
+    },
+    hostText:{
+        type:String
     }
 })
 

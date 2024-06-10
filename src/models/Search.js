@@ -23,6 +23,9 @@ const searchSchema = new Schema({
         type : Number,
         require : true,
         default : 0
+    },
+    url:{
+        type:String
     }
 
 })

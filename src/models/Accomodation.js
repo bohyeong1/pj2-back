@@ -167,6 +167,11 @@ const accomodationSchema = new Schema({
         default:Date.now()
     },
 
+    // 숙소 평점 -> 추후 몽고db 조인하는 방법 공부후에 필드 삭제할것
+    avgEvaluation : [
+        {type:Number}
+    ]
+
 })
 
 const Accomodation = mongoose.model('Accomodation', accomodationSchema)

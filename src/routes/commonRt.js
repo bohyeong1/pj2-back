@@ -12,7 +12,7 @@ const { Types: { ObjectId } } = mongoose
 /////////////////////////////////////////////////////////////////////////////////////////////////////////라우터
 ////////////////////////숙소 리스트 
 router.post('/',expressAsyncHandler(async(req,res,next)=>{
-    // console.log(req.body.query)
+    console.log(req.body.query)
     try{
         const accomodations = await Accomodation.find({...req.body.query})
             res.json({
