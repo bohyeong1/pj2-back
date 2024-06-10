@@ -21,6 +21,8 @@ router.get('/', (req,res,next)=>{
 ///////숙소평가 and 댓글 등록
 router.post('/regist', expressAsyncHandler(async(req,res,next)=>{
 
+    console.log(req.body.totalAvg.grade)
+
 
     const writer = await User.findOne({
         _id : req.body.writerid
@@ -30,7 +32,7 @@ router.post('/regist', expressAsyncHandler(async(req,res,next)=>{
         _id : req.body.homeid
     })
 
-    console.log(accomodation)
+    // console.log(accomodation)
 
     const seller = await User.findOne({
         _id : accomodation.seller
@@ -46,6 +48,8 @@ router.post('/regist', expressAsyncHandler(async(req,res,next)=>{
                 text : req.body.text,
                 totalGrade : req.body.totalGrade
             })
+            accomodation?.avgEvaluation.push(req.body.totalAvg.grade)
+            const newAccomodation = await accomodation.save()
             const newEvaluation = await evaluation.save()
             if(newEvaluation){
                 res.json('댓글등록 성공')  

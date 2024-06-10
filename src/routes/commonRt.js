@@ -2,6 +2,7 @@
 const express = require('express')
 const Accomodation = require('../models/Accomodation')
 const User = require('../models/User')
+const Search = require('../models/Search')
 const Evaluation = require('../models/Evaluation')
 const Category = require('../models/Category')
 const expressAsyncHandler = require('express-async-handler')
@@ -15,9 +16,13 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
     console.log(req.body.query)
     try{
         const accomodations = await Accomodation.find({...req.body.query})
+        const search = await Search.find({})
+        // console.log(search)
             res.json({
             code:200,
-            accomodations})
+            accomodations, search})
+        
+        
 
     }catch(e){
         console.log(e)

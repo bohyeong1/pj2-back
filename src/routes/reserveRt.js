@@ -87,7 +87,7 @@ router.post('/reserv', expressAsyncHandler(async(req,res,next)=>{
 router.post('/', expressAsyncHandler(async(req,res,next)=>{
     const reservation = await Reservaiton.find({
         buyer : req.body.userId
-    })
+    }).populate('seller')
     console.log(reservation)
     res.json(reservation)
 }))
