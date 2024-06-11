@@ -83,7 +83,7 @@ router.post('/reserv', expressAsyncHandler(async(req,res,next)=>{
     }
 }))
 
-////////////예약 리스트 얻기
+////////////예약 리스트 얻기<게스트용>
 router.post('/', expressAsyncHandler(async(req,res,next)=>{
     const reservation = await Reservaiton.find({
         buyer : req.body.userId
@@ -93,7 +93,15 @@ router.post('/', expressAsyncHandler(async(req,res,next)=>{
 }))
 
 
+////////////예약 리스트 얻기<호스트용>
+router.post('/host', expressAsyncHandler(async(req,res,next)=>{
+    console.log(req.body)
+    const reservation = await Reservaiton.find({
+        seller : req.body.userId
+    }).populate('buyer')
 
+    res.json(reservation)
+}))
 
 
 
