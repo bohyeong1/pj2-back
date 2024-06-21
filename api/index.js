@@ -23,7 +23,7 @@ const corsOption = {
 
 ////////////////////////////////db연결
 mongoose.connect(process.env.MONGODB_URI)
-.then(() => console.log('DB 연동 성공'))
+.then(() => console.log('DB 연동 성공!'))
 .catch((e) => console.log(`DB 연동 실패 ${e}`))
 
 //////////////////////////////////공통 미들웨어
