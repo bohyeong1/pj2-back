@@ -3,7 +3,6 @@ const app = express()
 const cors = require('cors')
 const logger = require('morgan')
 const mongoose = require('mongoose')
-// const axios = require('axios')
 const config = require('../config')
 
 // const Category = require('./src/models/Category')
@@ -22,7 +21,7 @@ const corsOption = {
 }
 
 ////////////////////////////////db연결
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(config.MONGODB_URL)
 .then(() => console.log('DB 연동 성공!'))
 .catch((e) => console.log(`DB 연동 실패 ${e}`))
 
