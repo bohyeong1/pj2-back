@@ -5,6 +5,7 @@ const logger = require('morgan')
 const mongoose = require('mongoose')
 const config = require('../config')
 
+
 // const Category = require('./src/models/Category')
 
 //////////////////////// 라우터
@@ -28,7 +29,7 @@ mongoose.connect(config.MONGODB_URL)
 //////////////////////////////////공통 미들웨어
 app.use(cors(corsOption))
 app.use(express.json())
-app.use(logger('tiny'))
+app.use(logger('dev'))
 
 //////////////////////////////////////라우터 연결
 app.use('/api/users', userRouter)
