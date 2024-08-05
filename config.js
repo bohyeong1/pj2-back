@@ -1,7 +1,5 @@
 const dotenv = require('dotenv')
 
-
-
 dotenv.config() // process.env 객체에 환경변수 설정
 
 module.exports = {
@@ -11,4 +9,4 @@ module.exports = {
   ACCESS_KEY: process.env.ACCESS_KEY,
   SECRET_KEY: process.env.SECRET_KEY,
   ENDPOINT: process.env.ENDPOINT
-  }
+}

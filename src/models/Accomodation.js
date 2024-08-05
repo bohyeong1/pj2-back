@@ -4,16 +4,6 @@ const {Schema} = mongoose
 const {Types:{ObjectId}} = Schema
 
 
-// subDocuments
-// aaa : [Rule] 형태로 넣을것
-// const Rule = new Schema({
-//     name: { type: String },
-//     text: { type: String },
-//     state: { type: Boolean, default: false },
-//     count: { type: Number, default: 0 },
-//     summary: { type: String, default: '' }
-// })
-
 const accomodationSchema = new Schema({
     ////////////판매자
     seller:{
