@@ -26,9 +26,16 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
                 code:200,
                 accomodations})
         }else if(req.body.filter && !req.body.keyword){
-            // 전체 도시 분류
-            if(req.body.filter === 'city'){
+            // 전체 도시 분류 // limit 있음
+            if(req.body.filter === 'city' && counts){
                 const search = await Search.find({}).limit(counts)
+                res.json({
+                    code:200,
+                    search}) 
+            }
+            // 전체 도시 분류 // limit 없음 검색어 컴포넌트에서 사용
+            else if(req.body.filter === 'city' && !counts){
+                const search = await Search.find({})
                 res.json({
                     code:200,
                     search}) 
@@ -77,23 +84,25 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
     const filters = req.body.filters
     const query = {...city, ...filters} // 필터 쿼리문
 
+    // 분류 조건
+    const sort = req.body.sort
     // 페이지네이션 관련 쿼리문(연습해볼겸 쿼리스트링으로 실어서 해보기)
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 10
     const skip = (page - 1) * 10
 
     try{
-        if(city && filters){
-            const [total_count, accomodations] = await Promise.all([
+        if(city && filters && sort){
+            const [total_counts, accomodations] = await Promise.all([
                 Accomodation.countDocuments(query),
-                Accomodation.find(query).skip(skip).limit(10)
-            ])            
-
+                Accomodation.find(query).sort({[sort]:-1}).skip(skip).limit(10)
+            ])    
+     
             res.json({
                 code:200,
                 accomodations,
-                totalPages: Math.ceil(total_count / limit),
-                currentPage: page
+                total_pages: Math.ceil(total_counts / limit),
+                total_counts:total_counts
             })
         }else{
             throw new Error('쿼리문 작성 불량 or 데이터 전송 에러')
@@ -168,7 +177,6 @@ router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
             code:429,
             message:e.message
         })
-
     }
 }))
 
