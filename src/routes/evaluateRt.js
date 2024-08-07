@@ -8,16 +8,6 @@ const expressAsyncHandler = require('express-async-handler')
 const mongoose = require('mongoose')
 const { Types: { ObjectId } } = mongoose
 
-///확인용
-router.get('/', (req,res,next)=>{
-    res.json('연동완료')
-})
-
-
-// writerNickname
-// writerImg
-
-
 ///////숙소평가 and 댓글 등록
 router.post('/regist', expressAsyncHandler(async(req,res,next)=>{
 

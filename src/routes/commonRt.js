@@ -9,6 +9,9 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const { Types: { ObjectId } } = mongoose
 
+// 파이프라인 모듈
+const {accomodation_pipe, accomodation_sort_pipe} = require('../pipelines/accomodation-pipe')
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////라우터
 ////////////////////////숙소 리스트 메인 페이지 - 카테고리 별 분류 api
 router.post('/',expressAsyncHandler(async(req,res,next)=>{
@@ -20,8 +23,7 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
         if(req.body.filter && req.body.keyword){
                   
             const query = {[`${field}.name`] : keyword}
-            const accomodations = await Accomodation.find(query).limit(counts)
-           
+            const accomodations = await Accomodation.find(query).limit(counts)     
             res.json({
                 code:200,
                 accomodations})
@@ -91,19 +93,108 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
     const limit = parseInt(req.query.limit) || 10
     const skip = (page - 1) * 10
 
+    console.log(sort)
+
     try{
         if(city && filters && sort){
-            const [total_counts, accomodations] = await Promise.all([
-                Accomodation.countDocuments(query),
-                Accomodation.find(query).sort({[sort]:-1}).skip(skip).limit(10)
-            ])    
-     
-            res.json({
-                code:200,
-                accomodations,
-                total_pages: Math.ceil(total_counts / limit),
-                total_counts:total_counts
-            })
+            // 최신순 정렬
+            if(sort === 'createAt'){
+                const [total_counts, accomodations] = await Promise.all([
+                    Accomodation.countDocuments(query),
+                    Accomodation.aggregate([
+                        {$match: query},
+                        ...accomodation_pipe(),
+                        {$sort:{sort:-1}},
+                        {$skip: skip},
+                        {$limit: 10}
+                    ])
+                ])                        
+                res.json({
+                    code:200,
+                    accomodations,
+                    total_pages: Math.ceil(total_counts / limit),
+                    total_counts:total_counts
+                })
+            }
+            // 비싼 가격순 정렬
+            else if(sort === 'price%2Fmax'){
+                const [total_counts, accomodations] = await Promise.all([
+                    Accomodation.countDocuments(query),
+                    Accomodation.aggregate([
+                        {$match: query},
+                        ...accomodation_pipe(),
+                        ...accomodation_sort_pipe('price',-1),
+                        {$skip: skip},
+                        {$limit: 10}
+                    ])
+                ])             
+                res.json({
+                    code:200,
+                    accomodations,
+                    total_pages: Math.ceil(total_counts / limit),
+                    total_counts:total_counts
+                })
+            }
+            // 싼 가격순 정렬
+            else if(sort === 'price%2Fmin'){
+                const [total_counts, accomodations] = await Promise.all([
+                    Accomodation.countDocuments(query),
+                    Accomodation.aggregate([
+                        {$match: query},
+                        ...accomodation_pipe(),
+                        ...accomodation_sort_pipe('price',1),
+                        {$skip: skip},
+                        {$limit: 10}
+                    ])
+                ])             
+                res.json({
+                    code:200,
+                    accomodations,
+                    total_pages: Math.ceil(total_counts / limit),
+                    total_counts:total_counts
+                })
+            }
+            // 리뷰 많은 순 정렬
+            else if(sort === 'replay%2Fmax'){
+                const [total_counts, accomodations] = await Promise.all([
+                    Accomodation.countDocuments(query),
+                    Accomodation.aggregate([
+                        {$match: query},
+                        ...accomodation_pipe(),
+                        ...accomodation_sort_pipe('counts_review',-1),
+                        {$skip: skip},
+                        {$limit: 10}
+                    ])
+                ])             
+                res.json({
+                    code:200,
+                    accomodations,
+                    total_pages: Math.ceil(total_counts / limit),
+                    total_counts:total_counts
+                })
+            }
+            // 평점 높은 순 정렬
+            else if(sort === 'evaluation%2Fmax'){
+                const [total_counts, accomodations] = await Promise.all([
+                    Accomodation.countDocuments(query),
+                    Accomodation.aggregate([
+                        {$match: query},
+                        ...accomodation_pipe(),
+                        ...accomodation_sort_pipe('average',-1),
+                        {$skip: skip},
+                        {$limit: 10}
+                    ])
+                ])             
+                res.json({
+                    code:200,
+                    accomodations,
+                    total_pages: Math.ceil(total_counts / limit),
+                    total_counts:total_counts
+                })
+            }else{
+                throw new Error(e)
+            }
+
         }else{
             throw new Error('쿼리문 작성 불량 or 데이터 전송 에러')
         }
@@ -115,6 +206,10 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
         })
     }
 }))
+
+
+
+
 
 //////////////////////////////////////////////host페이지 등록 숙소
 router.post('/host', expressAsyncHandler(async(req,res,next)=>{
@@ -132,7 +227,6 @@ router.post('/host', expressAsyncHandler(async(req,res,next)=>{
             code:429,
             message:'서버로 부터 데이터를 받는데 실패하였습니다.'
         })
-
     }
 }))
 
@@ -150,18 +244,16 @@ router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
         // 총 데이터의 평균 평점 집계하기
         const aggreEvalu = await Evaluation.aggregate([
             {$match : {homeid: new ObjectId(req.body._id) }},
-            {$unwind : "$evaluation" },
+            {$unwind : '$evaluation' },
             {$group : {
                 _id : {title: '$evaluation.title', url: '$evaluation.url'},
-                average : {$avg : "$evaluation.grade"},
+                average : {$avg : '$evaluation.grade'},
                 count : {$sum : 1},
             }},
             {
-                $sort : {"_id.title" : -1}
+                $sort : {'_id.title' : -1}
             }           
         ])
-
-        console.log(aggreEvalu)
 
         if(accomodations && seller){
             res.json({
