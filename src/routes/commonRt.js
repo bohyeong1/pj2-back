@@ -49,7 +49,7 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
                   }).limit(counts)
                   
                 res.json({
-                    code:200,
+                    code : 200,
                     accommodations}) 
             }
             // 전체
@@ -57,7 +57,7 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
                 const accomodations = await Accomodation.find({}).limit(counts)
 
                 res.json({
-                    code:200,
+                    code : 200,
                     accomodations
                 })
             }
@@ -72,8 +72,8 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
     }catch(e){
         console.log(e)
         res.status(429).json({
-            code:429,
-            message:e
+            code : 429,
+            message : e
         })
     }
 }))
@@ -88,12 +88,13 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
 
     // 분류 조건
     const sort = req.body.sort
+    
     // 페이지네이션 관련 쿼리문(연습해볼겸 쿼리스트링으로 실어서 해보기)
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 10
     const skip = (page - 1) * 10
 
-    console.log(sort)
+    // console.log(sort)
 
     try{
         if(city && filters && sort){
@@ -102,18 +103,18 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
                 const [total_counts, accomodations] = await Promise.all([
                     Accomodation.countDocuments(query),
                     Accomodation.aggregate([
-                        {$match: query},
+                        {$match : query},
                         ...accomodation_pipe(),
-                        {$sort:{sort:-1}},
-                        {$skip: skip},
-                        {$limit: 10}
+                        {$sort :{[sort]:-1}},
+                        {$skip : skip},
+                        {$limit : 10}
                     ])
                 ])                        
                 res.json({
-                    code:200,
+                    code : 200,
                     accomodations,
-                    total_pages: Math.ceil(total_counts / limit),
-                    total_counts:total_counts
+                    total_pages : Math.ceil(total_counts / limit),
+                    total_counts : total_counts
                 })
             }
             // 비싼 가격순 정렬
@@ -121,18 +122,18 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
                 const [total_counts, accomodations] = await Promise.all([
                     Accomodation.countDocuments(query),
                     Accomodation.aggregate([
-                        {$match: query},
+                        {$match : query},
                         ...accomodation_pipe(),
                         ...accomodation_sort_pipe('price',-1),
-                        {$skip: skip},
-                        {$limit: 10}
+                        {$skip : skip},
+                        {$limit : 10}
                     ])
                 ])             
                 res.json({
-                    code:200,
+                    code : 200,
                     accomodations,
-                    total_pages: Math.ceil(total_counts / limit),
-                    total_counts:total_counts
+                    total_pages : Math.ceil(total_counts / limit),
+                    total_counts : total_counts
                 })
             }
             // 싼 가격순 정렬
@@ -140,11 +141,11 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
                 const [total_counts, accomodations] = await Promise.all([
                     Accomodation.countDocuments(query),
                     Accomodation.aggregate([
-                        {$match: query},
+                        {$match : query},
                         ...accomodation_pipe(),
                         ...accomodation_sort_pipe('price',1),
-                        {$skip: skip},
-                        {$limit: 10}
+                        {$skip : skip},
+                        {$limit : 10}
                     ])
                 ])             
                 res.json({
@@ -159,11 +160,11 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
                 const [total_counts, accomodations] = await Promise.all([
                     Accomodation.countDocuments(query),
                     Accomodation.aggregate([
-                        {$match: query},
+                        {$match : query},
                         ...accomodation_pipe(),
                         ...accomodation_sort_pipe('counts_review',-1),
-                        {$skip: skip},
-                        {$limit: 10}
+                        {$skip : skip},
+                        {$limit : 10}
                     ])
                 ])             
                 res.json({
@@ -178,17 +179,17 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
                 const [total_counts, accomodations] = await Promise.all([
                     Accomodation.countDocuments(query),
                     Accomodation.aggregate([
-                        {$match: query},
+                        {$match : query},
                         ...accomodation_pipe(),
-                        ...accomodation_sort_pipe('average',-1),
-                        {$skip: skip},
-                        {$limit: 10}
+                        ...accomodation_sort_pipe('average', -1),
+                        {$skip : skip},
+                        {$limit : 10}
                     ])
                 ])             
                 res.json({
                     code:200,
                     accomodations,
-                    total_pages: Math.ceil(total_counts / limit),
+                    total_pages:Math.ceil(total_counts / limit),
                     total_counts:total_counts
                 })
             }else{
@@ -215,7 +216,7 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
 router.post('/host', expressAsyncHandler(async(req,res,next)=>{
     try{
         const accomodations = await Accomodation.find({
-            seller : req.body.sellerid
+            seller:req.body.sellerid
         })
             res.json({
             code:200,
@@ -238,20 +239,20 @@ router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
 
         //평가 data
         const evaluations = await Evaluation.find({
-            homeid : req.body._id
+            homeid:req.body._id
         }).populate('writerid')
 
         // 총 데이터의 평균 평점 집계하기
         const aggreEvalu = await Evaluation.aggregate([
-            {$match : {homeid: new ObjectId(req.body._id) }},
-            {$unwind : '$evaluation' },
-            {$group : {
-                _id : {title: '$evaluation.title', url: '$evaluation.url'},
-                average : {$avg : '$evaluation.grade'},
-                count : {$sum : 1},
+            {$match:{homeid: new ObjectId(req.body._id) }},
+            {$unwind:'$evaluation' },
+            {$group:{
+                _id:{title: '$evaluation.title', url: '$evaluation.url'},
+                average:{$avg : '$evaluation.grade'},
+                count:{$sum : 1},
             }},
             {
-                $sort : {'_id.title' : -1}
+                $sort:{'_id.title' : -1}
             }           
         ])
 
