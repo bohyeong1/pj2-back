@@ -107,7 +107,7 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
                         ...accomodation_pipe(),
                         {$sort :{[sort]:-1}},
                         {$skip : skip},
-                        {$limit : 10}
+                        {$limit : limit}
                     ])
                 ])                        
                 res.json({
@@ -126,7 +126,7 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
                         ...accomodation_pipe(),
                         ...accomodation_sort_pipe('price',-1),
                         {$skip : skip},
-                        {$limit : 10}
+                        {$limit : limit}
                     ])
                 ])             
                 res.json({
@@ -145,7 +145,7 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
                         ...accomodation_pipe(),
                         ...accomodation_sort_pipe('price',1),
                         {$skip : skip},
-                        {$limit : 10}
+                        {$limit : limit}
                     ])
                 ])             
                 res.json({
@@ -164,7 +164,7 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
                         ...accomodation_pipe(),
                         ...accomodation_sort_pipe('counts_review',-1),
                         {$skip : skip},
-                        {$limit : 10}
+                        {$limit : limit}
                     ])
                 ])             
                 res.json({
@@ -183,7 +183,7 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
                         ...accomodation_pipe(),
                         ...accomodation_sort_pipe('average', -1),
                         {$skip : skip},
-                        {$limit : 10}
+                        {$limit : limit}
                     ])
                 ])             
                 res.json({
