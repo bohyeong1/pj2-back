@@ -3,18 +3,18 @@ const User = require('../models/User')
 const expressAsyncHandler = require('express-async-handler')
 const {validationResult} = require('express-validator')
 const router = express.Router()
-const {isAdmin, isAuth, generateToken} = require('../../auth')
+const {isAdmin, isAuth, generateToken} = require('../jwt/auth')
 const {
     validateUserName,
     validateUserEmail,
     validateUserPassword,
     validateUserId
-} = require('../../validator')
+} = require('../validation/validator')
 
 const multer = require('multer')
 const AWS = require('aws-sdk')
 const {v4 : uuidv4} = require('uuid')
-const config = require('../../config')
+const config = require('../config/env_config')
 const storage = multer.memoryStorage();
 const upload = multer({ storage })
 const multiImg = upload.fields([{ name: 'userImg', maxCount: 1 }, {name:'userData', maxCount:100}]) 

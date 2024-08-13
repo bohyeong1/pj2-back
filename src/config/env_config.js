@@ -1,6 +1,6 @@
 const dotenv = require('dotenv')
 
-dotenv.config() // process.env 객체에 환경변수 설정
+dotenv.config()
 
 module.exports = {
   MONGODB_URL: process.env.MONGODB_URL,

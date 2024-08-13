@@ -12,7 +12,16 @@ const { Types: { ObjectId } } = mongoose
 // 파이프라인 모듈
 const {accomodation_pipe, accomodation_sort_pipe} = require('../pipelines/accomodation-pipe')
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////라우터
+// 컨트롤러 //
+// piece controller
+const acc_filter_controller = require('../controllers/common_controller/piece_controller/acc_filter_controller')
+const acc_limit_controller = require('../controllers/common_controller/piece_controller/acc_limit_controller')
+const acc_skip_controller = require('../controllers/common_controller/piece_controller/acc_skip_controller')
+const acc_sort_controller = require('../controllers/common_controller/piece_controller/acc_sort_controller')
+// main controller
+const {acc_get_controller} = require('../controllers/common_controller/main_controller/acc_get_controller')
+
+
 ////////////////////////숙소 리스트 메인 페이지 - 카테고리 별 분류 api
 router.post('/',expressAsyncHandler(async(req,res,next)=>{
     const counts = req.body.counts
@@ -209,7 +218,10 @@ router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
 }))
 
 
-
+/////////////////////////////////////////////////////////////////////////
+//////////////////////// subapp - modal - api ///////////////////////////
+/////////////////////////////////////////////////////////////////////////
+router.post('/submodal', acc_filter_controller, acc_limit_controller, acc_get_controller)
 
 
 //////////////////////////////////////////////host페이지 등록 숙소
