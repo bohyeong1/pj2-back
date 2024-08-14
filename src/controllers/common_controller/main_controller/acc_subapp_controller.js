@@ -3,7 +3,7 @@ const Accomodation = require('../../../models/Accomodation')
 const {accomodation_pipe, accomodation_sort_pipe} = require('../../../pipelines/accomodation-pipe')
 
 // 숙소 찾는 메인 컨트롤러
-async function acc_get_controller(req, res, next){
+async function acc_subapp_controller(req, res, next){
     const {filter_query, sort_query = null, limit_query, skip_query = 0} = req
 
     // 최종 파이프라인
@@ -35,5 +35,5 @@ async function acc_get_controller(req, res, next){
 }
 
 module.exports = {
-    acc_get_controller : async_handler(acc_get_controller)
+    acc_subapp_controller : async_handler(acc_subapp_controller)
 }

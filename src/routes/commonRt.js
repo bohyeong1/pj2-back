@@ -9,9 +9,6 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const { Types: { ObjectId } } = mongoose
 
-// 파이프라인 모듈
-const {accomodation_pipe, accomodation_sort_pipe} = require('../pipelines/accomodation-pipe')
-
 // 컨트롤러 //
 // piece controller
 const acc_filter_controller = require('../controllers/common_controller/piece_controller/acc_filter_controller')
@@ -19,33 +16,32 @@ const acc_limit_controller = require('../controllers/common_controller/piece_con
 const acc_skip_controller = require('../controllers/common_controller/piece_controller/acc_skip_controller')
 const acc_sort_controller = require('../controllers/common_controller/piece_controller/acc_sort_controller')
 // main controller
-const {acc_get_controller} = require('../controllers/common_controller/main_controller/acc_get_controller')
+const {acc_subapp_controller} = require('../controllers/common_controller/main_controller/acc_subapp_controller')
 
 
 ////////////////////////숙소 리스트 메인 페이지 - 카테고리 별 분류 api
 router.post('/',expressAsyncHandler(async(req,res,next)=>{
-    const counts = req.body.counts
+    const limit = req.body.limit
     const field = req.body.filter
     const keyword = req.body.keyword      
 
     try{
-        if(req.body.filter && req.body.keyword){
-                  
+        if(req.body.filter && req.body.keyword){                  
             const query = {[`${field}.name`] : keyword}
-            const accomodations = await Accomodation.find(query).limit(counts)     
+            const accomodations = await Accomodation.find(query).limit(limit)     
             res.json({
                 code:200,
                 accomodations})
         }else if(req.body.filter && !req.body.keyword){
             // 전체 도시 분류 // limit 있음
-            if(req.body.filter === 'city' && counts){
-                const search = await Search.find({}).limit(counts)
+            if(req.body.filter === 'city' && limit){
+                const search = await Search.find({}).limit(limit)
                 res.json({
                     code:200,
                     search}) 
             }
             // 전체 도시 분류 // limit 없음 검색어 컴포넌트에서 사용
-            else if(req.body.filter === 'city' && !counts){
+            else if(req.body.filter === 'city' && !limit){
                 const search = await Search.find({})
                 res.json({
                     code:200,
@@ -55,7 +51,7 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
             else if(req.body.filter === 'discount'){
                 const accommodations = await Accomodation.find({
                     discount: { $exists: true }
-                  }).limit(counts)
+                  }).limit(limit)
                   
                 res.json({
                     code : 200,
@@ -63,7 +59,7 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
             }
             // 전체
             else if(req.body.filter === 'all'){
-                const accomodations = await Accomodation.find({}).limit(counts)
+                const accomodations = await Accomodation.find({}).limit(limit)
 
                 res.json({
                     code : 200,
@@ -88,140 +84,16 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
 }))
 
 
-//////////////////////////////////숙소 리스트 서브 페이지 - 카테고리 별 분류 api(중복 허용) / 페이지네이션 백엔드에서 처리 
-router.post('/sub', expressAsyncHandler(async(req,res,next)=>{
-    // 필터링 조건
-    const city = {search_adress : req.body.city}
-    const filters = req.body.filters
-    const query = {...city, ...filters} // 필터 쿼리문
-
-    // 분류 조건
-    const sort = req.body.sort
-    
-    // 페이지네이션 관련 쿼리문(연습해볼겸 쿼리스트링으로 실어서 해보기)
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 10
-    const skip = (page - 1) * 10
-
-    // console.log(sort)
-
-    try{
-        if(city && filters && sort){
-            // 최신순 정렬
-            if(sort === 'createAt'){
-                const [total_counts, accomodations] = await Promise.all([
-                    Accomodation.countDocuments(query),
-                    Accomodation.aggregate([
-                        {$match : query},
-                        ...accomodation_pipe(),
-                        {$sort :{[sort]:-1}},
-                        {$skip : skip},
-                        {$limit : limit}
-                    ])
-                ])                        
-                res.json({
-                    code : 200,
-                    accomodations,
-                    total_pages : Math.ceil(total_counts / limit),
-                    total_counts : total_counts
-                })
-            }
-            // 비싼 가격순 정렬
-            else if(sort === 'price%2Fmax'){
-                const [total_counts, accomodations] = await Promise.all([
-                    Accomodation.countDocuments(query),
-                    Accomodation.aggregate([
-                        {$match : query},
-                        ...accomodation_pipe(),
-                        ...accomodation_sort_pipe('price',-1),
-                        {$skip : skip},
-                        {$limit : limit}
-                    ])
-                ])             
-                res.json({
-                    code : 200,
-                    accomodations,
-                    total_pages : Math.ceil(total_counts / limit),
-                    total_counts : total_counts
-                })
-            }
-            // 싼 가격순 정렬
-            else if(sort === 'price%2Fmin'){
-                const [total_counts, accomodations] = await Promise.all([
-                    Accomodation.countDocuments(query),
-                    Accomodation.aggregate([
-                        {$match : query},
-                        ...accomodation_pipe(),
-                        ...accomodation_sort_pipe('price',1),
-                        {$skip : skip},
-                        {$limit : limit}
-                    ])
-                ])             
-                res.json({
-                    code:200,
-                    accomodations,
-                    total_pages: Math.ceil(total_counts / limit),
-                    total_counts:total_counts
-                })
-            }
-            // 리뷰 많은 순 정렬
-            else if(sort === 'replay%2Fmax'){
-                const [total_counts, accomodations] = await Promise.all([
-                    Accomodation.countDocuments(query),
-                    Accomodation.aggregate([
-                        {$match : query},
-                        ...accomodation_pipe(),
-                        ...accomodation_sort_pipe('counts_review',-1),
-                        {$skip : skip},
-                        {$limit : limit}
-                    ])
-                ])             
-                res.json({
-                    code:200,
-                    accomodations,
-                    total_pages: Math.ceil(total_counts / limit),
-                    total_counts:total_counts
-                })
-            }
-            // 평점 높은 순 정렬
-            else if(sort === 'evaluation%2Fmax'){
-                const [total_counts, accomodations] = await Promise.all([
-                    Accomodation.countDocuments(query),
-                    Accomodation.aggregate([
-                        {$match : query},
-                        ...accomodation_pipe(),
-                        ...accomodation_sort_pipe('average', -1),
-                        {$skip : skip},
-                        {$limit : limit}
-                    ])
-                ])             
-                res.json({
-                    code:200,
-                    accomodations,
-                    total_pages:Math.ceil(total_counts / limit),
-                    total_counts:total_counts
-                })
-            }else{
-                throw new Error(e)
-            }
-
-        }else{
-            throw new Error('쿼리문 작성 불량 or 데이터 전송 에러')
-        }
-    }catch(e){
-        console.log(e)
-        res.status(429).json({
-            code:429,
-            message:e
-        })
-    }
-}))
+/////////////////////////////////////////////////////////////////////////
+////////////////////////// subapp - list - api //////////////////////////
+///////////////////////////////////////////////////////////////////////// 
+router.post('/sub', acc_filter_controller, acc_sort_controller, acc_skip_controller, acc_limit_controller, acc_subapp_controller)
 
 
 /////////////////////////////////////////////////////////////////////////
 //////////////////////// subapp - modal - api ///////////////////////////
 /////////////////////////////////////////////////////////////////////////
-router.post('/submodal', acc_filter_controller, acc_limit_controller, acc_get_controller)
+router.post('/submodal', acc_filter_controller, acc_sort_controller, acc_limit_controller, acc_subapp_controller)
 
 
 //////////////////////////////////////////////host페이지 등록 숙소
