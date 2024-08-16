@@ -1,5 +1,6 @@
+// =================================================
+// 숙소 정렬 쿼리문 작성 컨트롤러 //
 
-// 숙소 정렬 쿼리문 작성 컨트롤러
 async function acc_sort_controller(req, res, next){
     const sort = req.body.sort
 
