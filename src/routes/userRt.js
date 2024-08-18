@@ -10,7 +10,7 @@ const {
     validateUserPassword,
     validateUserId
 } = require('../validation/validator')
-
+const admin = require('../config/firebase_config')
 const multer = require('multer')
 const AWS = require('aws-sdk')
 const {v4 : uuidv4} = require('uuid')
@@ -19,8 +19,21 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage })
 const multiImg = upload.fields([{ name: 'userImg', maxCount: 1 }, {name:'userData', maxCount:100}]) 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////라우터
-//////////////////////////////////////////회원가입
+// =================================================
+// controller //
+const {user_getuser_controller} = require('../controllers/user_controller/user_getuser_controller')
+const {user_login_controller} = require('../controllers/user_controller/user_login_controller')
+const {user_duplicate_controller} = require('../controllers/user_controller/user_duplicate_controller')
+
+
+
+
+////////////////////////////////////////////////////
+//////////////////// 라 우 터 //////////////////////
+///////////////////////////////////////////////////
+
+// =================================================
+// 회원가입 //
 router.post('/register', expressAsyncHandler(async(req,res,next)=>{
     console.log(req.body)
     try{
@@ -49,7 +62,8 @@ router.post('/register', expressAsyncHandler(async(req,res,next)=>{
     }
 }))
 
-/////////////////마일리지 확인창
+// =================================================
+// 마일리지 //
 router.post('/mileage', expressAsyncHandler(async (req, res, next)=>{
     const logUser = await User.findOne({
         userId : req.body.userId
@@ -67,40 +81,22 @@ router.post('/mileage', expressAsyncHandler(async (req, res, next)=>{
 }))
 
 
-/////////////////////////////////////로그인
-router.post('/login', expressAsyncHandler(async (req, res, next)=>{
-    console.log(req.body)
+// =================================================
+// login //
+router.post('/login',user_login_controller)
 
-    const loginUser = await User.findOne({
-        userId : req.body.userId,
-        password : req.body.password
-    })
+// =================================================
+// get user //
+router.post('/getuser',user_getuser_controller)
 
-    if(!loginUser){
-        console.log(loginUser)
-        res.status(401).json({code:401, message : '아이디 또는 비밀번호를 잘못 입력했습니다.'})
-    }else{
-        if(loginUser.isAdmin){                  ////////////////관리자 로그인
-            const {name, email, userId, isAdmin, createdAt, cashInv, profileImg,createAt,hostText,nickname} = loginUser
-            res.json({
-                code:200,
-                name, email, userId, isAdmin, createdAt, cashInv,profileImg,createAt,hostText,nickname,
-                token : generateToken(loginUser),
-                message : '관리자 로그인'
-            })                                                                                                                                                                              
-        }else{
-            const {name, email, userId, isAdmin, createdAt, _id, cashInv,profileImg,createAt,hostText,nickname} = loginUser
-            res.json({
-                code:200,
-                name, email, userId, isAdmin, createdAt,_id, cashInv,profileImg,createAt,hostText,nickname,
-                token : generateToken(loginUser)
-            })
-        }       
-    }
-}))
+// =================================================
+// user id 중복 체크 //
+router.post('/duplicate',user_duplicate_controller)
 
 
-///////////////////////이미지 등록
+
+// =================================================
+// 이미지 등록 //
 router.post('/userImg',multiImg ,expressAsyncHandler(async(req,res,next)=>{
 
     console.log(req.files)
@@ -169,8 +165,8 @@ router.post('/userImg',multiImg ,expressAsyncHandler(async(req,res,next)=>{
 
 
 
-//////////////////////////////////// 회원정보 수정하기
-//인증폼
+// =================================================
+// 회원정보 수정 //
 
 router.put('/update',[validateUserName(),
     validateUserEmail(),
@@ -212,7 +208,8 @@ router.put('/update',[validateUserName(),
 
 
 
-/////////////////////////////////////////호스트 정보 수정하기
+// =================================================
+// 호스트 정보 수정 //
 router.put('/host', expressAsyncHandler(async(req,res,next) => {
     const user = await User.findOne({
         userId : req.body.userId}) 
@@ -237,7 +234,8 @@ router.put('/host', expressAsyncHandler(async(req,res,next) => {
 
 
 
-///////////////////////////////////////// 회원정보 삭제하기
+// =================================================
+// 회원탈퇴 //
 router.delete('/delete', expressAsyncHandler(async(req, res, next) => {
 
     const user = await User.find({
@@ -257,6 +255,8 @@ router.delete('/delete', expressAsyncHandler(async(req, res, next) => {
         res.status(200).json({code:200, message: '성공적으로 삭제가 완료되었습니다.'})
     }
 }))
+
+
 
 
 module.exports = router

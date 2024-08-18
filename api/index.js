@@ -10,7 +10,7 @@ const connect_db = require('../src/config/db_config')
 // middlewares //
 const error_middle = require('../src/middlewares/error_handle_middle/error_midle')
 const notfound_middle = require('../src/middlewares/error_handle_middle/404_midle')
-
+const cookie_parser = require('../src/middlewares/common_middle/cookie_middle')
 
 // =================================================
 // router //
@@ -36,6 +36,7 @@ connect_db(config.MONGODB_URL)
 app.use(cors(corsOption))
 app.use(express.json())
 app.use(logger('dev'))
+app.use(cookie_parser)
 
 // =================================================
 // connect router //

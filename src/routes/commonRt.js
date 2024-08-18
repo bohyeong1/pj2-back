@@ -9,8 +9,8 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const { Types: { ObjectId } } = mongoose
 
-// 컨트롤러 //
-// piece controller
+// =================================================
+// controller //
 const acc_filter_controller = require('../controllers/common_controller/piece_controller/acc_filter_controller')
 const acc_limit_controller = require('../controllers/common_controller/piece_controller/acc_limit_controller')
 const acc_skip_controller = require('../controllers/common_controller/piece_controller/acc_skip_controller')
@@ -19,7 +19,13 @@ const acc_sort_controller = require('../controllers/common_controller/piece_cont
 const {acc_subapp_controller} = require('../controllers/common_controller/main_controller/acc_subapp_controller')
 
 
-////////////////////////숙소 리스트 메인 페이지 - 카테고리 별 분류 api
+
+////////////////////////////////////////////////////
+//////////////////// 라 우 터 //////////////////////
+///////////////////////////////////////////////////
+
+// =================================================
+// subapp - main - api //
 router.post('/',expressAsyncHandler(async(req,res,next)=>{
     const limit = req.body.limit
     const field = req.body.filter
@@ -84,15 +90,12 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
 }))
 
 
-/////////////////////////////////////////////////////////////////////////
-////////////////////////// subapp - list - api //////////////////////////
-///////////////////////////////////////////////////////////////////////// 
+// =================================================
+// subapp - list - api //
 router.post('/sub', acc_filter_controller, acc_sort_controller, acc_skip_controller, acc_limit_controller, acc_subapp_controller)
 
-
-/////////////////////////////////////////////////////////////////////////
-//////////////////////// subapp - modal - api ///////////////////////////
-/////////////////////////////////////////////////////////////////////////
+// =================================================
+// subapp - modal - api //
 router.post('/submodal', acc_filter_controller, acc_sort_controller, acc_limit_controller, acc_subapp_controller)
 
 
@@ -115,7 +118,8 @@ router.post('/host', expressAsyncHandler(async(req,res,next)=>{
     }
 }))
 
-/////////////////////////////////////숙소 한개 
+// =================================================
+// detaill_app - - api //
 router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
     try{
         const accomodations = await Accomodation.findOne({_id:req.body._id}).populate('seller')  //숙소 data

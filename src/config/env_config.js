@@ -8,5 +8,7 @@ module.exports = {
   BUCKET_NAME: process.env.BUCKET_NAME,
   ACCESS_KEY: process.env.ACCESS_KEY,
   SECRET_KEY: process.env.SECRET_KEY,
-  ENDPOINT: process.env.ENDPOINT
+  ENDPOINT: process.env.ENDPOINT,
+  FIREBASE_URL : process.env.FIREBASE_URL,
+  MAPPING_EMAIL : process.env.MAPPING_EMAIL
 }

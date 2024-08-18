@@ -17,21 +17,18 @@ async function acc_subapp_controller(req, res, next){
         {$limit : limit_query}
     ]
 
-    try{
-        const [total_counts, accomodations] = await Promise.all([
-            Accomodation.countDocuments(filter_query),
-            Accomodation.aggregate(pipelines)
-        ])
 
-        res.json({
-            code: 200,
-            accomodations,
-            total_pages: Math.ceil(total_counts / limit_query),
-            total_counts: total_counts
-        })
-    }catch(e){
-        throw new Error(e)
-    }
+    const [total_counts, accomodations] = await Promise.all([
+        Accomodation.countDocuments(filter_query),
+        Accomodation.aggregate(pipelines)
+    ])
+
+    res.json({
+        code: 200,
+        accomodations,
+        total_pages: Math.ceil(total_counts / limit_query),
+        total_counts: total_counts
+    })
 }
 
 module.exports = {
