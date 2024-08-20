@@ -1,4 +1,5 @@
 const admin = require('firebase-admin')
+
 const service_account = require('../../firebase.json')
 const config = require('./env_config')
 
@@ -8,3 +9,4 @@ admin.initializeApp({
 })
 
 module.exports = admin
+

@@ -10,7 +10,6 @@ const {
     validateUserPassword,
     validateUserId
 } = require('../validation/validator')
-const admin = require('../config/firebase_config')
 const multer = require('multer')
 const AWS = require('aws-sdk')
 const {v4 : uuidv4} = require('uuid')
@@ -24,43 +23,14 @@ const multiImg = upload.fields([{ name: 'userImg', maxCount: 1 }, {name:'userDat
 const {user_getuser_controller} = require('../controllers/user_controller/user_getuser_controller')
 const {user_login_controller} = require('../controllers/user_controller/user_login_controller')
 const {user_duplicate_controller} = require('../controllers/user_controller/user_duplicate_controller')
-
-
+const {user_initial_join_controller} = require('../controllers/user_controller/user_initial_join_controller')
+const {user_maintain_controller} = require('../controllers/user_controller/user_maintain_controller')
 
 
 ////////////////////////////////////////////////////
 //////////////////// 라 우 터 //////////////////////
 ///////////////////////////////////////////////////
 
-// =================================================
-// 회원가입 //
-router.post('/register', expressAsyncHandler(async(req,res,next)=>{
-    console.log(req.body)
-    try{
-        const user = new User({
-            name:req.body.name,
-            email:req.body.email,
-            userId:req.body.userId,
-            password:req.body.password,
-            nickname:req.body.nickname
-        })
-        const newUser = await user.save()
-
-        // console.log(newUser)
-
-        res.json({
-            code:200,
-            newUser, 
-            token : generateToken(newUser)
-        })
-    }catch(e){
-        res.status(401).json({
-            code : 401,
-            message : '유효하지 않은 정보를 입력하셨습니다.',
-            e
-        })
-    }
-}))
 
 // =================================================
 // 마일리지 //
@@ -86,14 +56,20 @@ router.post('/mileage', expressAsyncHandler(async (req, res, next)=>{
 router.post('/login',user_login_controller)
 
 // =================================================
-// get user //
-router.post('/getuser',user_getuser_controller)
+// 로그인 유지 *사용자 정보 제공 //
+router.get('/getuser',user_getuser_controller)
+
+// =================================================
+// 로그인 유지 *사용자 정보 미제공 db조회 안함 //
+router.get('/maintain',user_maintain_controller)
 
 // =================================================
 // user id 중복 체크 //
 router.post('/duplicate',user_duplicate_controller)
 
-
+// =================================================
+// user 초기 회원가입 //
+router.post('/initailjoin',user_initial_join_controller)
 
 // =================================================
 // 이미지 등록 //

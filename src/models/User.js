@@ -14,7 +14,7 @@ const userSchema = new Schema({
     },
     email:{
         type:String,
-        require:true
+        // unique:true
     },
     userId:{
         type:String,
@@ -46,8 +46,7 @@ const userSchema = new Schema({
         default:''
     },
     nickname:{
-        type:String,
-        require:true
+        type:String
     },
     hostText:{
         type:String

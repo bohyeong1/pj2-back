@@ -3,17 +3,17 @@ const user_dto = require('../../dto/user_dto')
 const async_handler = require('express-async-handler')
 
 // =================================================
-// 유저 정보 http cookie로 획득 //
+// http cookie에 로그인 유지 되었나 체크 //
 
-async function user_getuser_controller(req, res, next){
+async function user_maintain_controller(req, res, next){
     const user = new user_dto({token : req.cookies.auth_token})
-    console.log(req.cookies)
     const user_service_layer = new user_service()
-    const result = await user_service_layer.getuser_user(user)
+
+    const result = await user_service_layer.maintain_user(user)
     // console.log(result)
     res.status(200).json(result)
 }
 
 module.exports = {
-    user_getuser_controller : async_handler(user_getuser_controller)
+    user_maintain_controller : async_handler(user_maintain_controller)
 }
