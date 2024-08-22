@@ -4,20 +4,18 @@ const expressAsyncHandler = require('express-async-handler')
 const {validationResult} = require('express-validator')
 const router = express.Router()
 const {isAdmin, isAuth, generateToken} = require('../jwt/auth')
-const {
-    validateUserName,
-    validateUserEmail,
-    validateUserPassword,
-    validateUserId
-} = require('../validation/validator')
+const config = require('../config/env_config')
+// =================================================
+// multer and img storage //
 const multer = require('multer')
 const AWS = require('aws-sdk')
 const {v4 : uuidv4} = require('uuid')
-const config = require('../config/env_config')
 const storage = multer.memoryStorage();
 const upload = multer({ storage })
 const multiImg = upload.fields([{ name: 'userImg', maxCount: 1 }, {name:'userData', maxCount:100}]) 
-
+// =================================================
+// validator //
+const {validateUserEmail} = require('../validation/validator')
 // =================================================
 // controller //
 const {user_getuser_controller} = require('../controllers/user_controller/user_getuser_controller')
@@ -25,12 +23,13 @@ const {user_login_controller} = require('../controllers/user_controller/user_log
 const {user_duplicate_controller} = require('../controllers/user_controller/user_duplicate_controller')
 const {user_initial_join_controller} = require('../controllers/user_controller/user_initial_join_controller')
 const {user_maintain_controller} = require('../controllers/user_controller/user_maintain_controller')
+const {verification_code_controller} = require('../controllers/user_controller/verification_code_controller')
+
 
 
 ////////////////////////////////////////////////////
 //////////////////// 라 우 터 //////////////////////
 ///////////////////////////////////////////////////
-
 
 // =================================================
 // 마일리지 //
@@ -70,6 +69,16 @@ router.post('/duplicate',user_duplicate_controller)
 // =================================================
 // user 초기 회원가입 //
 router.post('/initailjoin',user_initial_join_controller)
+
+// =================================================
+// user 이메일 인증 코드 발급 //
+router.post('/verification',verification_code_controller)
+// validateUserEmail,
+
+
+
+
+
 
 // =================================================
 // 이미지 등록 //
@@ -144,9 +153,7 @@ router.post('/userImg',multiImg ,expressAsyncHandler(async(req,res,next)=>{
 // =================================================
 // 회원정보 수정 //
 
-router.put('/update',[validateUserName(),
-    validateUserEmail(),
-    validateUserId()] ,expressAsyncHandler(async(req, res, next) => {
+router.put('/update',validateUserEmail ,expressAsyncHandler(async(req, res, next) => {
 
         // console.log(req.body)
     const errors = validationResult(req)

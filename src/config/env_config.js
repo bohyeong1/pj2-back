@@ -10,5 +10,7 @@ module.exports = {
   SECRET_KEY: process.env.SECRET_KEY,
   ENDPOINT: process.env.ENDPOINT,
   FIREBASE_URL : process.env.FIREBASE_URL,
-  MAPPING_EMAIL : process.env.MAPPING_EMAIL
+  MAPPING_EMAIL : process.env.MAPPING_EMAIL,
+  MAILGUN_KEY : process.env.MAILGUN_KEY,
+  MAILGUN_DOMAIN : process.env.MAILGUN_DOMAIN
 }

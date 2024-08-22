@@ -1,7 +1,11 @@
 const admin = require('../config/firebase_config')
 const User = require('../models/User')
+const Reqcount = require('../models/Reqcount')
+const Authcode = require('../models/Authcode')
 const config = require('../config/env_config')
-const speakeasy = require('speakeasy')
+const {create_code} = require('../util_function/util_function')
+const {send_code_email} = require('../util_function/util_function')
+const error_dto = require('../dto/error_dto')
 
 class user_service{
     // =================================================
@@ -50,7 +54,10 @@ class user_service{
             const uid = verify_token.uid           
             const user = await User.findOne({firebase_uid: uid})
             if(!user){
-                throw new Error('token과 user mongoDB 연동 문제')
+                return {
+                    code : 200,
+                    log_state : false
+                }
             }
             return {
                 code : 200,
@@ -104,15 +111,6 @@ class user_service{
         }catch(e){
             throw new Error(e.massage)
         }
-    }
-
-    // =================================================
-    // user email 인증 //
-    async user_email(user_dto){
-        if(!user_dto.email){
-            throw new Error('파라미터를 넣어주세요')
-        }
-        user_dto.validate()
     }
 
     // =================================================
@@ -206,6 +204,117 @@ class user_service{
             }
         }catch(e){
             throw e
+        }
+    }
+
+    
+    // =================================================
+    // user email 코드 발급 //
+    async verification_code(user_dto){
+        if(!user_dto.email){
+            return {
+                code : 200, 
+                massage : '이메일을 입력해 주세요.', 
+                code_state : false
+            }
+        }
+
+        // 코드 발급 회수 체크
+        const req_count = await Reqcount.findOne({userId : user_dto.userId})
+
+        try{
+            // 처음 인증 코드 발급 시 or 하루 지낫을 시
+            if(!req_count){
+                // 하루 3번 인증 db 생성
+                const new_req_count = await Reqcount.create({
+                    userId : user_dto.userId,
+                    email : user_dto.email,
+                    requestAt : Date.now()
+                })
+
+                // 인증코드 생성
+                const injung_code = create_code()
+
+                // 1번의 인증당 3번의 기회 db 생성
+                const new_auth_code = await Authcode.create({
+                    code : injung_code,
+                    email : user_dto.email
+                })
+
+                // email 발송
+                await send_code_email(user_dto.email, injung_code)
+
+                return {
+                    code : 200,
+                    message : `이메일 인증 코드 발급이 성공하였습니다. 요청회수 ${new_req_count.count}/3`,
+                    code_state : true,
+                    count : new_req_count.count
+                }
+            }
+            // 2번째 부터
+            else{
+                // 아이디당 코드 발급 3회 초과 시
+                if(req_count >= 3){
+                    return {
+                        code : 200,
+                        message : '아이디 당 코드 발급 회수는 1일 3회로 제한되어 있습니다.',
+                        code_state : false
+                    }
+                }
+
+                req_count.requestAt = Date.now()
+                req_count.count += 1
+                // 인증코드 생성
+                const injung_code = create_code()
+
+                const auth_code = await Authcode.findOne({email : user_dto.email})
+
+                // 새로운 이메일로 인증 코드 발급 시
+                if(!auth_code){
+                    req_count.email = user_dto.email
+                    const new_auth_code = await Authcode.create({
+                        code : injung_code,
+                        email : user_dto.email
+                    })
+                }
+                // 기존 이메일로 인증 코드 재발급 시
+                else{
+                    // index 조회
+                    const indexes = await Authcode.collection.indexes()
+                    console.log(indexes)
+                }
+                await req_count.save()
+
+                // email 발송
+                await send_code_email(user_dto.email, injung_code)
+
+                return {
+                    code : 200,
+                    message : `이메일 인증 코드 발급이 성공하였습니다. 요청회수 ${req_count.count}/3`,
+                    code_state : true,
+                    count : req_count.count
+                }
+            }
+        }
+        catch(e){
+            throw new error_dto({
+                code: 401,
+                message: 'DB 업데이트 중 문제가 발생 하였습니다.',
+                server_state: false
+            })
+        }
+    }
+
+
+    // =================================================
+    // user email 인증 //
+    async user_email(user_dto){
+        if(!user_dto.email){
+            return {
+                code : 200, 
+                massage : '이메일을 입력해 주세요.', 
+                log_state : false
+            }
         }
     }
 }

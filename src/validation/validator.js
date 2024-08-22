@@ -1,7 +1,5 @@
 const {body} = require('express-validator')
 
-
-
 const isFieldEmpty = (field) => { // Form 필드가 비어있는지 검사
     return body(field)
     .not()
@@ -28,45 +26,6 @@ function validateUserEmail(){
     ]
 } 
 
-const validateUserId = () => {
-    return isFieldEmpty('userId')
-    .isLength({min:1})
-    .withMessage('userId must be more than 1 characters')
-    .bail()
-    .isLength({max:12})
-    .withMessage('userId must be lesser than 12 characters')
-    .bail()
-    .not()
-    .isAlpha()
-    .withMessage('id must be at least 1 number')
-    .bail()
-    .matches(/[0-9]/)
-    .withMessage('id must be at least 1 alphabet')
-    .bail()
-    .not()
-    .matches(/[!@#$%^&*]/)
-    .withMessage('id must consist alpahbet or number')
-}
-
-const validateUserPassword = () => {
-    return isFieldEmpty("password")
-    .isLength({ min: 7 })
-    .withMessage("password must be more than 7 characters")
-    .bail()
-    .isLength({ max: 15 })
-    .withMessage("password must be lesser than 15 characters")
-    .bail()
-    .not()
-    .isAlpha()
-    .withMessage("password must be at least 1 number")
-    .matches(/[!@#$%^&*]/)
-    .withMessage("password must be at least 1 special charactor")
-    .bail()
-    // Form 에서 전달된 password 정보가 일치하는지 검사
-    // value : password
-    .custom((value, { req }) => req.body.confirmPassword === value)
-    .withMessage("Passwords don't match.")
-}
 
 
 
@@ -76,8 +35,5 @@ const validateUserPassword = () => {
 
 
 module.exports = {
-    validateUserName,
-    validateUserEmail,
-    validateUserPassword,
-    validateUserId
+    validateUserEmail
 }
