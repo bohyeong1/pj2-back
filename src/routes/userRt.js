@@ -5,14 +5,10 @@ const {validationResult} = require('express-validator')
 const router = express.Router()
 const {isAdmin, isAuth, generateToken} = require('../jwt/auth')
 const config = require('../config/env_config')
+
 // =================================================
-// multer and img storage //
-const multer = require('multer')
-const AWS = require('aws-sdk')
-const {v4 : uuidv4} = require('uuid')
-const storage = multer.memoryStorage();
-const upload = multer({ storage })
-const multiImg = upload.fields([{ name: 'userImg', maxCount: 1 }, {name:'userData', maxCount:100}]) 
+// multer //
+const {user_multer} = require('../middlewares/common_middle/multer_middle')
 // =================================================
 // validator //
 const {validateUserEmail} = require('../validation/validator')
@@ -24,6 +20,10 @@ const {user_duplicate_controller} = require('../controllers/user_controller/user
 const {user_initial_join_controller} = require('../controllers/user_controller/user_initial_join_controller')
 const {user_maintain_controller} = require('../controllers/user_controller/user_maintain_controller')
 const {verification_code_controller} = require('../controllers/user_controller/verification_code_controller')
+const {email_auth_controller} = require('../controllers/user_controller/email_auth_controller')
+const {user_nickname_controller} = require('../controllers/user_controller/user_nickname_controller')
+const {user_profile_controller} = require('../controllers/user_controller/user_profile_controller')
+
 
 
 
@@ -75,84 +75,22 @@ router.post('/initailjoin',user_initial_join_controller)
 router.post('/verification',verification_code_controller)
 // validateUserEmail,
 
-
-
-
-
+// =================================================
+// user 이메일 인증 확인 //
+router.post('/authemail', email_auth_controller)
 
 // =================================================
-// 이미지 등록 //
-router.post('/userImg',multiImg ,expressAsyncHandler(async(req,res,next)=>{
+// user 이미지 + 닉네임 업데이트 //
+router.post('/profile', user_multer, user_profile_controller)
 
-    console.log(req.files)
-
-    const text = await new Response(req.files.userData[0].buffer).text()     ///id 값   
-    const parsingText = JSON.parse(text)         
-    // console.log(parsingText)
-
-  
-    // 네이버 오브젝트 스토리지에 이미지 저장 링크문자데이터만 db에 저장하기 
-    const S3 = new AWS.S3({
-        endpoint: new AWS.Endpoint(config.ENDPOINT),
-        region: 'kr-standard',
-        credentials: {
-          accessKeyId: config.ACCESS_KEY,
-          secretAccessKey: config.SECRET_KEY,
-        },
-      });         
-
-    //   ///////////////////이미지 오브젝트 스토리지로 전송 
-  
-      // 유저 저장
-      const imageName = uuidv4(); // 랜덤 이미지 이름 생성
-      await S3.putObject({
-        Bucket: config.BUCKET_NAME,
-        Key: `${imageName}.PNG`,
-        ACL: 'public-read',
-        // ACL을 지우면 전체공개가 되지 않습니다.
-        Body: req.files.userImg[0].buffer,
-        ContentType: 'image/png', // 파일 타입을 png로 지정
-      }).promise();
-  
-      const userImgUrls = `${config.ENDPOINT}/${config.BUCKET_NAME}/${imageName}.PNG` ///유저 이미지 데이터 url값 저장 
-  
-      // 문자 url db에 저장하기 ㅇ
-      try{
-        const customer = await User.findOne({
-          _id : parsingText
-        })
-        
-        console.log(customer)
-
-      if(!customer){
-        res.status(404).json({ code: 404, message: '유저 정보를 찾을 수 없습니다.'})
-      }else{      
-        
-        customer.profileImg = userImgUrls || customer.profileImg
-         
-  
-        const updatedcustomer = await customer.save()
-        
-        console.log(updatedcustomer)
-  
-        res.json({
-          code:200,
-          imgUrls :userImgUrls,
-          message:'데이터 저장 성공'
-        })
-      }
-  
-      }catch(e){
-        res.status(401).json(e)
-      }
-  
-}))
+// =================================================
+// user 이메일 인증 확인 //
+router.post('/nickname',user_nickname_controller)
 
 
 
 // =================================================
 // 회원정보 수정 //
-
 router.put('/update',validateUserEmail ,expressAsyncHandler(async(req, res, next) => {
 
         // console.log(req.body)

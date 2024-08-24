@@ -8,15 +8,16 @@ class user_dto{
         this.userId = data.userId || null 
         this.password = data.password || null
         this.password_confirm = data.password_confirm || null
-        this.email = data.email || null
         this.name = data.name || null
-        // 아직 폼 타입검사 미구현
+        this.nickname = data.nickname || null
+        this.defaultProfile = data.defaultProfile || null
+        this.profileImg = data.profileImg || null
+        // 폼 타입검사 미구현
+        this.email = data.email || null
         this.isAdmin = data.isAdmin || null
         this.cashInv = data.cashInv || null
-        this.profileImg = data.profileImg || null
-        this.nickname = data.nickname || null
         this.hostText = data.hostText || null
-        this.hostText = data.hostText || null
+        this.code = data.code || null
     }
 
     // =================================================
@@ -43,9 +44,38 @@ class user_dto{
         if(typeof this.userId !== 'string'){
             throw new Error('userId  타입이 잘못 되었습니다.')
         }
-        const id_rgx = /^(?=.*[a-zA-Z])[a-zA-Z0-9]{7,12}$/
+        const id_rgx = /^(?=.*[a-zA-Z])[a-zA-Z0-9]{7,15}$/
         if(!id_rgx.test(this.userId)){
-            throw new Error('아이디는 7~12자 + 알파벳(+숫자)으로 구성되어야 됩니다.')
+            throw new Error('아이디는 7~15자 + 알파벳(+숫자)으로 구성되어야 됩니다.')
+        }
+    }
+
+    // =================================================
+    // nickname 타입 & 형식검사 //
+    validate_nickname(){
+        if(!this.nickname){
+            throw new Error('userId data가 없습니다.')
+        }
+        if(typeof this.nickname !== 'string'){
+            throw new Error('userId  타입이 잘못 되었습니다.')
+        }
+        const nick_rgx = /^[a-zA-Z0-9가-힣]+$/
+        if(!nick_rgx.test(this.nickname)){
+            throw new Error('닉네임은 한글, 영어, 숫자로 작성해 주세요.')
+        }
+    }
+
+    // =================================================
+    // defaultProfile 형식 & 타입검사 //
+    validate_default_profile(){
+        if(!this.defaultProfile){
+            throw new Error('default profile data가 없습니다.')
+        }
+        if(typeof this.defaultProfile !== 'string'){
+            throw new Error('default profile 타입이 잘못 되었습니다.')
+        }
+        if(this.defaultProfile.length !== 7){
+            throw new Error('default profile은 7글자로 작성되어야 합니다.')
         }
     }
 
@@ -90,6 +120,19 @@ class user_dto{
         const name_rgx = /^[가-힣a-zA-Z]{1,20}$/
         if(!name_rgx.test(this.name)){
             throw new Error('이름은 1~20자 영어 또는 한글로 작성되어야 합니다.')
+        }
+    }
+
+    // =================================================
+    // id 타입 & 형식검사 //
+    // 이미지 전체가 아닌 mimetype meta data만 파라미터로 받ㄷ기 //
+    validate_img(){
+        if(!this.profileImg){
+            throw new Error('이미지 파일을 넣어주세요.')
+        }
+        const file_format = ['image/jpeg', 'image/png', 'image/webp']
+        if(!file_format.includes(this.profileImg)){
+            throw new Error('이미지 파일은 jpeg, png, webg로 넣어 주세요.')
         }
     }
 

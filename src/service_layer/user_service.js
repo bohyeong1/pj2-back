@@ -6,6 +6,8 @@ const config = require('../config/env_config')
 const {create_code} = require('../util_function/util_function')
 const {send_code_email} = require('../util_function/util_function')
 const error_dto = require('../dto/error_dto')
+const AWS = require('aws-sdk')
+const {v4 : uuidv4} = require('uuid')
 
 class user_service{
     // =================================================
@@ -30,7 +32,10 @@ class user_service{
                 }
             }
             else{
-                throw new Error('mongoDB와 firebase token간에 연동 로직 잘못 작성되었을듯')
+                return {
+                    code : 200,
+                    log_state : false
+                }
             }
         }catch(e){
             throw new Error(e.massage)
@@ -46,6 +51,7 @@ class user_service{
                 log_state : false
             }
         }
+
         user_dto.validate_token()
 
         const real_token = user_dto.token.split(' ')[1]
@@ -76,6 +82,46 @@ class user_service{
             }
         }catch(e){
             throw new Error(e.massage)
+        }
+    }
+
+    // =================================================
+    // user nickname 업데이트 //
+    async update_nickname(user_dto){
+        if(!user_dto.nickname || !user_dto.userId || !user_dto.defaultProfile){
+            return {
+                code : 200,
+                log_state : false
+            }
+        }
+
+        user_dto.validate_id()
+        user_dto.validate_nickname()
+        user_dto.validate_default_profile()
+
+        try{
+            const user = await User.findOne({
+                userId : user_dto.userId
+            })
+            if(user){
+                user.nickname = user_dto.nickname
+                user.defaultProfile = user_dto.defaultProfile
+                await user.save()
+                return {
+                    code : 200,
+                    duplicate_text : 'nickname 업데이트 성공',
+                    log_state : true,
+                    user : user
+                }
+            }else{
+                return {
+                    code : 200,
+                    duplicate_text : 'id값이 정확하지 않습니다.',
+                    log_state : false
+                }
+            }
+        }catch(e){
+            throw e
         }
     }
 
@@ -254,10 +300,10 @@ class user_service{
             // 2번째 부터
             else{
                 // 아이디당 코드 발급 3회 초과 시
-                if(req_count >= 3){
+                if(req_count.count >= 3){
                     return {
                         code : 200,
-                        message : '아이디 당 코드 발급 회수는 1일 3회로 제한되어 있습니다.',
+                        message : '아이디 당 코드 발급 회수는 1일 3회로 제한되어 있습니다. 3/3',
                         code_state : false
                     }
                 }
@@ -279,9 +325,9 @@ class user_service{
                 }
                 // 기존 이메일로 인증 코드 재발급 시
                 else{
-                    // index 조회
-                    const indexes = await Authcode.collection.indexes()
-                    console.log(indexes)
+                    auth_code.createAt = Date.now()
+                    auth_code.code = injung_code
+                    await auth_code.save()
                 }
                 await req_count.save()
 
@@ -313,9 +359,180 @@ class user_service{
             return {
                 code : 200, 
                 massage : '이메일을 입력해 주세요.', 
-                log_state : false
+                code_state : false
             }
         }
+        if(!user_dto.code){
+            return {
+                code : 200, 
+                massage : '코드를 입력해 주세요.', 
+                code_state : false
+            }
+        }
+        if(!user_dto.userId){
+            return {
+                code : 200, 
+                massage : '로그인을 해주세요.', 
+                code_state : false
+            }
+        }
+
+        try{
+            const auth_code = await Authcode.findOne({
+                email : user_dto.email
+            })
+            // 인증 시간 초과 시
+            if(!auth_code){
+                return {
+                    code : 200,
+                    message : '인증 시간을 초과하셨습니다.',
+                    code_state : false,
+                }
+            }
+
+            // 인증회수 3회 초과 시
+            if(auth_code.attemp >= 3){
+                return {
+                    code : 200,
+                    message : '인증 시도가 3회를 초과하셨습니다. 3/3',
+                    code_state : false,
+                    count : auth_code.attemp
+                }
+            }
+
+            auth_code.attemp += 1
+
+            // 인증번호 일치
+            if(auth_code.code === user_dto.code){
+                const user = await User.findOne({
+                    userId : user_dto.userId
+                })
+                console.log(user)
+                if(user){
+                    user.email = user_dto.email
+
+                    await user.save()
+    
+                    await Authcode.deleteOne({
+                        email: user_dto.email
+                    })
+                    return {
+                        code : 200,
+                        message : `이메일 인증이 완료되었습니다. 요청회수 ${auth_code.attemp}/3`,
+                        code_state : true
+                    }
+                }else{
+                    return {
+                        code : 200,
+                        message : `로그인 후 이용해 주세요.`,
+                        code_state : false
+                    }
+                }
+            }
+            // 인증번호 불일치
+            else{
+                await auth_code.save()
+                return {
+                    code : 200,
+                    message : `올바른 인증코드를 입력해 주세요. 요청회수 ${auth_code.attemp}/3`,
+                    code_state : false,
+                    count : auth_code.attemp
+                }
+            }
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false
+            })
+        }
+    }
+    
+
+    // =================================================
+    // user img, nickname update //
+    async user_profile(user_dto, files){
+        if(!user_dto.userId){
+            return {
+                code : 200, 
+                massage : '로그인을 해 주세요.', 
+                code_state : false
+            }
+        }
+        if(!user_dto.nickname){
+            return {
+                code : 200, 
+                massage : '닉네임을 입력해 주세요.', 
+                code_state : false
+            }
+        }
+        if(!files){
+            return {
+                code : 200, 
+                massage : '이미지를 등록해 주세요.', 
+                code_state : false
+            }
+        }
+
+        user_dto.validate_id()
+        user_dto.validate_nickname()
+        user_dto.validate_img()
+      
+        // naver object storage 생성
+        const S3 = new AWS.S3({
+            endpoint: new AWS.Endpoint(config.ENDPOINT),
+            region: 'kr-standard',
+            credentials: {
+              accessKeyId: config.ACCESS_KEY,
+              secretAccessKey: config.SECRET_KEY,
+            },
+          })    
+    
+        // storage 전송      
+        const image_name = uuidv4()
+
+        await S3.putObject({
+            Bucket: config.BUCKET_NAME,
+            Key: `${image_name}.PNG`,
+            ACL: 'public-read',
+            Body: files.buffer,
+            ContentType: 'image/png',
+        }).promise()
+      
+        const image_url = `${config.ENDPOINT}/${config.BUCKET_NAME}/${image_name}.PNG` ///유저 이미지 데이터 url값 저장 
+    
+        // 문자 url db에 저장하기 
+        try{
+            const user = await User.findOne({
+                userId : user_dto.userId
+            })
+
+            if(user){
+                user.profileImg = image_url || null
+                user.nickname = user_dto.nickname            
+
+                await user.save()
+
+                return{
+                    code:200,
+                    code_state : true,
+                    message:'이미지 저장 성공'
+                }
+            }else{             
+                return{
+                    code : 200, 
+                    massage : '유저를 찾을 수 없습니다.', 
+                    code_state : false
+                }
+            }    
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: 'db 업데이트 중 문제가 발생 하였습니다.',
+                server_state: false
+            })
+        }
+
     }
 }
 

@@ -3,57 +3,61 @@ const {Schema} = mongoose
 const {Types:{ObjectId}} = Schema
 
 const userSchema = new Schema({
-    firebase_uid:{
-        type: String, 
-        required: true, 
-        unique: true
+    firebase_uid : {
+        type : String, 
+        required : true, 
+        unique : true
     },
-    name:{
-        type:String,
-        require:true
+    name : {
+        type : String,
+        require : true
     },
-    email:{
-        type:String,
+    email : {
+        type : String,
         // unique:true
     },
-    userId:{
-        type:String,
-        require:true,
-        unique:true
+    userId : {
+        type : String,
+        require : true,
+        unique : true
     },
-    password:{
-        type:String,
-        require:true
+    password : {
+        type : String,
+        require : true
     },
-    isAdmin:{
-        type:Boolean,
-        default:false
+    defaultProfile : {
+        type : String,
+        default : '#ccddee'
     },
-    createAt:{
-        type:Date,
-        default:Date.now()
+    isAdmin : {
+        type : Boolean,
+        default : false
     },
-    lastModifiedAt:{
-        type:Date,
-        default:Date.now()
+    createAt : {
+        type : Date,
+        default : Date.now()
     },
-    cashInv:{
-        type:Number,
-        default:2000000
+    lastModifiedAt : {
+        type : Date,
+        default : Date.now()
     },
-    profileImg:{
-        type:String,
-        default:''
+    cashInv : {
+        type : Number,
+        default : 2000000
     },
-    nickname:{
+    profileImg : {
+        type : String,
+        default : ''
+    },
+    nickname : {
+        type : String
+    },
+    hostText : {
         type:String
     },
-    hostText:{
-        type:String
-    },
-    host_state:{
-        type:Boolean,
-        default:false
+    host_state : {
+        type : Boolean,
+        default : false
     }
 })
 

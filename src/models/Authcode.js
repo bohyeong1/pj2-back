@@ -16,8 +16,8 @@ const authcodeSchema = new Schema({
     },
     createAt : {
         type : Date,
-        default : Date.now(),
-        expires : 3600 * 24
+        default : Date.now,
+        expires : 600
     }
 })
 
