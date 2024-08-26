@@ -77,6 +77,8 @@ class user_service{
                     profileImg : user.profileImg || null,
                     hostText : user.hostText || null,
                     nickname : user.nickname || null,
+                    host_state : user.host_state || null,
+                    defaultProfile : user.defaultProfile || null
                 },
                 log_state : true
             }
@@ -135,7 +137,15 @@ class user_service{
                 log_state : false
             }
         }
+        if(!user_dto.userId){
+            return {
+                code : 200, 
+                massage : 'login 실패', 
+                log_state : false
+            }
+        }
         user_dto.validate_token()
+        user_dto.validate_id()
 
         const real_token = user_dto.token
 
@@ -148,12 +158,24 @@ class user_service{
                 maxAge : 3600000 * 3 //3시간짜ㅣ리
             })
 
-            return {
-                code : 200, 
-                massage : 'login 성공', 
-                log_state : true
-            }
+            const user = await User.findOne({
+                userId : user_dto.userId
+            })
 
+            if(user){
+                return {
+                    code : 200, 
+                    massage : 'login 성공', 
+                    log_state : true,
+                    userId : user.userId
+                }
+            }else{
+                return {
+                    code : 200, 
+                    massage : 'login 실패', 
+                    log_state : false
+                }
+            }
         }catch(e){
             throw new Error(e.massage)
         }

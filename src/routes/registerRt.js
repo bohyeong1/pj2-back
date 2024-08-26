@@ -3,15 +3,15 @@ const Accomodation = require('../models/Accomodation')
 const Search = require('../models/Search')
 const expressAsyncHandler = require('express-async-handler')
 const router = express.Router()
-const multer = require('multer')
+
 const AWS = require('aws-sdk')
 const {v4 : uuidv4} = require('uuid')
 const config = require('../config/env_config')
 const mongoose = require('mongoose')
 const { Types: { ObjectId } } = mongoose
 
-const storage = multer.memoryStorage();
-
+const multer = require('multer')
+const storage = multer.memoryStorage()
 const upload = multer({ storage })
 const multiImg = upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'subImg', maxCount: 4 },
                               {name:'userData', maxCount:100},{name:'homeid', maxCount:100}]) ////////main sub 이미지 동시에 받기

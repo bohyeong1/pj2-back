@@ -23,7 +23,7 @@ const {verification_code_controller} = require('../controllers/user_controller/v
 const {email_auth_controller} = require('../controllers/user_controller/email_auth_controller')
 const {user_nickname_controller} = require('../controllers/user_controller/user_nickname_controller')
 const {user_profile_controller} = require('../controllers/user_controller/user_profile_controller')
-
+const {host_initial_controller} = require('../controllers/host_controller/host_initial_controller')
 
 
 
@@ -87,13 +87,16 @@ router.post('/profile', user_multer, user_profile_controller)
 // user 이메일 인증 확인 //
 router.post('/nickname',user_nickname_controller)
 
+// =================================================
+// host 자격 등록 //
+router.post('/hostinitial',host_initial_controller)
 
 
 // =================================================
 // 회원정보 수정 //
 router.put('/update',validateUserEmail ,expressAsyncHandler(async(req, res, next) => {
 
-        // console.log(req.body)
+    // console.log(req.body)
     const errors = validationResult(req)
 
     console.log(req.body)
