@@ -52,12 +52,15 @@ const userSchema = new Schema({
     nickname : {
         type : String
     },
-    hostText : {
-        type:String
-    },
     host_state : {
         type : Boolean,
         default : false
+    },
+    // =================================================
+    // ref //
+    host_text : {
+        type : ObjectId,
+        ref : 'Hostinformation'
     }
 })
 

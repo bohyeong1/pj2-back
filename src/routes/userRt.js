@@ -24,7 +24,7 @@ const {email_auth_controller} = require('../controllers/user_controller/email_au
 const {user_nickname_controller} = require('../controllers/user_controller/user_nickname_controller')
 const {user_profile_controller} = require('../controllers/user_controller/user_profile_controller')
 const {host_initial_controller} = require('../controllers/host_controller/host_initial_controller')
-
+const {host_information_controller} = require('../controllers/host_controller/host_information_controller')
 
 
 ////////////////////////////////////////////////////
@@ -91,6 +91,14 @@ router.post('/nickname',user_nickname_controller)
 // host 자격 등록 //
 router.post('/hostinitial',host_initial_controller)
 
+// =================================================
+// host text 초기 등록 및 수정 //
+router.post('/hostinformation',host_information_controller)
+
+
+
+
+
 
 // =================================================
 // 회원정보 수정 //
@@ -129,34 +137,6 @@ router.put('/update',validateUserEmail ,expressAsyncHandler(async(req, res, next
         }
     }    
 }))
-
-
-
-// =================================================
-// 호스트 정보 수정 //
-router.put('/host', expressAsyncHandler(async(req,res,next) => {
-    const user = await User.findOne({
-        userId : req.body.userId}) 
-
-        console.log(user)
-
-    if(!user){
-        res.status(404).json({ code: 404, message: '유저를 찾을 수 없습니다'})
-    }else{
-        user.hostText = req.body.hostText || user.hostText
-
-        const updatedUser = await user.save()
-
-        console.log(updatedUser)  
-        res.json({
-            code:200,
-            updatedUser
-        })
-    }
-}))
-
-
-
 
 // =================================================
 // 회원탈퇴 //

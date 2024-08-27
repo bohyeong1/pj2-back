@@ -7,8 +7,6 @@ const router = express.Router()
 const AWS = require('aws-sdk')
 const {v4 : uuidv4} = require('uuid')
 const config = require('../config/env_config')
-const mongoose = require('mongoose')
-const { Types: { ObjectId } } = mongoose
 
 const multer = require('multer')
 const storage = multer.memoryStorage()

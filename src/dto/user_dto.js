@@ -12,6 +12,7 @@ class user_dto{
         this.nickname = data.nickname || null
         this.defaultProfile = data.defaultProfile || null
         this.profileImg = data.profileImg || null
+        this.host_text = data.host_text || null
         // 폼 타입검사 미구현
         this.email = data.email || null
         this.isAdmin = data.isAdmin || null
@@ -139,7 +140,7 @@ class user_dto{
     // =================================================
     // 초기 회원가입 id & password & name 타입 & 형식검사 //
     validate_initial_join(){
-        if (!this.userId || !this.password || !this.name) {
+        if(!this.userId || !this.password || !this.name) {
             throw new Error('회원가입에 필요한 데이터가 없습니다. userId, password, name이 필요합니다.');
         }
         // id 타입 & 형식 검사
@@ -150,7 +151,18 @@ class user_dto{
         this.validate_password_confirm()
         // 이름 타입 형식검사
         this.validate_name()
-    }    
+    }   
+
+    // =================================================
+    // host_text 타입 & 형식검사 //
+    validate_host_text(){
+        if(!this.host_text){
+            throw new Error('호스트 소개 문구를 작성해 주세요.')
+        }
+        if(typeof this.host_text !== 'string'){
+            throw new Error('호스트 소개 문구는 문자열로 작성해 주세요.')
+        }
+    }
 }
 
 module.exports = user_dto
