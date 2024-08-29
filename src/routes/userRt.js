@@ -26,7 +26,6 @@ const {user_profile_controller} = require('../controllers/user_controller/user_p
 const {host_initial_controller} = require('../controllers/host_controller/host_initial_controller')
 const {host_information_controller} = require('../controllers/host_controller/host_information_controller')
 
-
 ////////////////////////////////////////////////////
 //////////////////// 라 우 터 //////////////////////
 ///////////////////////////////////////////////////
@@ -84,7 +83,7 @@ router.post('/authemail', email_auth_controller)
 router.post('/profile', user_multer, user_profile_controller)
 
 // =================================================
-// user 이메일 인증 확인 //
+// user 닉네임 업데이트 //
 router.post('/nickname',user_nickname_controller)
 
 // =================================================

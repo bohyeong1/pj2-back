@@ -131,18 +131,18 @@ const accomodationSchema = new Schema({
         type : Date,
         default : Date.now()
     },
-    // 숙소 평점 -> 추후 몽고db 조인하는 방법 공부후에 필드 삭제할것
+    // 숙소 평점
     avgEvaluation : [
         {type : Number}
     ],
-    //판매 완료, 미완료 상태
-    sellState : {
+    // 등록 완료 & 미완료
+    regist_state : {
         type : Boolean,
-        default : false,
-        require : true
+        require : true,
+        default : false  
     },
     // 현재 업데이트 단계
-    sell_step : {
+    acc_step : {
         type : Number,
         require : true,
         default : 0

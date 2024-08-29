@@ -16,11 +16,11 @@ const notfound_middle = require('../src/middlewares/error_handle_middle/404_midl
 
 // =================================================
 // router //
-const userRouter = require('../src/routes/userRt')
-const registerRouter = require('../src/routes/registerRt')
-const commonRouter = require('../src/routes/commonRt')
-const reservRouter = require('../src/routes/reserveRt')
-const evaluRouter = require('../src/routes/evaluateRt')
+const user_router = require('../src/routes/userRt')
+const register_router = require('../src/routes/registerRt')
+const common_router = require('../src/routes/commonRt')
+const reserve_router = require('../src/routes/reserveRt')
+const evaluation_router = require('../src/routes/evaluateRt')
 
 // =================================================
 // https options //
@@ -53,11 +53,11 @@ app.use(cookie_parser())
 
 // =================================================
 // connect router //
-app.use('/api/users', userRouter)
-app.use('/api/accomodation', registerRouter)
-app.use('/api/common', commonRouter)
-app.use('/api/reserv', reservRouter)
-app.use('/api/evalu', evaluRouter)
+app.use('/api/users', user_router)
+app.use('/api/accomodation', register_router)
+app.use('/api/common', common_router)
+app.use('/api/reserv', reserve_router)
+app.use('/api/evalu', evaluation_router)
 
 
 

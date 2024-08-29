@@ -1,5 +1,6 @@
-const user_service = require('../../service_layer/user_service')
+const accomodation_regist_service = require('../../service_layer/accomodation_regist_service')
 const user_dto = require('../../dto/user_dto')
+const accomodation_dto = require('../../dto/accomodation_dto')
 const async_handler = require('express-async-handler')
 
 
@@ -7,9 +8,10 @@ const async_handler = require('express-async-handler')
 // 숙소 등록 컨트롤러 //
 async function acc_regist_lv0_controller(req, res, next){
     const user = new user_dto({token : req.cookies.auth_token})
-    const user_service_layer = new user_service()
+    const accomodation = new accomodation_dto({sell_step : req.body.sell_step})
+    const accomodation_regist_service_layer = new accomodation_regist_service()
 
-    const result = await user_service_layer.user_email(user)
+    const result = await accomodation_regist_service_layer.regist_lv0(user, accomodation)
     res.status(200).json(result)
 }
 

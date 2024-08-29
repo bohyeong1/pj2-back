@@ -1,9 +1,7 @@
 const admin = require('../config/firebase_config')
 const User = require('../models/User')
 const Hostinformation = require('../models/Hostinformation')
-const config = require('../config/env_config')
 const error_dto = require('../dto/error_dto')
-const {v4 : uuidv4} = require('uuid')
 
 class host_information_service{
     // =================================================

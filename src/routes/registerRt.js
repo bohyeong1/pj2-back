@@ -7,16 +7,43 @@ const router = express.Router()
 const AWS = require('aws-sdk')
 const {v4 : uuidv4} = require('uuid')
 const config = require('../config/env_config')
+// =================================================
+// multer //
+
+// =================================================
+// controller //
+const {acc_regist_lv0_controller} = require('../controllers/accomodation_controller/acc_regist_lv0_controller')
 
 const multer = require('multer')
 const storage = multer.memoryStorage()
 const upload = multer({ storage })
 const multiImg = upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'subImg', maxCount: 4 },
-                              {name:'userData', maxCount:100},{name:'homeid', maxCount:100}]) ////////main sub 이미지 동시에 받기
+                                {name:'userData', maxCount:100},{name:'homeid', maxCount:100}]) ////////main sub 이미지 동시에 받기
+
+////////////////////////////////////////////////////
+//////////////////// 라 우 터 //////////////////////
+///////////////////////////////////////////////////
+
+// =================================================
+// regist lv0 //
+router.post('/registLv0', acc_regist_lv0_controller)
+
+// =================================================
+// regist lv1 //
+
+// =================================================
+// regist lv2 //
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////라우터
-//////////////숙소초기 등록
+
+
+
+
+
+
+
+
+
 router.post('/register',expressAsyncHandler(async(req,res,next)=>{
     try{
         const accomodation = new Accomodation({
@@ -62,7 +89,6 @@ router.put('/register/update',expressAsyncHandler(async(req,res,next)=>{
       )
       console.log(search)
     }
-    // console.log(accomodation)
 
     if(!accomodation){
       res.status(404).json({ code: 404, message: '숙소 정보를 찾을 수 없습니다.'})
