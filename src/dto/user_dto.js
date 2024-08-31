@@ -13,7 +13,7 @@ class user_dto{
         this.defaultProfile = data.defaultProfile || null
         this.profileImg = data.profileImg || null
         this.host_text = data.host_text || null
-        // 폼 타입검사 미구현
+        // 폼 타입검사 미적용
         this.email = data.email || null
         this.isAdmin = data.isAdmin || null
         this.cashInv = data.cashInv || null

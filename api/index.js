@@ -8,7 +8,7 @@ const cookie_parser = require('cookie-parser')
 const fs = require('fs')
 const https = require('https')
 const path = require('path')
-
+const Structure = require('../src/models/Structure')
 // =================================================
 // middlewares //
 const error_middle = require('../src/middlewares/error_handle_middle/error_midle')
@@ -16,11 +16,11 @@ const notfound_middle = require('../src/middlewares/error_handle_middle/404_midl
 
 // =================================================
 // router //
-const user_router = require('../src/routes/userRt')
-const register_router = require('../src/routes/registerRt')
-const common_router = require('../src/routes/commonRt')
-const reserve_router = require('../src/routes/reserveRt')
-const evaluation_router = require('../src/routes/evaluateRt')
+const user_router = require('../src/routes/user_router')
+const register_router = require('../src/routes/register_router')
+const common_router = require('../src/routes/common_router')
+const reserve_router = require('../src/routes/reserve_router')
+const evaluation_router = require('../src/routes/evaluate_router')
 
 // =================================================
 // https options //

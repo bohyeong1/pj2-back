@@ -13,6 +13,10 @@ const config = require('../config/env_config')
 // =================================================
 // controller //
 const {acc_regist_lv0_controller} = require('../controllers/accomodation_controller/acc_regist_lv0_controller')
+const {acc_regist_lv1_controller} = require('../controllers/accomodation_controller/acc_regist_lv1_controller')
+const {acc_regist_lv2_controller} = require('../controllers/accomodation_controller/acc_regist_lv2_controller')
+const {acc_regist_lv3_controller} = require('../controllers/accomodation_controller/acc_regist_lv3_controller')
+const {acc_regist_lv4_controller} = require('../controllers/accomodation_controller/acc_regist_lv4_controller')
 
 const multer = require('multer')
 const storage = multer.memoryStorage()
@@ -30,9 +34,48 @@ router.post('/registLv0', acc_regist_lv0_controller)
 
 // =================================================
 // regist lv1 //
+router.put('/registLv1', acc_regist_lv1_controller)
 
-// =================================================
-// regist lv2 //
+// // =================================================
+// // regist lv2 //
+router.put('/registLv2', acc_regist_lv2_controller)
+
+// // =================================================
+// // regist lv3 //
+router.put('/registLv3', acc_regist_lv3_controller)
+
+// // =================================================
+// // regist lv4 //
+router.put('/registLv4', acc_regist_lv4_controller)
+
+// // =================================================
+// // regist lv5 //
+// router.put('/registLv1', acc_regist_lv1_controller)
+
+// // =================================================
+// // regist lv6 //
+// router.put('/registLv1', acc_regist_lv1_controller)
+
+// // =================================================
+// // regist lv7 //
+// router.put('/registLv1', acc_regist_lv1_controller)
+
+// // =================================================
+// // regist lv8 //
+// router.put('/registLv1', acc_regist_lv1_controller)
+
+// // =================================================
+// // regist lv9 //
+// router.put('/registLv1', acc_regist_lv1_controller)
+
+// // =================================================
+// // regist lv10 //
+// router.put('/registLv1', acc_regist_lv1_controller)
+
+// // =================================================
+// // regist lv11 //
+// router.put('/registLv1', acc_regist_lv1_controller)
+
 
 
 

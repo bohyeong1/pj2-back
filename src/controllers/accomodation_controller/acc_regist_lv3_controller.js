@@ -6,15 +6,15 @@ const async_handler = require('express-async-handler')
 
 // =================================================
 // 숙소 등록 컨트롤러 //
-async function acc_regist_lv0_controller(req, res, next){
+async function acc_regist_lv3_controller(req, res, next){
     const user = new user_dto({token : req.cookies.auth_token})
-    const accomodation = new accomodation_dto({acc_step : req.body.acc_step})
+    const accomodation = new accomodation_dto({acc_step : req.body.acc_step, base_facility : req.body.base_facility})
     const accomodation_regist_service_layer = new accomodation_regist_service()
 
-    const result = await accomodation_regist_service_layer.regist_lv0(user, accomodation)
+    const result = await accomodation_regist_service_layer.regist_lv3(user, accomodation)
     res.status(200).json(result)
 }
 
 module.exports = {
-    acc_regist_lv0_controller : async_handler(acc_regist_lv0_controller)
+    acc_regist_lv3_controller : async_handler(acc_regist_lv3_controller)
 }

@@ -88,6 +88,41 @@ class user_service{
     }
 
     // =================================================
+    // user token 업데이트 //
+    async update_user_token(user_dto, res){
+        if(!user_dto.token){
+            return {
+                code : 200,
+                log_state : false
+            }
+        }
+
+        user_dto.validate_token()
+
+        const real_token = user_dto.token
+
+        try{        
+            res.cookie('auth_token', real_token, {
+                path:'/',
+                httpOnly : true, 
+                secure : true, 
+                sameSite : 'none'
+            })
+            return({
+                code:200,
+                log_state : true,
+                message : 'token값 업데이트'
+            })
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: 'cookie 저장 중 오류가 발생하였습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
     // user nickname 업데이트 //
     async update_nickname(user_dto){
         if(!user_dto.nickname || !user_dto.userId || !user_dto.defaultProfile){
@@ -154,8 +189,7 @@ class user_service{
                 path:'/',
                 httpOnly : true, 
                 secure : true, 
-                sameSite : 'none', 
-                maxAge : 3600000 * 3 //3시간짜ㅣ리
+                sameSite : 'none'
             })
 
             const user = await User.findOne({

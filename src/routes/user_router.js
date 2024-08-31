@@ -25,6 +25,7 @@ const {user_nickname_controller} = require('../controllers/user_controller/user_
 const {user_profile_controller} = require('../controllers/user_controller/user_profile_controller')
 const {host_initial_controller} = require('../controllers/host_controller/host_initial_controller')
 const {host_information_controller} = require('../controllers/host_controller/host_information_controller')
+const {update_user_token_controller} = require('../controllers/user_controller/update_user_token_controller')
 
 ////////////////////////////////////////////////////
 //////////////////// 라 우 터 //////////////////////
@@ -52,6 +53,10 @@ router.post('/mileage', expressAsyncHandler(async (req, res, next)=>{
 // =================================================
 // login //
 router.post('/login',user_login_controller)
+
+// =================================================
+// update token(1시간 마다) //
+router.get('/updateToken',update_user_token_controller)
 
 // =================================================
 // 로그인 유지 *사용자 정보 제공 //

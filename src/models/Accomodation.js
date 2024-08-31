@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-
 const {Schema} = mongoose
 const {Types:{ObjectId}} = Schema
 
@@ -125,11 +124,11 @@ const accomodationSchema = new Schema({
     //호스팅날짜
     createAt : {
         type : Date,
-        default : Date.now()
+        default : Date.now
     },
-        lastModifiedAt : {
-        type : Date,
-        default : Date.now()
+    lastModifiedAt : {
+    type : Date,
+    default : Date.now
     },
     // 숙소 평점
     avgEvaluation : [
@@ -147,8 +146,6 @@ const accomodationSchema = new Schema({
         require : true,
         default : 0
     }
-    
-
 })
 
 const Accomodation = mongoose.model('Accomodation', accomodationSchema)
