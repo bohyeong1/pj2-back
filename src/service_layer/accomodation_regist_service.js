@@ -385,6 +385,10 @@ class accomodation_regist_service{
             })
         }
     }
+
+    // =================================================
+    // 숙소 등록 절차 lv5 //
+    
 }
 
 module.exports = accomodation_regist_service

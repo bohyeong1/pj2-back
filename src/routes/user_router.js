@@ -5,7 +5,6 @@ const {validationResult} = require('express-validator')
 const router = express.Router()
 const {isAdmin, isAuth, generateToken} = require('../jwt/auth')
 const config = require('../config/env_config')
-
 // =================================================
 // multer //
 const {user_multer} = require('../middlewares/common_middle/multer_middle')
@@ -27,9 +26,9 @@ const {host_initial_controller} = require('../controllers/host_controller/host_i
 const {host_information_controller} = require('../controllers/host_controller/host_information_controller')
 const {update_user_token_controller} = require('../controllers/user_controller/update_user_token_controller')
 
-////////////////////////////////////////////////////
-//////////////////// 라 우 터 //////////////////////
-///////////////////////////////////////////////////
+// =================================================
+// ================== 라 우 터 =================== //
+// =================================================
 
 // =================================================
 // 마일리지 //
