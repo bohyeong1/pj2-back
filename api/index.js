@@ -59,8 +59,6 @@ app.use('/api/common', common_router)
 app.use('/api/reserv', reserve_router)
 app.use('/api/evalu', evaluation_router)
 
-
-
 // =================================================
 // test server //
 app.get('/hello', (req, res)=>{

@@ -18,16 +18,11 @@ const searchSchema = new Schema({
     url:{
         type:String
     },
-
     search_counts : {
         type : Number,
         require : true,
         default : 0
-    },
-    url:{
-        type:String
     }
-
 })
 
 const Search = mongoose.model('Search', searchSchema)

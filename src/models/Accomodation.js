@@ -27,7 +27,7 @@ const accomodationSchema = new Schema({
         {type : String}
     ],
     //주소 메인&서브로 분할 메인주소 => 서브주소까지는 예약 확정된 후 보여주기
-    //검색창에서 필터할때 적합한 검색어 만들기 위해서 filer_adress로 데이터 가공 해보기
+    //검색 필드 => 검색창에서 사용할 키워드
     //도시 분류   
     main_adress : {
         name : {type : String},
@@ -39,6 +39,13 @@ const accomodationSchema = new Schema({
     },
     search_adress : {
         type : String
+    },
+    navigation_data : {
+        type : ObjectId,
+        ref : 'Path'
+    },
+    distance_information : {
+        type : Object
     },
     //숙소 카테고리
     category : {

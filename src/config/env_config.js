@@ -12,5 +12,6 @@ module.exports = {
   FIREBASE_URL : process.env.FIREBASE_URL,
   MAPPING_EMAIL : process.env.MAPPING_EMAIL,
   MAILGUN_KEY : process.env.MAILGUN_KEY,
-  MAILGUN_DOMAIN : process.env.MAILGUN_DOMAIN
+  MAILGUN_DOMAIN : process.env.MAILGUN_DOMAIN,
+  KAKAO_REST_API_KEY : process.env.KAKAO_REST_API_KEY
 }
