@@ -716,6 +716,77 @@ class accomodation_regist_service{
             })
         }
     }
+
+    // =================================================
+    // 숙소 등록 절차 lv8 //
+    async regist_lv8(user_dto, accomodation_dto){
+
+        user_dto.validate_token()
+        accomodation_dto.validate_title()
+        accomodation_dto.validate_capacity()
+        accomodation_dto.validate_alter_under_id()
+
+        const real_token = user_dto.token.split(' ')[1]
+        try{
+            const verify_token = await admin.auth().verifyIdToken(real_token)
+            const uid = verify_token.uid           
+            const user = await User.findOne({firebase_uid: uid})
+
+            if(!user){
+                return {
+                    code : 200,
+                    acc_state : false,
+                    message : '유효한 토큰이 아닙니다.'
+                }
+            }
+
+            if(!user.host_state){
+                return {
+                    code : 200,
+                    acc_state : false,
+                    message : 'host_state가 false인데 숙소 업데이트를 진행하려고 시도하는 중입니다.'
+                }
+            }
+
+            const accomodation = await Accomodation.findOne({
+                seller : user._id,
+                _id : accomodation_dto._id
+            })
+
+            if(!accomodation){
+                throw new error_dto({
+                    code: 401,
+                    message: '해당되는 숙소를 찾지 못했습니다.',
+                    server_state: false,
+                    error : e
+                }) 
+            }
+
+            // 업데이트 단계 업데이트
+            accomodation.acc_step = accomodation.acc_step !== accomodation_dto.acc_step ? 
+            accomodation_dto.acc_step : accomodation.acc_step
+
+            // title & capacity 업데이트
+            accomodation.title = accomodation_dto.title
+            accomodation.capacity = accomodation_dto.capacity
+
+            await accomodation.save()
+
+            return {
+                code : 200,
+                host_state : user.host_state,
+                acc_state : true,
+                accomodation : accomodation
+            }
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false,
+                error : e
+            })
+        }
+    }
 }
 
 module.exports = accomodation_regist_service

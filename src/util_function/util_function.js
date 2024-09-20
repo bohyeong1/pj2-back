@@ -80,6 +80,14 @@ function check_array(input_data, length = null){
 }
 
 // =================================================
+// integer type check //
+function check_integer(input_data, start = null, end = null){
+    return Number.isInteger(input_data) && 
+        (start ? input_data > start : true) &&
+        (end ? input_data < end : true)
+}
+
+// =================================================
 // get file data's type //
 function get_files_type(files){
     const type_inv = []
@@ -112,6 +120,7 @@ module.exports = {
     check_object : check_object,
     check_string : check_string,
     check_array : check_array,
+    check_integer : check_integer,
     kakao_close_location_fetch : kakao_close_location_fetch,
     get_files_type : get_files_type
 }

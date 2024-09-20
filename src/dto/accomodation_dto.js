@@ -2,13 +2,13 @@ const error_dto = require('../dto/error_dto')
 const Structure = require('../models/Structure')
 const mongoose = require('mongoose')
 const _ = require('lodash')
-const {check_object, check_string, check_array} = require('../util_function/util_function')
+const {check_object, check_string, check_array, check_integer} = require('../util_function/util_function')
 
 class accomodation_dto{
     constructor(data){ 
         // 구현
-        this._id = data._id || null,
-        this.acc_step = (data.acc_step >= 0) ? data.acc_step : null,
+        this._id = data._id || null
+        this.acc_step = (data.acc_step >= 0) ? data.acc_step : null
         this.category = data.category || null
         this.space_category = data.space_category || null
         this.base_facility = data.base_facility || null   
@@ -19,6 +19,8 @@ class accomodation_dto{
         this.main_img = data.main_img || null
         this.sub_img = data.sub_img || null
         this.keywords = data.keywords || null
+        this.title = data.title || null
+        this.capacity = data.capacity || null
     }
     // =================================================
     // _id 형식 & 타입검사 & objectId 타입 변환 //
@@ -354,6 +356,56 @@ class accomodation_dto{
                 server_state: false
             })
         }        
+    }
+
+    // =================================================
+    // title 형식 & 타입검사 //
+    validate_title(){
+        if(this.title){
+            if(!check_string(this.title)){
+                throw new error_dto({
+                    code: 401,
+                    message: 'title 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+
+            const title_rgx = /^[가-힣a-zA-Z0-9][가-힣a-zA-Z0-9\s]{0,18}[가-힣a-zA-Z0-9]$/
+            if(!title_rgx.test(this.title)){
+                throw new error_dto({
+                    code: 401,
+                    message: `title은 시작점과 끝지점 공백이 불가하고, 
+                              1 ~ 20글자 완성된 문자 + 특수문자 사용이 불가합니다.`,
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 401,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // capacity 형식 & 타입검사 //
+    validate_capacity(){
+        if(this.capacity){
+            if(!check_integer(this.capacity, 0, 31)){
+                throw new error_dto({
+                    code: 401,
+                    message: 'capacity 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 401,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
     }
 }
 

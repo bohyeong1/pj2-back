@@ -20,6 +20,7 @@ const {acc_regist_lv4_controller} = require('../controllers/accomodation_control
 const {acc_regist_lv5_controller} = require('../controllers/accomodation_controller/acc_regist_lv5_controller')
 const {acc_regist_lv6_controller} = require('../controllers/accomodation_controller/acc_regist_lv6_controller')
 const {acc_regist_lv7_controller} = require('../controllers/accomodation_controller/acc_regist_lv7_controller')
+const {acc_regist_lv8_controller} = require('../controllers/accomodation_controller/acc_regist_lv8_controller')
 
 // =================================================
 // ================== 라 우 터 =================== //
@@ -59,7 +60,7 @@ router.put('/registLv7/:house', acc_regist_lv7_controller)
 
 // // =================================================
 // // regist lv8 //
-// router.put('/registLv1', acc_regist_lv1_controller)
+router.put('/registLv8/:house', acc_regist_lv8_controller)
 
 // // =================================================
 // // regist lv9 //

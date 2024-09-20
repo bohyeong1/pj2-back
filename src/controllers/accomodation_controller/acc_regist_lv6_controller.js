@@ -9,8 +9,8 @@ const {get_files_type} = require('../../util_function/util_function')
 async function acc_regist_lv6_controller(req, res, next){
     const accomodation_id = req.params.house
     const img_files = req.files
-    const user = new user_dto({userId : req.body.userId})
 
+    const user = new user_dto({userId : req.body.userId})
     const accomodation = new accomodation_dto({
         main_img : img_files.mainImg[0].mimetype,
         sub_img : get_files_type(img_files.subImg),
