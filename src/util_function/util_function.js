@@ -88,7 +88,7 @@ function check_integer(input_data, start = null, end = null){
 }
 
 // =================================================
-// get file data's type //
+// file type check //
 function get_files_type(files){
     const type_inv = []
     if(!Array.isArray(files)){

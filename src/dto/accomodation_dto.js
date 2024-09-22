@@ -21,6 +21,7 @@ class accomodation_dto{
         this.keywords = data.keywords || null
         this.title = data.title || null
         this.capacity = data.capacity || null
+        this.summary = data.summary || null
     }
     // =================================================
     // _id 형식 & 타입검사 & objectId 타입 변환 //
@@ -28,7 +29,7 @@ class accomodation_dto{
         if(this._id){
             if(typeof this._id !== 'string'){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: '_id 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
@@ -38,14 +39,14 @@ class accomodation_dto{
                 this._id = new mongoose.Types.ObjectId(this._id)
             }catch(e){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: '_id가 유효한 ObjectId 형식이 아닙니다.',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -58,21 +59,21 @@ class accomodation_dto{
         if(this.acc_step >= 0){
             if(typeof this.acc_step !== 'number'){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'sell step 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
             }
             if(this.acc_step < 0 || this.acc_step > 11){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'sell step 전달 형식이 잘못 되었습니다',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -85,7 +86,7 @@ class accomodation_dto{
         if(this.category){
             if(typeof this.category !== 'object' || this.category === null || Array.isArray(this.category)){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'category 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
@@ -97,14 +98,14 @@ class accomodation_dto{
             // db에 저장되 있는 category 항목인지 검사
             if(!_.some(category_structure.structure, (item) => {return _.isMatch(item, this.category)})){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'category 전달 형식이 잘못 되었습니다',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -117,7 +118,7 @@ class accomodation_dto{
         if(this.space_category){
             if(typeof this.space_category !== 'object' || this.space_category === null || Array.isArray(this.space_category)){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'space_category 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
@@ -130,14 +131,14 @@ class accomodation_dto{
             if(!_.some(space_category_structure.structure, (item) => {return _.isMatch(item, this.space_category)})){
                 console.log(space_category_structure)
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'space_category 전달 형식이 잘못 되었습니다',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -150,7 +151,7 @@ class accomodation_dto{
         if(this.base_facility){
             if(!Array.isArray(this.base_facility) || this.base_facility.length === 0){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'base_facility 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
@@ -158,7 +159,7 @@ class accomodation_dto{
             // 배열 요소 객체인지 검사
             if(!this.base_facility.every((item) => {return typeof item === 'object' && item !== null && !Array.isArray(item)})){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'base_facility 배열의 요소들이 객체 타입이 아닙니다',
                     server_state: false
                 })
@@ -176,14 +177,14 @@ class accomodation_dto{
             )
             if(!check_req){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'base_facility 전달 형식이 잘못 되었습니다',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -196,7 +197,7 @@ class accomodation_dto{
         if(this.service_facility){
             if(!Array.isArray(this.service_facility) || this.service_facility.length === 0){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'service_facility 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
@@ -204,7 +205,7 @@ class accomodation_dto{
             // 배열 요소 객체인지 검사
             if(!this.service_facility.every((el) => {return typeof el === 'object' && el !== null && !Array.isArray(el)})){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'service_facility 배열의 요소들이 객체 타입이 아닙니다',
                     server_state: false
                 })
@@ -222,14 +223,14 @@ class accomodation_dto{
             )
             if(!check_req){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'service_facility 전달 형식이 잘못 되었습니다',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -243,7 +244,7 @@ class accomodation_dto{
             // 타입 검사
             if(!check_object(this.main_adress) || !check_object(this.sub_adress) || !check_string(this.search_adress)){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'adress 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
@@ -251,14 +252,14 @@ class accomodation_dto{
             // 형식 검사
             if(!check_string(this.main_adress.name) || !check_string(this.sub_adress.name) || !check_array(this.main_adress.coor, 2) || !check_array(this.sub_adress.coor, 2)){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'adress의 형식이 잘못 되었습니다.',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -272,14 +273,14 @@ class accomodation_dto{
             const file_format = ['image/jpeg', 'image/png', 'image/webp']
             if(!file_format.includes(this.main_img)){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: '이미지 파일은 jpeg, png, webg로 넣어 주세요.',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -297,14 +298,14 @@ class accomodation_dto{
             })
             if(!is_valid_format){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: '이미지 파일은 jpeg, png, webg로 넣어 주세요.',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -317,7 +318,7 @@ class accomodation_dto{
         if(this.keywords){
             if(!Array.isArray(this.keywords) || this.keywords.length === 0){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'keywords 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
@@ -325,7 +326,7 @@ class accomodation_dto{
             // 배열 요소 객체인지 검사
             if(!this.keywords.every((el) => {return typeof el === 'object' && el !== null && !Array.isArray(el)})){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'keywords 배열의 요소들이 객체 타입이 아닙니다',
                     server_state: false
                 })
@@ -344,14 +345,14 @@ class accomodation_dto{
 
             if(!check_req){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'keywords 전달 형식이 잘못 되었습니다',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -364,7 +365,7 @@ class accomodation_dto{
         if(this.title){
             if(!check_string(this.title)){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'title 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
@@ -373,7 +374,7 @@ class accomodation_dto{
             const title_rgx = /^[가-힣a-zA-Z0-9][가-힣a-zA-Z0-9\s]{0,18}[가-힣a-zA-Z0-9]$/
             if(!title_rgx.test(this.title)){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: `title은 시작점과 끝지점 공백이 불가하고, 
                               1 ~ 20글자 완성된 문자 + 특수문자 사용이 불가합니다.`,
                     server_state: false
@@ -381,7 +382,7 @@ class accomodation_dto{
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
@@ -394,14 +395,41 @@ class accomodation_dto{
         if(this.capacity){
             if(!check_integer(this.capacity, 0, 31)){
                 throw new error_dto({
-                    code: 401,
+                    code: 400,
                     message: 'capacity 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
             }
         }else{
             throw new error_dto({
-                code: 401,
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // summary 형식 & 타입검사 //
+    validate_summary(){
+        if(this.summary){
+            if(this.summary.trim().length === 0){
+                throw new error_dto({
+                    code: 400,
+                    message: 'summary 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(!check_string(this.summary)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'summary 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
                 message: 'client의 data가 제대로 전송되지 않았습니다.',
                 server_state: false
             })
