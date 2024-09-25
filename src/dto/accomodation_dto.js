@@ -6,7 +6,6 @@ const {check_object, check_string, check_array, check_integer} = require('../uti
 
 class accomodation_dto{
     constructor(data){ 
-        // 구현
         this._id = data._id || null
         this.acc_step = (data.acc_step >= 0) ? data.acc_step : null
         this.category = data.category || null
@@ -22,7 +21,11 @@ class accomodation_dto{
         this.title = data.title || null
         this.capacity = data.capacity || null
         this.summary = data.summary || null
+        this.rules = data.rules || null
+        this.price = data.price || null
+        this.addPrice = data.addPrice || null
     }
+
     // =================================================
     // _id 형식 & 타입검사 & objectId 타입 변환 //
     validate_alter_under_id(){
@@ -267,6 +270,27 @@ class accomodation_dto{
     }
 
     // =================================================
+    // search adress 형식 & 타입검사 //
+    validate_search_adress(){
+        if(this.search_adress){
+            // 타입 검사
+            if(!check_string(this.search_adress)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'search_adress 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
     // main_img 형식 & 타입검사 //
     async validate_main_img(){
         if(this.main_img){
@@ -324,7 +348,7 @@ class accomodation_dto{
                 })
             }
             // 배열 요소 객체인지 검사
-            if(!this.keywords.every((el) => {return typeof el === 'object' && el !== null && !Array.isArray(el)})){
+            if(!this.keywords.every((el) => {return check_object(el)})){
                 throw new error_dto({
                     code: 400,
                     message: 'keywords 배열의 요소들이 객체 타입이 아닙니다',
@@ -424,6 +448,104 @@ class accomodation_dto{
                 throw new error_dto({
                     code: 400,
                     message: 'summary 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // rules 형식 & 타입검사 //
+    async validate_rules(){
+        if(this.rules && this.rules.length === 5){
+            if(!check_array(this.rules, 5) || !this.rules.every((el)=>{return check_object(el)})){
+                throw new error_dto({
+                    code: 400,
+                    message: 'rules 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+
+            const rules_structure = await Structure.findOne({
+                name : 'rules'
+            })
+
+            // db에 저장되 있는 rules 항목인지 검사
+            const check_req = _.every(this.rules, (ele) => {
+                const is_match_structure = _.some(rules_structure.structure, (el) => {
+                    return _.isMatch(el, {text : ele.text, name : ele.name})
+                })
+
+                const req_type = typeof ele.state === 'boolean'
+                const req_summary = !ele.hasOwnProperty('summary') || typeof ele.summary === 'string'
+
+                return is_match_structure && req_type && req_summary
+            })
+
+            if(!check_req){
+                throw new error_dto({
+                    code: 400,
+                    message: 'rules 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // price 형식 & 타입검사 //
+    validate_price(){
+        if(this.price){
+            if(!check_integer(this.price)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'price 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(String(this.price).length > 6){
+                throw new error_dto({
+                    code: 400,
+                    message: 'price 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // addPrice 형식 & 타입검사 //
+    validate_addPrice(){
+        if(this.addPrice){
+            if(!check_integer(this.addPrice)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'addPrice 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(String(this.addPrice).length > 6){
+                throw new error_dto({
+                    code: 400,
+                    message: 'addPrice 전달 형식이 잘못 되었습니다',
                     server_state: false
                 })
             }

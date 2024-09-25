@@ -2,11 +2,12 @@ const admin = require('../config/firebase_config')
 const User = require('../models/User')
 const Accomodation = require('../models/Accomodation')
 const error_dto = require('../dto/error_dto')
+const {accomodation_get_local_average_pipe} = require('../pipelines/accomodation-pipe')
 
 class accomodation_get_service{
     // =================================================
     // public get -> acc_id값으로 조회 / common page(client : detail page) get 요청 유저 + 평점 파이프라인 포함 //
-    async public_get(accomodation_dto){
+    async public_get(){
         
     }
 
@@ -16,6 +17,7 @@ class accomodation_get_service{
         if(!user_dto.token){
             return {
                 code : 200,
+                server_state : true,
                 log_state : false
             }
         }
@@ -31,6 +33,7 @@ class accomodation_get_service{
                 return {
                     code : 200,
                     log_state : false,
+                    server_state : true,
                     message : 'user를 찾을 수 없습니다.'
                 }
             }
@@ -38,23 +41,64 @@ class accomodation_get_service{
             const accomodation = await Accomodation.findOne({
                 seller : user._id
             })
+
             if(!accomodation){
                 return {
                     code : 200,
                     log_state : false,
-                    message : 'accomodation를 찾을 수 없습니다.'
+                    server_state : true,
+                    message : 'accomodation average를 찾을 수 없습니다.'
                 }
             }
 
             return {
                 code : 200,
                 accomodation : accomodation,
-                log_state : true
+                server_state : true
             }
         }catch(e){
             throw new error_dto({
                 code: 401,
                 message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
+    // client : regist page, 지역별 숙소 평균 가격 조회 //
+    async local_average_get(accomodation_dto){
+
+        accomodation_dto.validate_search_adress()
+
+        try{
+            const today_date = new Date()
+            const date_range = new Date(today_date.setMonth(today_date.getMonth() - 11))
+            const pipe_line = accomodation_get_local_average_pipe(date_range, accomodation_dto.search_adress)
+            const accomodation_average = await Accomodation.aggregate([
+                ...pipe_line
+            ])
+
+            if(!accomodation_average){
+                return {
+                    code : 200,
+                    db_state : false,
+                    server_state : true,
+                    message : 'accomodation를 찾을 수 없습니다.'
+                }
+            }
+
+            return {
+                code : 200,
+                accomodation : accomodation_average,
+                server_state : true,
+                db_state : true
+            }
+
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: 'db 탐색ㅈ중 문제가 발생 하였습니다.',
                 server_state: false
             })
         }

@@ -7,7 +7,7 @@ async function acc_subapp_controller(req, res, next){
     const {filter_query, sort_query = null, limit_query, skip_query = 0} = req
 
     // 최종 파이프라인
-    const pipelines = [
+    const pipe_line = [
         {$match : filter_query},
         ...accomodation_pipe(),
         ...(sort_query ? 
@@ -16,11 +16,10 @@ async function acc_subapp_controller(req, res, next){
         {$skip : skip_query},
         {$limit : limit_query}
     ]
-
-
+    
     const [total_counts, accomodations] = await Promise.all([
         Accomodation.countDocuments(filter_query),
-        Accomodation.aggregate(pipelines)
+        Accomodation.aggregate(pipe_line)
     ])
 
     res.json({

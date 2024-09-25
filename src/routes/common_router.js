@@ -119,7 +119,7 @@ router.post('/host', expressAsyncHandler(async(req,res,next)=>{
 }))
 
 // =================================================
-// detaill_app - - api //
+// detaill_app - api //
 router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
     try{
         const accomodations = await Accomodation.findOne({_id:req.body._id}).populate('seller')  //숙소 data
