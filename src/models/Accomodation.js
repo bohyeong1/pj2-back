@@ -124,6 +124,21 @@ const accomodationSchema = new Schema({
             state : false,
             summary : ''}]
         },
+    // check-in, out time
+    check_time : {
+        check_in : {
+            type : Number,
+            default : 15,
+            min : 8,
+            max : 24
+        },
+        check_out : {
+                type : Number,
+                default : 17,
+                min : 8,
+                max : 24
+        }
+    },
     //숙소 할인 // price값을 바꾸기 보단 aggregate로 파이프라인만들어서 프론트에 보내야 할듯
     discount : {
         type:Number

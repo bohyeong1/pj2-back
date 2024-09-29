@@ -1,5 +1,5 @@
-const accomodation_get_service = require('../../service_layer/accomodation_get_service')
-const accomodation_dto = require('../../dto/accomodation_dto')
+const accomodation_get_service = require('../../../service_layer/accomodation_get_service')
+const accomodation_dto = require('../../../dto/accomodation_dto')
 const async_handler = require('express-async-handler')
 
 // =================================================

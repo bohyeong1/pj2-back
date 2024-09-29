@@ -8,6 +8,7 @@ const router = express.Router()
 const {initail_acc_regist_multer} = require('../middlewares/common_middle/multer_middle')
 // =================================================
 // controller //
+// regist
 const {acc_regist_lv0_controller} = require('../controllers/accomodation_controller/acc_regist_lv0_controller')
 const {acc_regist_lv1_controller} = require('../controllers/accomodation_controller/acc_regist_lv1_controller')
 const {acc_regist_lv2_controller} = require('../controllers/accomodation_controller/acc_regist_lv2_controller')
@@ -20,8 +21,11 @@ const {acc_regist_lv8_controller} = require('../controllers/accomodation_control
 const {acc_regist_lv9_controller} = require('../controllers/accomodation_controller/acc_regist_lv9_controller')
 const {acc_regist_lv10_controller} = require('../controllers/accomodation_controller/acc_regist_lv10_controller')
 const {acc_regist_lv11_controller} = require('../controllers/accomodation_controller/acc_regist_lv11_controller')
-
-const {acc_get_local_average_contrller} = require('../controllers/accomodation_controller/acc_get_local_average_contrller')
+// get
+const {acc_get_local_average_contrller} = require('../controllers/accomodation_controller/get/acc_get_local_average_contrller')
+const {acc_get_secret_all_controller} = require('../controllers/accomodation_controller/get/acc_get_secret_all_controller')
+const {acc_get_secret_controller} = require('../controllers/accomodation_controller/get/acc_get_secret_controller')
+// delete
 
 // =================================================
 // ================== 라 우 터 =================== //
@@ -77,6 +81,14 @@ router.put('/registLv11/:house', acc_regist_lv11_controller)
 
 // =================================================
 // 해당 지역의 평균 가격 //
-router.put('/regist/localAverage/:house',acc_get_local_average_contrller)
+router.post('/regist/localAverage/:house',acc_get_local_average_contrller)
+
+// =================================================
+// host page 등록된 모든 숙소 조회
+router.post('/get/secret-all',acc_get_secret_all_controller)
+
+// =================================================
+// host page 등록된 하나의 숙소 조회
+router.post('/get/secret-one/:house',acc_get_secret_controller)
 
 module.exports = router

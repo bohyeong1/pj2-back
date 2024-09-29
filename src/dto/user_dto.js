@@ -1,4 +1,5 @@
-
+const error_dto = require('../dto/error_dto')
+const mongoose = require('mongoose')
 // ***********************************************************
 // e-mail 형식은 종류가 많고 복잡하므로 express validator로 검사!
 class user_dto{
@@ -6,6 +7,7 @@ class user_dto{
         // 구현
         this.token = data.token || null
         this.userId = data.userId || null 
+        this._id = data._id || null
         this.password = data.password || null
         this.password_confirm = data.password_confirm || null
         this.name = data.name || null
@@ -48,6 +50,36 @@ class user_dto{
         const id_rgx = /^(?=.*[a-zA-Z])[a-zA-Z0-9]{7,15}$/
         if(!id_rgx.test(this.userId)){
             throw new Error('아이디는 7~15자 + 알파벳(+숫자)으로 구성되어야 됩니다.')
+        }
+    }
+
+    // =================================================
+    // _id 형식 & 타입검사 & objectId 타입 변환 //
+    validate_alter_under_id(){
+        if(this._id){
+            if(typeof this._id !== 'string'){
+                throw new error_dto({
+                    code: 400,
+                    message: '_id 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            // 변환
+            try{
+                this._id = new mongoose.Types.ObjectId(this._id)
+            }catch(e){
+                throw new error_dto({
+                    code: 400,
+                    message: '_id가 유효한 ObjectId 형식이 아닙니다.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
         }
     }
 

@@ -43,7 +43,7 @@ class user_service{
     }
 
     // =================================================
-    // 사용자 상세정보 주는 로그인 유지 //
+    // 사용자 기본 정보 제공 && 로그인 유지 //
     async getuser_user(user_dto){
         if(!user_dto.token){
             return {
@@ -68,6 +68,7 @@ class user_service{
             return {
                 code : 200,
                 user : {
+                    _id : user._id || null,
                     name : user.name || null,
                     email : user.email || null,
                     userId : user.userId || null,
@@ -75,7 +76,7 @@ class user_service{
                     createdAt : user.createAt || null,
                     cashInv : user.cashInv || null,
                     profileImg : user.profileImg || null,
-                    hostText : user.hostText || null,
+                    host_text : user.host_text || null,
                     nickname : user.nickname || null,
                     host_state : user.host_state || null,
                     defaultProfile : user.defaultProfile || null

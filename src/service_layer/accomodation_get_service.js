@@ -13,33 +13,35 @@ class accomodation_get_service{
 
     // =================================================
     // secret get -> user_id 값으로 조회 secret page(client : host page) 요청 //
-    async secret_get(user_dto){
-        if(!user_dto.token){
-            return {
-                code : 200,
-                server_state : true,
-                log_state : false
-            }
-        }
-
+    async secret_get(user_dto, accomodation_dto){
         user_dto.validate_token()
+        accomodation_dto.validate_alter_under_id()
 
         const real_token = user_dto.token.split(' ')[1]
         try{
             const verify_token = await admin.auth().verifyIdToken(real_token)
             const uid = verify_token.uid           
             const user = await User.findOne({firebase_uid: uid})
+
             if(!user){
                 return {
                     code : 200,
-                    log_state : false,
-                    server_state : true,
-                    message : 'user를 찾을 수 없습니다.'
+                    acc_state : false,
+                    message : '유효한 토큰이 아닙니다.'
+                }
+            }
+
+            if(!user.host_state){
+                return {
+                    code : 200,
+                    acc_state : false,
+                    message : 'host_state가 false인데 숙소 업데이트를 진행하려고 시도하는 중입니다.'
                 }
             }
 
             const accomodation = await Accomodation.findOne({
-                seller : user._id
+                seller : user._id,
+                _id : accomodation_dto._id
             })
 
             if(!accomodation){
@@ -50,6 +52,52 @@ class accomodation_get_service{
                     message : 'accomodation average를 찾을 수 없습니다.'
                 }
             }
+
+            return {
+                code : 200,
+                accomodation : accomodation,
+                user : {
+                    _id : user._id || null,
+                    name : user.name || null,
+                    email : user.email || null,
+                    userId : user.userId || null,
+                    isAdmin : user.isAdmin || null,
+                    createdAt : user.createAt || null,
+                    cashInv : user.cashInv || null,
+                    profileImg : user.profileImg || null,
+                    host_text : user.host_text || null,
+                    nickname : user.nickname || null,
+                    host_state : user.host_state || null,
+                    defaultProfile : user.defaultProfile || null
+                },
+                server_state : true
+            }
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
+    // secret all get -> user._id 값으로 조회 & host가 등록한 모든 숙소 조회 //
+    async secret_all_get(user_dto){
+        if(!user_dto._id){
+            return {
+                code : 200,
+                server_state : true,
+                log_state : false
+            }
+        }
+
+        user_dto.validate_alter_under_id()
+
+        try{
+            const accomodation = await Accomodation.find({
+                seller : user_dto._id
+            })
 
             return {
                 code : 200,
