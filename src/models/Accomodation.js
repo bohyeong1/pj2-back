@@ -47,6 +47,10 @@ const accomodationSchema = new Schema({
     distance_information : {
         type : Object
     },
+    custom_navigation : {
+        type : ObjectId,
+        ref : 'CustomPath'
+    },
     //숙소 카테고리
     category : {
         name : {
@@ -130,13 +134,58 @@ const accomodationSchema = new Schema({
             type : Number,
             default : 15,
             min : 8,
-            max : 24
+            max : 22
         },
         check_out : {
                 type : Number,
                 default : 17,
                 min : 8,
                 max : 24
+        }
+    },
+    // 체크인, 아웃 방법
+    check_method : {
+        check_in : {
+            name : {
+                type : String
+            },
+            text : {
+                type : String
+            },
+            url : {
+                type : String
+            }
+        },
+        check_out : {
+            name : {
+                type : String
+            },
+            text : {
+                type : String
+            },
+            url : {
+                type : String
+            }
+        }
+    },
+    // wifi information
+    wifi_information : {
+        name : {
+            type : String
+        },
+        password : {
+            type : String
+        }
+    },
+    // manual
+    manual : {
+        type : ObjectId,
+        ref : 'Manual'
+    },
+    // comunication
+    comunication : {
+        name : {
+            type : String
         }
     },
     //숙소 할인 // price값을 바꾸기 보단 aggregate로 파이프라인만들어서 프론트에 보내야 할듯
