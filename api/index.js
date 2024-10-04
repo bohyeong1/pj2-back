@@ -17,7 +17,7 @@ const notfound_middle = require('../src/middlewares/error_handle_middle/404_midl
 // =================================================
 // router //
 const user_router = require('../src/routes/user_router')
-const register_router = require('../src/routes/register_router')
+const register_router = require('../src/routes/accomodation_router')
 const common_router = require('../src/routes/common_router')
 const reserve_router = require('../src/routes/reserve_router')
 const evaluation_router = require('../src/routes/evaluate_router')

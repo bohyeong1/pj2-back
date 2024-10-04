@@ -25,11 +25,15 @@ const {acc_regist_lv11_controller} = require('../controllers/accomodation_contro
 const {acc_get_local_average_contrller} = require('../controllers/accomodation_controller/get/acc_get_local_average_contrller')
 const {acc_get_secret_all_controller} = require('../controllers/accomodation_controller/get/acc_get_secret_all_controller')
 const {acc_get_secret_controller} = require('../controllers/accomodation_controller/get/acc_get_secret_controller')
+// modify
+const {acc_modify_title_controller} = require('../controllers/accomodation_controller/modify/acc_modify_title_controller')
+const {acc_modify_category_controller} = require('../controllers/accomodation_controller/modify/acc_modify_category_controller')
 // delete
 
-// =================================================
-// ================== 라 우 터 =================== //
-// =================================================
+
+// ===================================================
+// =============== regist 라우터 =================== //
+// ===================================================
 
 // =================================================
 // regist lv0 //
@@ -90,5 +94,18 @@ router.post('/get/secret-all',acc_get_secret_all_controller)
 // =================================================
 // host page 등록된 하나의 숙소 조회
 router.post('/get/secret-one/:house',acc_get_secret_controller)
+
+
+// ===================================================
+// =============== modify 라우터 =================== //
+// ===================================================
+
+// =================================================
+// title modify //
+router.put('/modify/title/:house', acc_modify_title_controller)
+
+// =================================================
+// category modify //
+router.put('/modify/category/:house', acc_modify_category_controller)
 
 module.exports = router

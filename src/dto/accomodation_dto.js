@@ -98,8 +98,9 @@ class accomodation_dto{
             const category_structure = await Structure.findOne({
                 name : 'category'
             })
+
             // db에 저장되 있는 category 항목인지 검사
-            if(!_.some(category_structure.structure, (item) => {return _.isMatch(item, this.category)})){
+            if(!_.some(category_structure.structure, (el) => {return _.isEqual(el, this.category)})){
                 throw new error_dto({
                     code: 400,
                     message: 'category 전달 형식이 잘못 되었습니다',
@@ -131,8 +132,8 @@ class accomodation_dto{
                 name : 'space_category'
             })
             // db에 저장되 있는 space_category 항목인지 검사
-            if(!_.some(space_category_structure.structure, (item) => {return _.isMatch(item, this.space_category)})){
-                console.log(space_category_structure)
+            if(!_.some(space_category_structure.structure, (el) => {return _.isMatch(el, this.space_category)})){
+
                 throw new error_dto({
                     code: 400,
                     message: 'space_category 전달 형식이 잘못 되었습니다',
@@ -160,7 +161,7 @@ class accomodation_dto{
                 })
             }
             // 배열 요소 객체인지 검사
-            if(!this.base_facility.every((item) => {return typeof item === 'object' && item !== null && !Array.isArray(item)})){
+            if(!this.base_facility.every((el) => {return typeof el === 'object' && el !== null && !Array.isArray(item)})){
                 throw new error_dto({
                     code: 400,
                     message: 'base_facility 배열의 요소들이 객체 타입이 아닙니다',

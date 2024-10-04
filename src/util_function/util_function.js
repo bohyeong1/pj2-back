@@ -3,6 +3,8 @@ const Mailgun = require('mailgun.js')
 const config = require('../config/env_config')
 const mailgun = new Mailgun(form_data)
 const error_dto = require('../dto/error_dto')
+const User = require('../models/User')
+const admin = require('../config/firebase_config')
 
 const mg = mailgun.client({
     username : 'api',
@@ -88,7 +90,7 @@ function check_integer(input_data, start = null, end = null){
 }
 
 // =================================================
-// file type check //
+// get type check //
 function get_files_type(files){
     const type_inv = []
     if(!Array.isArray(files)){
@@ -114,6 +116,38 @@ function get_files_type(files){
     return type_inv
 }
 
+// =================================================
+// cookie를 통한 유저 검사 //
+async function is_valid_user(user_dto){
+    const real_token = user_dto.token.split(' ')[1]
+    const verify_token = await admin.auth().verifyIdToken(real_token)
+    const uid = verify_token.uid           
+    const user = await User.findOne({firebase_uid: uid})
+
+    if(!user){
+        return {
+            code : 200,
+            user_state : false,
+            acc_state : false,
+            message : '유효한 토큰이 아닙니다.'
+        }
+    }
+
+    if(!user.host_state){
+        return {
+            code : 200,
+            user_state : false,
+            acc_state : false,
+            message : 'host_state가 false인데 숙소 업데이트를 진행하려고 시도하는 중입니다.'
+        }
+    }
+
+    return {
+        user_state : true,
+        user : user
+    }
+}
+
 module.exports = {
     create_code : create_code,
     send_code_email : send_code_email,
@@ -122,5 +156,6 @@ module.exports = {
     check_array : check_array,
     check_integer : check_integer,
     kakao_close_location_fetch : kakao_close_location_fetch,
-    get_files_type : get_files_type
+    get_files_type : get_files_type,
+    is_valid_user : is_valid_user
 }

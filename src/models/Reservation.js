@@ -49,8 +49,7 @@ const reservaitonSchema = new Schema({
         url:{
             type:String
         }
-    },   
-    
+    },       
     ////////최종가격
     totalPrice:{
         type:Number

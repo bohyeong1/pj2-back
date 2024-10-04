@@ -35,11 +35,14 @@ const userSchema = new Schema({
     },
     createAt : {
         type : Date,
-        default : Date.now()
+        default : Date.now
     },
     lastModifiedAt : {
         type : Date,
-        default : Date.now()
+        default : Date.now
+    },
+    host_create_at : {
+        type : Date
     },
     cashInv : {
         type : Number,
