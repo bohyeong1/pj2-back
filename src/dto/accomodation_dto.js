@@ -221,7 +221,7 @@ class accomodation_dto{
             // db에 저장되 있는 service_facility 항목인지 검사
             const check_req = _.every(this.service_facility, (ele) => {
                 return _.some(service_facility_structure.structure, (el) => {
-                    return _.isMatch(el, ele)
+                    return _.isMatch(ele, el)
                     })
                 }
             )
@@ -363,7 +363,7 @@ class accomodation_dto{
             // db에 저장되 있는 keywords 항목인지 검사
             const check_req = _.every(this.keywords, (ele) => {
                 return _.some(keywords_structure.structure, (el) => {
-                    return _.isMatch(el, ele)
+                    return _.isMatch(ele, el)
                     })
                 }
             )

@@ -28,6 +28,8 @@ const {acc_get_secret_controller} = require('../controllers/accomodation_control
 // modify
 const {acc_modify_title_controller} = require('../controllers/accomodation_controller/modify/acc_modify_title_controller')
 const {acc_modify_category_controller} = require('../controllers/accomodation_controller/modify/acc_modify_category_controller')
+const {acc_modify_service_facility_controller} = require('../controllers/accomodation_controller/modify/acc_modify_service_facility_controller')
+const {acc_modifiy_keyword_controller} = require('../controllers/accomodation_controller/modify/acc_modifiy_keyword_controller')
 // delete
 
 
@@ -107,5 +109,16 @@ router.put('/modify/title/:house', acc_modify_title_controller)
 // =================================================
 // category modify //
 router.put('/modify/category/:house', acc_modify_category_controller)
+
+// =================================================
+// service facility modify //
+router.put('/modify/service-facility/:house', acc_modify_service_facility_controller)
+
+// =================================================
+// keyword modify //
+router.put('/modify/keyword/:house', acc_modifiy_keyword_controller)
+
+
+
 
 module.exports = router
