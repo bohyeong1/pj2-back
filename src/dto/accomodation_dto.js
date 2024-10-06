@@ -3,6 +3,7 @@ const Structure = require('../models/Structure')
 const mongoose = require('mongoose')
 const _ = require('lodash')
 const {check_object, check_string, check_array, check_integer} = require('../util_function/util_function')
+const config = require('../config/env_config')
 
 class accomodation_dto{
     constructor(data){ 
@@ -16,7 +17,9 @@ class accomodation_dto{
         this.sub_adress = data.sub_adress || null
         this.search_adress = data.search_adress || null
         this.main_img = data.main_img || null
+        this.delete_main_img = data.delete_main_img || null
         this.sub_img = data.sub_img || null
+        this.delete_sub_img = data.delete_sub_img || null
         this.keywords = data.keywords || null
         this.title = data.title || null
         this.capacity = data.capacity || null
@@ -293,7 +296,7 @@ class accomodation_dto{
 
     // =================================================
     // main_img 형식 & 타입검사 //
-    async validate_main_img(){
+    validate_main_img(){
         if(this.main_img){
             const file_format = ['image/jpeg', 'image/png', 'image/webp']
             if(!file_format.includes(this.main_img)){
@@ -310,17 +313,67 @@ class accomodation_dto{
                 server_state: false
             })
         }
-    }        
-    
+    }    
 
     // =================================================
+    // delete_main_img 형식 & 타입검사 //
+    validate_delete_main_img(){
+        if(this.delete_main_img){
+            const file_format = ['PNG', config.ENDPOINT, config.BUCKET_NAME]
+            if(!file_format.every((el)=>{
+                return  this.delete_main_img.includes(el)
+            })){
+                throw new error_dto({
+                    code: 400,
+                    message: '이미지 파일은 jpeg, png, webg로 넣어 주세요.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
+    }
+    
+    
+    // =================================================
     // sub_img 형식 & 타입검사 //
-    async validate_sub_img(){
+    validate_sub_img(){
         if(this.sub_img && Array.isArray(this.sub_img)){
             const file_format = ['image/jpeg', 'image/png', 'image/webp']
             const is_valid_format = this.sub_img.every((el)=>{
                 return file_format.includes(el)
             })
+            if(!is_valid_format){
+                throw new error_dto({
+                    code: 400,
+                    message: '이미지 파일은 jpeg, png, webg로 넣어 주세요.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
+    // delete_sub_img 형식 & 타입검사 //
+    validate_delete_sub_img(){
+        if(this.delete_sub_img && check_array(this.delete_sub_img) && this.delete_sub_img.length){
+            const file_format = ['PNG', config.ENDPOINT, config.BUCKET_NAME]
+            const is_valid_format = this.delete_sub_img.every((el)=>{
+                return file_format.every((ele)=>{
+                    return el.includes(ele)
+                })
+            })
+
             if(!is_valid_format){
                 throw new error_dto({
                     code: 400,

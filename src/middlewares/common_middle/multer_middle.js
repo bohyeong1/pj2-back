@@ -12,7 +12,14 @@ const initail_acc_regist_multer = upload.fields([
     {name : 'mainImg', maxCount : 1}, {name : 'subImg', maxCount : 4}
 ])
 
+// =================================================
+// 숙소 이미지 수정 멀터 //
+const acc_modify_multer = upload.fields([
+    {name : 'mainImg', maxCount : 1}, {name : 'subImg', maxCount : 9}
+])
+
 module.exports = {
     user_multer : user_multer,
-    initail_acc_regist_multer : initail_acc_regist_multer
+    initail_acc_regist_multer : initail_acc_regist_multer,
+    acc_modify_multer : acc_modify_multer
 }

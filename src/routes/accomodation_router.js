@@ -5,7 +5,7 @@ const expressAsyncHandler = require('express-async-handler')
 const router = express.Router()
 // =================================================
 // multer //
-const {initail_acc_regist_multer} = require('../middlewares/common_middle/multer_middle')
+const {initail_acc_regist_multer, acc_modify_multer} = require('../middlewares/common_middle/multer_middle')
 // =================================================
 // controller //
 // regist
@@ -30,6 +30,7 @@ const {acc_modify_title_controller} = require('../controllers/accomodation_contr
 const {acc_modify_category_controller} = require('../controllers/accomodation_controller/modify/acc_modify_category_controller')
 const {acc_modify_service_facility_controller} = require('../controllers/accomodation_controller/modify/acc_modify_service_facility_controller')
 const {acc_modifiy_keyword_controller} = require('../controllers/accomodation_controller/modify/acc_modifiy_keyword_controller')
+const {acc_modify_photo_controller} = require('../controllers/accomodation_controller/modify/acc_modify_photo_controller')
 // delete
 
 
@@ -87,15 +88,15 @@ router.put('/registLv11/:house', acc_regist_lv11_controller)
 
 // =================================================
 // 해당 지역의 평균 가격 //
-router.post('/regist/localAverage/:house',acc_get_local_average_contrller)
+router.post('/regist/localAverage/:house', acc_get_local_average_contrller)
 
 // =================================================
 // host page 등록된 모든 숙소 조회
-router.post('/get/secret-all',acc_get_secret_all_controller)
+router.post('/get/secret-all', acc_get_secret_all_controller)
 
 // =================================================
 // host page 등록된 하나의 숙소 조회
-router.post('/get/secret-one/:house',acc_get_secret_controller)
+router.post('/get/secret-one/:house', acc_get_secret_controller)
 
 
 // ===================================================
@@ -118,6 +119,9 @@ router.put('/modify/service-facility/:house', acc_modify_service_facility_contro
 // keyword modify //
 router.put('/modify/keyword/:house', acc_modifiy_keyword_controller)
 
+// =================================================
+// photo modify //
+router.put('/modify/photo/:house', acc_modify_multer, acc_modify_photo_controller)
 
 
 
