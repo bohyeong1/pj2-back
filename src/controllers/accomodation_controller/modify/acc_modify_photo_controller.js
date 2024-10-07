@@ -6,7 +6,7 @@ const async_handler = require('express-async-handler')
 const {check_array} = require('../../../util_function/util_function')
 const {get_files_type} = require('../../../util_function/util_function')
 // =================================================
-// 숙소 이름 수정 컨트롤러 //
+// 숙소 사진 수정 컨트롤러 //
 async function acc_modify_photo_controller(req, res, next){
     const accomodation_id = req.params.house
     const img_files = req.files

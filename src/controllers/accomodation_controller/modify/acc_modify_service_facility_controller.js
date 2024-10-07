@@ -4,7 +4,7 @@ const accomodation_dto = require('../../../dto/accomodation_dto')
 const async_handler = require('express-async-handler')
 
 // =================================================
-// 숙소 이름 수정 컨트롤러 //
+// 숙소 서비스 시설 수정 컨트롤러 //
 async function acc_modify_service_facility_controller(req, res, next){
     const accomodation_id = req.params.house
 

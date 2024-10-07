@@ -25,30 +25,28 @@ module.exports = Structure
 
 
 // const acc_structure = new Structure({
-//     name : 'rules',
+//     name : 'discount_date',
 //     structure : [
-//         {text:'반려동물 동반 가능',
-//         name:'aniaml',
-//         state:null,
-//         count:0},
-        
-//         {text:'이벤트 허용',
-//         name:'event',
-//         state:null},
-
-//         {text:'흡연, 베이핑, 전자담배 허용',
-//         name:'vaping',
-//         state:null},
-
-//         {text:'상업적 사진 및 동영상 촬영 허용',
-//         name:'recoding',
-//         state:null,
+//         {
+//             name : '3박 이상',
+//             date : 3
 //         },
-
-//         {text:'추가 규칙',
-//         name:'addrule',
-//         state:null,
-//         summary:''},
+//         {
+//             name : '5박 이상',
+//             date : 5
+//         },
+//         {
+//             name : '7박 이상',
+//             date : 7
+//         },
+//         {
+//             name : '14박 이상',
+//             date : 14
+//         },
+//         {
+//             name : '전체 적용',
+//             date : -1
+//         }
 //     ]
 // })
 

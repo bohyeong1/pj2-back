@@ -188,9 +188,15 @@ const accomodationSchema = new Schema({
             type : String
         }
     },
-    //숙소 할인 // price값을 바꾸기 보단 aggregate로 파이프라인만들어서 프론트에 보내야 할듯
+    //숙소 할인
     discount : {
-        type:Number
+        date : {
+            name : {type : String},
+            date : {type : Number}
+        },
+        rate : {
+            type : Number
+        }
     },
     //호스팅날짜
     createAt : {

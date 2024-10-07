@@ -4,7 +4,7 @@ const accomodation_dto = require('../../../dto/accomodation_dto')
 const async_handler = require('express-async-handler')
 
 // =================================================
-// 숙소 공간, 유형 수정 컨트롤러 //
+// 숙소 키워드 수정 컨트롤러 //
 async function acc_modifiy_keyword_controller(req, res, next){
     const accomodation_id = req.params.house
 

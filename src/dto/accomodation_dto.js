@@ -27,6 +27,7 @@ class accomodation_dto{
         this.rules = data.rules || null
         this.price = data.price || null
         this.addPrice = data.addPrice || null
+        this.discount = data.discount || null
     }
 
     // =================================================
@@ -600,6 +601,57 @@ class accomodation_dto{
                 throw new error_dto({
                     code: 400,
                     message: 'addPrice 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // discount 형식 & 타입검사 //
+    async validate_discount(){
+        if(this.discount){
+            if(!check_object(this.discount)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'discount 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(!this.discount.rate || !this.discount.date){
+                throw new error_dto({
+                    code: 400,
+                    message: 'discount 의 key가 정확하지 않습니다.',
+                    server_state: false
+                })
+            }
+            if(!check_integer(this.discount.rate) || 
+               !check_object(this.discount.date) ||
+               !check_integer(this.discount.date.date) ||
+               !check_string(this.discount.name)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'discount 의 value의 타입이 잘못 되었습니다.',
+                    server_state: false
+                })
+            }
+
+            const discount_date_structure = await Structure.findOne({
+                name : 'discount_date'
+            })
+
+            if(this.discount.rate > 50 || this.discount.rate < 0 || !_.some(discount_date_structure, (el)=>{
+                return _.isEqual(el, this.discount.date)
+            })){
+                throw new error_dto({
+                    code: 400,
+                    message: 'discount 의 value의 형식이 잘못 되었습니다.',
                     server_state: false
                 })
             }
