@@ -32,6 +32,8 @@ const {acc_modify_service_facility_controller} = require('../controllers/accomod
 const {acc_modifiy_keyword_controller} = require('../controllers/accomodation_controller/modify/acc_modifiy_keyword_controller')
 const {acc_modify_photo_controller} = require('../controllers/accomodation_controller/modify/acc_modify_photo_controller')
 const {acc_modify_price_controller} = require('../controllers/accomodation_controller/modify/acc_modify_price_controller')
+const {acc_modify_capacity_controller} = require('../controllers/accomodation_controller/modify/acc_modify_capacity_controller')
+const {acc_modify_summary_controller} = require('../controllers/accomodation_controller/modify/acc_modify_summary_controller')
 // delete
 
 
@@ -127,5 +129,13 @@ router.put('/modify/photo/:house', acc_modify_multer, acc_modify_photo_controlle
 // =================================================
 // price modify //
 router.put('/modify/price/:house', acc_modify_price_controller)
+
+// =================================================
+// capacity modify //
+router.put('/modify/capacity/:house', acc_modify_capacity_controller)
+
+// =================================================
+// summary modify //
+router.put('/modify/summary/:house', acc_modify_summary_controller)
 
 module.exports = router

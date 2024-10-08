@@ -631,10 +631,11 @@ class accomodation_dto{
                     server_state: false
                 })
             }
+
             if(!check_integer(this.discount.rate) || 
                !check_object(this.discount.date) ||
                !check_integer(this.discount.date.date) ||
-               !check_string(this.discount.name)){
+               !check_string(this.discount.date.name)){
                 throw new error_dto({
                     code: 400,
                     message: 'discount 의 value의 타입이 잘못 되었습니다.',
@@ -646,7 +647,7 @@ class accomodation_dto{
                 name : 'discount_date'
             })
 
-            if(this.discount.rate > 50 || this.discount.rate < 0 || !_.some(discount_date_structure, (el)=>{
+            if(this.discount.rate > 50 || this.discount.rate < 0 || !_.some(discount_date_structure.structure, (el)=>{
                 return _.isEqual(el, this.discount.date)
             })){
                 throw new error_dto({

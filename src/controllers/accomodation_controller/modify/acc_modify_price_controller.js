@@ -9,8 +9,8 @@ async function acc_modify_price_controller(req, res, next){
     const accomodation_id = req.params.house
 
     const user = new user_dto({token : req.cookies.auth_token})
-    const accomodation = new accomodation_dto({price : req.body.price,
-                                               addPrice : req.body.addPrice,
+    const accomodation = new accomodation_dto({price : req.body.price ? req.body.price : null,
+                                               addPrice : req.body.addPrice ? req.body.addPrice : null,
                                                discount : req.body.discount ? req.body.discount : null,
                                                 _id : accomodation_id})
     const accomodation_modfiy_service_layer = new accomodation_modfiy_service()
