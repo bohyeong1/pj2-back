@@ -17,7 +17,7 @@ class accomodation_modfiy_service{
             const user_data = await is_valid_user(user_dto)
 
             if(!user_data.user_state){
-                return user
+                return user_data
             }
 
             const user = user_data.user
@@ -71,7 +71,7 @@ class accomodation_modfiy_service{
             const user_data = await is_valid_user(user_dto)
 
             if(!user_data.user_state){
-                return user
+                return user_data
             }
 
             const user = user_data.user
@@ -125,7 +125,7 @@ class accomodation_modfiy_service{
             const user_data = await is_valid_user(user_dto)
 
             if(!user_data.user_state){
-                return user
+                return user_data
             }
 
             const user = user_data.user
@@ -178,7 +178,7 @@ class accomodation_modfiy_service{
             const user_data = await is_valid_user(user_dto)
 
             if(!user_data.user_state){
-                return user
+                return user_data
             }
 
             const user = user_data.user
@@ -240,7 +240,7 @@ class accomodation_modfiy_service{
             const user_data = await is_valid_user(user_dto)
 
             if(!user_data.user_state){
-                return user
+                return user_data
             }
 
             const user = user_data.user
@@ -375,7 +375,7 @@ class accomodation_modfiy_service{
             const user_data = await is_valid_user(user_dto)
 
             if(!user_data.user_state){
-                return user
+                return user_data
             }
 
             const user = user_data.user
@@ -430,7 +430,7 @@ class accomodation_modfiy_service{
             const user_data = await is_valid_user(user_dto)
 
             if(!user_data.user_state){
-                return user
+                return user_data
             }
 
             const user = user_data.user
@@ -483,7 +483,7 @@ class accomodation_modfiy_service{
             const user_data = await is_valid_user(user_dto)
 
             if(!user_data.user_state){
-                return user
+                return user_data
             }
 
             const user = user_data.user
@@ -504,6 +504,59 @@ class accomodation_modfiy_service{
 
             // summary 업데이트
             accomodation.summary = accomodation_dto.summary
+
+            await accomodation.save()
+
+            return {
+                code : 200,
+                host_state : user.host_state,
+                acc_state : true,
+                accomodation : accomodation,
+                server_state : true
+            }
+
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false,
+                error : e
+            })
+        }
+    }
+
+    // =================================================
+    // rule 수정 //
+    async modify_rule(user_dto, accomodation_dto){
+        user_dto.validate_token()
+        accomodation_dto.validate_alter_under_id()
+        accomodation_dto.validate_rules()
+
+        try{    
+            const user_data = await is_valid_user(user_dto)
+
+            if(!user_data.user_state){
+                return user_data
+            }
+
+            const user = user_data.user
+
+            const accomodation = await Accomodation.findOne({
+                seller : user._id,
+                _id : accomodation_dto._id
+            })
+
+            if(!accomodation){
+                throw new error_dto({
+                    code: 401,
+                    message: '해당되는 숙소를 찾지 못했습니다.',
+                    server_state: false,
+                    error : e
+                }) 
+            }
+
+            // rule 업데이트
+            accomodation.rules = accomodation_dto.rules
 
             await accomodation.save()
 

@@ -131,16 +131,28 @@ const accomodationSchema = new Schema({
     // check-in, out time
     check_time : {
         check_in : {
-            type : Number,
-            default : 15,
-            min : 8,
-            max : 22
+            time : {
+                type : Number,
+                default : 15,
+                min : 8,
+                max : 22
+            },
+            name : {
+                type : String,
+                default : '오후 3시'
+            }
         },
         check_out : {
+            time : {
                 type : Number,
                 default : 17,
-                min : 8,
+                min : 10,
                 max : 24
+            },
+            name : {
+                type : String,
+                default : '오후 5시'
+            }
         }
     },
     // 체크인, 아웃 방법
