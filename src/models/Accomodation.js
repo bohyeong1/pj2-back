@@ -135,7 +135,7 @@ const accomodationSchema = new Schema({
                 type : Number,
                 default : 15,
                 min : 8,
-                max : 22
+                max : 24
             },
             name : {
                 type : String,
@@ -146,7 +146,7 @@ const accomodationSchema = new Schema({
             time : {
                 type : Number,
                 default : 17,
-                min : 10,
+                min : 8,
                 max : 24
             },
             name : {
@@ -168,7 +168,7 @@ const accomodationSchema = new Schema({
                 type : String
             }
         },
-        check_out : {
+        check_out : [{
             name : {
                 type : String
             },
@@ -178,7 +178,7 @@ const accomodationSchema = new Schema({
             url : {
                 type : String
             }
-        }
+        }]
     },
     // wifi information
     wifi_information : {

@@ -577,6 +577,150 @@ class accomodation_modfiy_service{
             })
         }
     }
+
+    // =================================================
+    // check in 수정 //
+    async modify_checkin(user_dto, accomodation_dto){
+        user_dto.validate_token()
+        accomodation_dto.validate_alter_under_id()
+        if(accomodation_dto.check_in){
+            await accomodation_dto.validate_check_in()
+        }
+        if(accomodation_dto.check_in_method){
+            await accomodation_dto.validate_check_in_method()
+        }
+
+        try{    
+            const user_data = await is_valid_user(user_dto)
+
+            if(!user_data.user_state){
+                return user_data
+            }
+
+            const user = user_data.user
+
+            const accomodation = await Accomodation.findOne({
+                seller : user._id,
+                _id : accomodation_dto._id
+            })
+
+            if(!accomodation){
+                throw new error_dto({
+                    code: 401,
+                    message: '해당되는 숙소를 찾지 못했습니다.',
+                    server_state: false,
+                    error : e
+                }) 
+            }
+ 
+            if(!accomodation_dto.check_in && !accomodation_dto.check_in_method){
+                throw new error_dto({
+                    code: 401,
+                    message: '수정 요청 데이터가 전달되지 않았습니다.',
+                    server_state: false,
+                    error : e
+                }) 
+            }
+
+            // check in 업데이트
+            accomodation.check_time.check_in = accomodation_dto.check_in ? 
+                                               accomodation_dto.check_in : 
+                                               accomodation.check_time.check_in 
+            accomodation.check_method.check_in = accomodation_dto.check_in_method ? 
+                                                 accomodation_dto.check_in_method : 
+                                                 accomodation.check_method.check_in
+
+            await accomodation.save()
+
+            return {
+                code : 200,
+                host_state : user.host_state,
+                acc_state : true,
+                accomodation : accomodation,
+                server_state : true
+            }
+
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false,
+                error : e
+            })
+        }
+    }
+
+    // =================================================
+    // check out 수정 //
+    async modify_checkout(user_dto, accomodation_dto){
+        user_dto.validate_token()
+        accomodation_dto.validate_alter_under_id()
+        if(accomodation_dto.check_out){
+            await accomodation_dto.validate_check_out()
+        }
+        if(accomodation_dto.check_out_method){
+            await accomodation_dto.validate_check_out_method()
+        }
+
+        try{    
+            const user_data = await is_valid_user(user_dto)
+
+            if(!user_data.user_state){
+                return user_data
+            }
+
+            const user = user_data.user
+
+            const accomodation = await Accomodation.findOne({
+                seller : user._id,
+                _id : accomodation_dto._id
+            })
+
+            if(!accomodation){
+                throw new error_dto({
+                    code: 401,
+                    message: '해당되는 숙소를 찾지 못했습니다.',
+                    server_state: false,
+                    error : e
+                }) 
+            }
+ 
+            if(!accomodation_dto.check_out && !accomodation_dto.check_out_method){
+                throw new error_dto({
+                    code: 401,
+                    message: '수정 요청 데이터가 전달되지 않았습니다.',
+                    server_state: false,
+                    error : e
+                }) 
+            }
+
+            // check out 업데이트
+            accomodation.check_time.check_out = accomodation_dto.check_out ? 
+                                                accomodation_dto.check_out : 
+                                                accomodation.check_time.check_out 
+            accomodation.check_method.check_out = accomodation_dto.check_out_method ? 
+                                                  accomodation_dto.check_out_method : 
+                                                  accomodation.check_method.check_out
+
+            await accomodation.save()
+
+            return {
+                code : 200,
+                host_state : user.host_state,
+                acc_state : true,
+                accomodation : accomodation,
+                server_state : true
+            }
+
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false,
+                error : e
+            })
+        }
+    }
 }
 
 module.exports = accomodation_modfiy_service

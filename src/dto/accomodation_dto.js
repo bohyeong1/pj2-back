@@ -9,6 +9,7 @@ class accomodation_dto{
     constructor(data){ 
         this._id = data._id || null
         this.acc_step = (data.acc_step >= 0) ? data.acc_step : null
+        // accomodation
         this.category = data.category || null
         this.space_category = data.space_category || null
         this.base_facility = data.base_facility || null   
@@ -28,6 +29,11 @@ class accomodation_dto{
         this.price = data.price || null
         this.addPrice = data.addPrice || null
         this.discount = data.discount || null
+        // check in out
+        this.check_in = data.check_in || null
+        this.check_in_method = data.check_in_method || null
+        this.check_out = data.check_out || null
+        this.check_out_method = data.check_out_method || null
     }
 
     // =================================================
@@ -653,6 +659,219 @@ class accomodation_dto{
                 throw new error_dto({
                     code: 400,
                     message: 'discount 의 value의 형식이 잘못 되었습니다.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // check in 형식 & 타입검사 //
+    async validate_check_in(){
+        if(this.check_in){
+            if(!check_object(this.check_in)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_in 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(!this.check_in.time || !this.check_in.name){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_in 의 key, value값이 정확하지 않습니다.',
+                    server_state: false
+                })
+            }
+
+            if(!check_integer(this.check_in.time) || 
+               !check_string(this.check_in.name)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_in 의 value의 타입이 잘못 되었습니다.',
+                    server_state: false
+                })
+            }
+
+            const check_time_structure = await Structure.findOne({
+                name : 'check_time'
+            })
+
+            if(!_.some(check_time_structure.structure, (el)=>{
+                return _.isEqual(el, this.check_in)
+            })){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_in 의 value의 형식이 잘못 되었습니다.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // check in method 형식 & 타입검사 //
+    async validate_check_in_method(){
+        if(this.check_in_method){
+            if(!check_object(this.check_in_method)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_in_method 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(!this.check_in_method.text || !this.check_in_method.name || !this.check_in_method.url){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_in_method 의 key, value값이 정확하지 않습니다.',
+                    server_state: false
+                })
+            }
+
+            if(!check_string(this.check_in_method.text) || 
+               !check_string(this.check_in_method.name) || 
+               !check_string(this.check_in_method.url)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_in_method 의 value의 타입이 잘못 되었습니다.',
+                    server_state: false
+                })
+            }
+
+            const check_in_method_structure = await Structure.findOne({
+                name : 'checkin_method'
+            })
+
+            if(!_.some(check_in_method_structure.structure, (el)=>{
+                return _.isMatch(el, {name : this.check_in_method.name, url : this.check_in_method.url})
+            })){
+                throw new error_dto({
+                    code: 400,
+                    message: 'checkin_method 의 value의 형식이 잘못 되었습니다.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // check out 형식 & 타입검사 //
+    async validate_check_out(){
+        if(this.check_out){
+            if(!check_object(this.check_out)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_out 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(!this.check_out.time || !this.check_out.name){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_out 의 key, value값이 정확하지 않습니다.',
+                    server_state: false
+                })
+            }
+
+            if(!check_integer(this.check_out.time) || 
+               !check_string(this.check_out.name)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_out 의 value의 타입이 잘못 되었습니다.',
+                    server_state: false
+                })
+            }
+
+            const check_time_structure = await Structure.findOne({
+                name : 'check_time'
+            })
+
+            if(!_.some(check_time_structure.structure, (el)=>{
+                return _.isEqual(el, this.check_out)
+            })){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_out 의 value의 형식이 잘못 되었습니다.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // check out method 형식 & 타입검사 //
+    async validate_check_out_method(){
+        if(this.check_out_method.length){
+            if(!check_array(this.check_out_method)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_out_method 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+
+            this.check_out_method.forEach((el)=>{
+                if(!check_object(el)){
+                    throw new error_dto({
+                        code: 400,
+                        message: 'check_out_method 전달 타입이 잘못 되었습니다',
+                        server_state: false
+                    })
+                }
+
+                if(!el.text || !el.name || !el.url){
+                    throw new error_dto({
+                        code: 400,
+                        message: 'check_out_method 의 key, value값이 정확하지 않습니다.',
+                        server_state: false
+                    })
+                }
+
+                if(![el.text, el.name, el.url].every((ele)=>{return check_string(ele)})){
+                    throw new error_dto({
+                        code: 400,
+                        message: 'check_out_method 의 value의 타입이 잘못 되었습니다.',
+                        server_state: false
+                    })
+                }
+            })
+
+            const check_out_method_structure = await Structure.findOne({
+                name : 'checkout_method'
+            })
+
+            if(!_.some(check_out_method_structure.structure, (el)=>{
+                return _.some(this.check_out_method, (ele)=>{
+                    return _.isMatch(el, {name : ele.name, url : ele.url})
+                })
+            })){
+                throw new error_dto({
+                    code: 400,
+                    message: 'check_out_method 의 value의 형식이 잘못 되었습니다.',
                     server_state: false
                 })
             }
