@@ -4,10 +4,10 @@ const accomodation_dto = require('../../../dto/accomodation_dto')
 const async_handler = require('express-async-handler')
 
 // =================================================
-// 숙소 체크인 수정 컨트롤러 //
-async function acc_modfiy_checkout_controller(req, res, next){
+// 숙소 체크아웃 수정 컨트롤러 //
+async function acc_modifiy_checkout_controller(req, res, next){
     const accomodation_id = req.params.house
-    console.log(req.body)
+
     const user = new user_dto({token : req.cookies.auth_token})
     const accomodation = new accomodation_dto({check_out : req.body.check_out ?
                                                            req.body.check_out :
@@ -24,5 +24,5 @@ async function acc_modfiy_checkout_controller(req, res, next){
 }
 
 module.exports = {
-    acc_modfiy_checkout_controller : async_handler(acc_modfiy_checkout_controller)
+    acc_modifiy_checkout_controller : async_handler(acc_modifiy_checkout_controller)
 }

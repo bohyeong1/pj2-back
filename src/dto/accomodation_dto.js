@@ -34,6 +34,11 @@ class accomodation_dto{
         this.check_in_method = data.check_in_method || null
         this.check_out = data.check_out || null
         this.check_out_method = data.check_out_method || null
+        this.custom_navigation = data.custom_navigation || null
+        this.manual = data.manual || null
+        this.comunication = data.comunication || null
+        this.wifi_id = data.wifi_id || null
+        this.wifi_password = data.wifi_password || null
     }
 
     // =================================================
@@ -882,6 +887,184 @@ class accomodation_dto{
                 server_state: false
             })
         } 
+    }
+
+    // =================================================
+    // custom navigation 형식 & 타입검사 //
+    validate_custom_navigation(){
+        if(this.custom_navigation){
+            if(this.custom_navigation.trim().length === 0){
+                throw new error_dto({
+                    code: 400,
+                    message: 'custom_navigation 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(!check_string(this.custom_navigation)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'custom_navigation 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // manual 형식 & 타입검사 //
+    validate_manual(){
+        if(this.manual){
+            if(this.manual.trim().length === 0){
+                throw new error_dto({
+                    code: 400,
+                    message: 'manual 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(!check_string(this.manual)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'manual 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        } 
+    }
+
+    // =================================================
+    // comunication 형식 & 타입검사 //
+    async validate_comunication(){
+        if(this.comunication){
+            if(!check_object(this.comunication)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'comunication 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+
+            if(!this.comunication.name){
+                throw new error_dto({
+                    code: 400,
+                    message: 'comunication의 key값이 제대로 전달되지 않았습니다.',
+                    server_state: false
+                })
+            }
+
+            if(!check_string(this.comunication.name)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'comunication value값의 타입이 잘못 되었습니다.',
+                    server_state: false
+                })
+            }
+
+            const comunication_structure = await Structure.findOne({
+                name : 'comunication'
+            })
+            // db에 저장되 있는 comunication 항목인지 검사
+            const check_req = _.some(comunication_structure.structure, (el)=>{
+                return _.isEqual(el, this.comunication)
+            })
+
+            if(!check_req){
+                throw new error_dto({
+                    code: 400,
+                    message: 'comunication 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
+    // wifi_id 형식 & 타입검사 //
+    validate_wifi_id(){
+        if(this.wifi_id){
+            if(!check_string(this.wifi_id)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'wifi_id 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(this.wifi_id.length <= 0 || this.wifi_id.length > 32){
+                throw new error_dto({
+                    code: 400,
+                    message: 'wifi_id 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+
+            const id_rgx = /^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;"'<>,.?\/\\|-]*$/
+            if(!id_rgx.test(this.wifi_id)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'wifi_id 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
+    // wifi_password 형식 & 타입검사 //
+    validate_wifi_password(){
+        if(this.wifi_password){
+            if(!check_string(this.wifi_password)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'wifi_password 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            if(this.wifi_password.length < 8 || this.wifi_password.length > 32){
+                throw new error_dto({
+                    code: 400,
+                    message: 'wifi_password 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+
+            const password_rgx = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}[\]:;"'<>,.?\/\\|-]).*$/
+            if(!password_rgx.test(this.wifi_password)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'wifi_password 전달 형식이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
     }
 }
 

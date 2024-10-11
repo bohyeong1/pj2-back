@@ -36,7 +36,11 @@ const {acc_modify_capacity_controller} = require('../controllers/accomodation_co
 const {acc_modify_summary_controller} = require('../controllers/accomodation_controller/modify/acc_modify_summary_controller')
 const {acc_modify_rule_controller} = require('../controllers/accomodation_controller/modify/acc_modify_rule_controller')
 const {acc_modify_checkin_controller} = require('../controllers/accomodation_controller/modify/acc_modify_checkin_controller')
-const {acc_modfiy_checkout_controller} = require('../controllers/accomodation_controller/modify/acc_modfiy_checkout_controller')
+const {acc_modifiy_checkout_controller} = require('../controllers/accomodation_controller/modify/acc_modifiy_checkout_controller')
+const {acc_modifiy_custom_navigation_controller} = require('../controllers/accomodation_controller/modify/acc_modifiy_custom_navigation_controller')
+const {acc_modifiy_manual_controller} = require('../controllers/accomodation_controller/modify/acc_modifiy_manual_controller')
+const {acc_modify_comunication_controller} = require('../controllers/accomodation_controller/modify/acc_modify_comunication_controller')
+const {acc_modify_wifi_controller} = require('../controllers/accomodation_controller/modify/acc_modify_wifi_controller')
 // delete
 
 
@@ -150,7 +154,23 @@ router.put('/modify/rule/:house', acc_modify_rule_controller)
 router.put('/modify/check-in/:house', acc_modify_checkin_controller)
 
 // =================================================
-// check-out modify //
-router.put('/modify/check-out/:house', acc_modfiy_checkout_controller)
+// check out modify //
+router.put('/modify/check-out/:house', acc_modifiy_checkout_controller)
+
+// =================================================
+// custom navigation modify //
+router.put('/modify/custom-navigation/:house', acc_modifiy_custom_navigation_controller)
+
+// =================================================
+// manual modify //
+router.put('/modify/manual/:house', acc_modifiy_manual_controller)
+
+// =================================================
+// comunication modify //
+router.put('/modify/comunication/:house', acc_modify_comunication_controller)
+
+// =================================================
+// wifi modify //
+router.put('/modify/wifi/:house', acc_modify_wifi_controller)
 
 module.exports = router

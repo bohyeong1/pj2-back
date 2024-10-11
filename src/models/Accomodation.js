@@ -48,8 +48,7 @@ const accomodationSchema = new Schema({
         type : Object
     },
     custom_navigation : {
-        type : ObjectId,
-        ref : 'CustomPath'
+        type : String
     },
     //숙소 카테고리
     category : {
@@ -182,7 +181,7 @@ const accomodationSchema = new Schema({
     },
     // wifi information
     wifi_information : {
-        name : {
+        id : {
             type : String
         },
         password : {
@@ -191,8 +190,7 @@ const accomodationSchema = new Schema({
     },
     // manual
     manual : {
-        type : ObjectId,
-        ref : 'Manual'
+        type : String
     },
     // comunication
     comunication : {
