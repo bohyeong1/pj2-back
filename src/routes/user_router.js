@@ -13,18 +13,25 @@ const {user_multer} = require('../middlewares/common_middle/multer_middle')
 const {validateUserEmail} = require('../validation/validator')
 // =================================================
 // controller //
+// get
+const {user_get_login_check_controller} = require('../controllers/user_controller/get/user_get_login_check_controller')
 const {user_getuser_controller} = require('../controllers/user_controller/user_getuser_controller')
-const {user_login_controller} = require('../controllers/user_controller/user_login_controller')
 const {user_duplicate_controller} = require('../controllers/user_controller/user_duplicate_controller')
-const {user_initial_join_controller} = require('../controllers/user_controller/user_initial_join_controller')
-const {user_maintain_controller} = require('../controllers/user_controller/user_maintain_controller')
+const {user_login_controller} = require('../controllers/user_controller/user_login_controller')
 const {verification_code_controller} = require('../controllers/user_controller/verification_code_controller')
 const {email_auth_controller} = require('../controllers/user_controller/email_auth_controller')
+// regist
+const {user_initial_join_controller} = require('../controllers/user_controller/user_initial_join_controller')
 const {user_nickname_controller} = require('../controllers/user_controller/user_nickname_controller')
 const {user_profile_controller} = require('../controllers/user_controller/user_profile_controller')
+// modify
+
+// delete
+
 const {host_initial_controller} = require('../controllers/host_controller/host_initial_controller')
 const {host_information_controller} = require('../controllers/host_controller/host_information_controller')
 const {update_user_token_controller} = require('../controllers/user_controller/update_user_token_controller')
+
 
 // =================================================
 // ================== 라 우 터 =================== //
@@ -58,12 +65,12 @@ router.post('/login',user_login_controller)
 router.get('/updateToken',update_user_token_controller)
 
 // =================================================
-// 로그인 유지 *사용자 정보 제공 //
+// 로그인 체크 *사용자 정보 제공 //
 router.get('/getuser',user_getuser_controller)
 
 // =================================================
-// 로그인 유지 *사용자 정보 미제공 db조회 안함 //
-router.get('/maintain',user_maintain_controller)
+// 로그인 체크 *사용자 정보 미제공 db조회 안함 //
+router.get('/login-check', user_get_login_check_controller)
 
 // =================================================
 // user id 중복 체크 //

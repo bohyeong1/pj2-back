@@ -1,58 +1,58 @@
 
 // =================================================
-// 숙소 평균 평점 & 평점메긴 사람 구하는 파이프라인 //
+// 숙소 리스트 평균 평점 & 평가 인원 구하는 파이프라인 //
 function accomodation_pipe(){
     return [
         // 댓글 & 숙소 조인
         {
-            $lookup:{
-                from:'evaluations',
-                localField:'_id',
-                foreignField:'homeid',
-                as:'replys'
+            $lookup : {
+                from : 'evaluations',
+                localField : '_id',
+                foreignField : 'homeid',
+                as : 'replys'
             }
         },
         // 평가 컬랙션 evaluation필드만 추출
         {
-            $addFields:{
-                evaluations:{
-                $reduce:{
-                    input:'$replys',
-                    initialValue:[],
-                    in:{$concatArrays:['$$value', '$$this.evaluation']}
+            $addFields : {
+                evaluations : {
+                $reduce : {
+                    input : '$replys',
+                    initialValue : [],
+                    in : {$concatArrays:['$$value', '$$this.evaluation']}
                 }
                 }
             }
         },
         // evaluation 필드 avgGrade값만 추출
         {
-            $addFields:{
-                filtered_evaluations:{
-                $filter:{
-                    input:'$evaluations',
-                    as:'evaluation',
-                    cond:{$eq:['$$evaluation.name', 'avgGrade']}
+            $addFields : {
+                filtered_evaluations : {
+                $filter : {
+                    input : '$evaluations',
+                    as : 'evaluation',
+                    cond : {$eq : ['$$evaluation.name', 'avgGrade']}
                 }
                 }
             }
         },
         // avgGrade에서 grade(평점)만 추출해서 배열ㅇ담기
         {
-            $addFields:{
-                grades:{
-                $map:{
-                    input:'$filtered_evaluations',
-                    as:'evaluation',
-                    in:'$$evaluation.grade'
+            $addFields : {
+                grades : {
+                $map : {
+                    input : '$filtered_evaluations',
+                    as : 'evaluation',
+                    in : '$$evaluation.grade'
                 }
                 }
             }
         },
         // 평균 & 리뷰 단 사람 숫자 집계
         {
-            $addFields:{
-                average:{$avg:'$grades'},
-                counts_review:{$size:'$replys'}
+            $addFields : {
+                average : {$avg : '$grades'},
+                counts_review : {$size : '$replys'}
             }
         },
 
@@ -65,30 +65,104 @@ function accomodation_pipe(){
 function accomodation_sort_pipe(sort, direction){
     return [
         {
-            $addFields:{
-                sortField:{
-                    $cond:{if: {$eq:[`$${sort}`, null]}, then:1, else:0}
+            $addFields : {
+                sortField : {
+                    $cond : {if: {$eq:[`$${sort}`, null]}, then:1, else:0}
                 }
             }
         },
         // 첫 번째 정렬 기준과 두 번째 정렬 기준 적용
         // * sort에서는 동적필드 참고할 땐 '$sortField'가 아니라 sortField로 변수 넣듯이 넣을것 문법적 차이 있음
         {
-            $sort:{
-                sortField:1, // null 값을 마지막으로 배치
-                [sort]:direction,
-                'createAt': -1 
+            $sort : {
+                sortField : 1, // null 값을 마지막으로 배치
+                [sort] : direction,
+                'createAt' : -1 
             }
         },
         // 필요없는 필드 제거
         {
-            $project:{
-                grades:0,
-                filtered_evaluations:0,
-                evaluations: 0,
-                replys:0
+            $project : {
+                grades : 0,
+                filtered_evaluations : 0,
+                evaluations : 0,
+                replys : 0
             }
         }]
+}
+
+// =================================================
+// 상세 숙소 평균 평점 & 평가 인원 구하는 파이프라인 //
+function get_detail_evaluation(){
+    return [
+        {
+            $facet: {
+                // reply와 total_counts를 계산하는 경로
+                reply_facet: [
+                    {
+                        $group: {
+                            _id: null,
+                            reply: { $push: "$$ROOT" },
+                            total_counts: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            reply: 1,
+                            total_counts: 1
+                        }
+                    }
+                ],
+                // evaluations를 계산하는 경로
+                evaluation_facet: [
+                    { $unwind: "$evaluation" },
+                    { $match: { "evaluation.name": { $exists: true, $ne: null } } },
+                    {
+                        $group: {
+                            _id: "$evaluation.name",
+                            avg: { $avg: "$evaluation.grade" },
+                            url: { $first: "$evaluation.url" },
+                            title: { $first: "$evaluation.title" }
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            evaluations: {
+                                $push: {
+                                    k: "$_id",
+                                    v: {
+                                        avg: "$avg",
+                                        url: "$url",
+                                        title: "$title"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        $addFields: {
+                            evaluations: { $arrayToObject: "$evaluations" }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            evaluations: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $project: {
+                reply: { $arrayElemAt: ["$reply_facet.reply", 0] },
+                total_counts: { $arrayElemAt: ["$reply_facet.total_counts", 0] },
+                evaluations: { $arrayElemAt: ["$evaluation_facet.evaluations", 0] }
+            }
+        }
+    ]
 }
 
 // =================================================
@@ -116,6 +190,7 @@ function accomodation_get_local_average_pipe(date_range, local){
 module.exports = {
     accomodation_pipe : accomodation_pipe, 
     accomodation_sort_pipe : accomodation_sort_pipe,
-    accomodation_get_local_average_pipe : accomodation_get_local_average_pipe
+    accomodation_get_local_average_pipe : accomodation_get_local_average_pipe,
+    get_detail_evaluation : get_detail_evaluation
 }
 

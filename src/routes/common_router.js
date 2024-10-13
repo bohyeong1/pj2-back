@@ -11,6 +11,8 @@ const { Types: { ObjectId } } = mongoose
 
 // =================================================
 // controller //
+// get
+const {acc_get_detail_controller} = require('../controllers/common_controller/get/acc_get_detail_controller')
 const acc_filter_controller = require('../controllers/common_controller/piece_controller/acc_filter_controller')
 const acc_limit_controller = require('../controllers/common_controller/piece_controller/acc_limit_controller')
 const acc_skip_controller = require('../controllers/common_controller/piece_controller/acc_skip_controller')
@@ -98,6 +100,9 @@ router.post('/sub', acc_filter_controller, acc_sort_controller, acc_skip_control
 // subapp - modal - api //
 router.post('/submodal', acc_filter_controller, acc_sort_controller, acc_limit_controller, acc_subapp_controller)
 
+// =================================================
+// 숙소 상세 페이지 //
+router.post('/detail/:house', acc_get_detail_controller)
 
 //////////////////////////////////////////////host페이지 등록 숙소
 router.post('/host', expressAsyncHandler(async(req,res,next)=>{
@@ -117,55 +122,6 @@ router.post('/host', expressAsyncHandler(async(req,res,next)=>{
         })
     }
 }))
-
-// =================================================
-// detaill_app - api //
-router.post('/sellect',expressAsyncHandler(async(req,res,next)=>{
-    try{
-        const accomodations = await Accomodation.findOne({_id:req.body._id}).populate('seller')  //숙소 data
-        const seller = accomodations.seller 
-
-        //평가 data
-        const evaluations = await Evaluation.find({
-            homeid:req.body._id
-        }).populate('writerid')
-
-        // 총 데이터의 평균 평점 집계하기
-        const aggreEvalu = await Evaluation.aggregate([
-            {$match:{homeid: new ObjectId(req.body._id) }},
-            {$unwind:'$evaluation' },
-            {$group:{
-                _id:{title: '$evaluation.title', url: '$evaluation.url'},
-                average:{$avg : '$evaluation.grade'},
-                count:{$sum : 1},
-            }},
-            {
-                $sort:{'_id.title' : -1}
-            }           
-        ])
-
-        if(accomodations && seller){
-            res.json({
-                code:200,
-                accomodations, seller, evaluations, aggreEvalu  })
-        }else{
-            throw new Error('서버로 부터 데이터를 받는데 실패하였습니다.')
-        }
-
-    }catch(e){
-
-        res.status(429).json({
-            code:429,
-            message:e.message
-        })
-    }
-}))
-
-
-
-
-
-
 
 
 

@@ -11,30 +11,39 @@ const {v4 : uuidv4} = require('uuid')
 
 class user_service{
     // =================================================
-    // 사용자 정보까지는 필요하지 않는 심플한 로그인 유지 //
-    async maintain_user(user_dto){
+    // 로그인 체크 //
+    async check_user(user_dto){
         if(!user_dto.token){
             return {
                 code : 200,
-                log_state : false
+                log_state : false,
+                server_state : true
             }
         }
+
         user_dto.validate_token()
 
         const real_token = user_dto.token.split(' ')[1]
         try{
             const verify_token = await admin.auth().verifyIdToken(real_token)
             const uid = verify_token.uid     
+            const user = await admin.auth().getUser(uid)
             if(verify_token && uid){
+                const filterd_user_id = user.email.split('@')[0]
                 return {
                     code : 200,
-                    log_state : true
+                    log_state : true,
+                    server_state : true,
+                    user : {
+                        userId : filterd_user_id
+                    }
                 }
             }
             else{
                 return {
                     code : 200,
-                    log_state : false
+                    log_state : false,
+                    server_state : true
                 }
             }
         }catch(e){
@@ -43,12 +52,14 @@ class user_service{
     }
 
     // =================================================
-    // 사용자 기본 정보 제공 && 로그인 유지 //
+    // 사용자 기본 정보 제공 && 로그인 체크 //
     async getuser_user(user_dto){
         if(!user_dto.token){
             return {
                 code : 200,
-                log_state : false
+                log_state : false,
+                server_state : true,
+                message : '쿠키값이 존재하지 않습니다.'
             }
         }
 
@@ -62,7 +73,9 @@ class user_service{
             if(!user){
                 return {
                     code : 200,
-                    log_state : false
+                    log_state : false,
+                    server_state : true,
+                message : '유효한 쿠키값이 아닙니다.'
                 }
             }
             return {
