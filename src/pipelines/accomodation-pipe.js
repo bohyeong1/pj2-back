@@ -96,70 +96,105 @@ function accomodation_sort_pipe(sort, direction){
 function get_detail_evaluation(){
     return [
         {
-            $facet: {
-                // reply와 total_counts를 계산하는 경로
-                reply_facet: [
+            $facet : {
+                // 댓글 원본
+                reply_facet : [
                     {
-                        $group: {
-                            _id: null,
-                            reply: { $push: "$$ROOT" },
-                            total_counts: { $sum: 1 }
+                        $lookup : {
+                            from : 'users',             
+                            localField : 'writerid', 
+                            foreignField : '_id',       
+                            as : 'user_information'     
                         }
                     },
                     {
-                        $project: {
-                            _id: 0,
-                            reply: 1,
-                            total_counts: 1
+                        $group : {
+                            _id : null,
+                            reply : {$push : '$$ROOT'},
+                            total_counts : {$sum : 1 }
+                        }
+                    },
+                    {
+                        $project : {
+                            _id : 0,
+                            reply : 1,
+                            total_counts : 1
                         }
                     }
                 ],
-                // evaluations를 계산하는 경로
-                evaluation_facet: [
-                    { $unwind: "$evaluation" },
-                    { $match: { "evaluation.name": { $exists: true, $ne: null } } },
+                // 평가, 각각 데이터
+                evaluation_facet : [
+                    {$unwind : '$evaluation'},
+                    {$match : {'evaluation.name' : {$exists: true, $ne: null}}},
                     {
-                        $group: {
-                            _id: "$evaluation.name",
-                            avg: { $avg: "$evaluation.grade" },
-                            url: { $first: "$evaluation.url" },
-                            title: { $first: "$evaluation.title" }
+                        $group : {
+                            _id : '$evaluation.name',
+                            avg : {$avg : '$evaluation.grade'},
+                            url : {$first : '$evaluation.url'},
+                            title : {$first : '$evaluation.title'}
                         }
                     },
                     {
-                        $group: {
-                            _id: null,
-                            evaluations: {
-                                $push: {
-                                    k: "$_id",
-                                    v: {
-                                        avg: "$avg",
-                                        url: "$url",
-                                        title: "$title"
+                        $group : {
+                            _id : null,
+                            evaluations : {
+                                $push : {
+                                    k : '$_id',
+                                    v : {
+                                        avg : '$avg',
+                                        url : '$url',
+                                        title : '$title'
                                     }
                                 }
                             }
                         }
                     },
                     {
-                        $addFields: {
-                            evaluations: { $arrayToObject: "$evaluations" }
+                        $addFields : {
+                            evaluations : {$arrayToObject: '$evaluations'}
                         }
                     },
                     {
-                        $project: {
-                            _id: 0,
-                            evaluations: 1
+                        $project : {
+                            _id : 0,
+                            evaluations : 1
+                        }
+                    }
+                ],
+                // 점수 별 통계
+                score_group_facet : [
+                    {$unwind : '$evaluation'},
+                    {
+                        $match : {
+                            'evaluation.name' : {$ne : 'avgGrade'}
+                        }
+                    },
+                    {
+                        $group : {
+                            _id : '$evaluation.grade',
+                            count : {$sum: 1}
+                        }
+                    },
+                    {
+                        $sort : {_id: 1} 
+                    },
+                    {
+                        $group : {
+                            _id : null,
+                            score_groups : {$push : {grade : '$_id', count : '$count'}},
+                            total_count : {$sum : '$count'} 
                         }
                     }
                 ]
             }
         },
         {
-            $project: {
-                reply: { $arrayElemAt: ["$reply_facet.reply", 0] },
-                total_counts: { $arrayElemAt: ["$reply_facet.total_counts", 0] },
-                evaluations: { $arrayElemAt: ["$evaluation_facet.evaluations", 0] }
+            $project : {
+                reply : {$arrayElemAt : ['$reply_facet.reply', 0]},
+                total_counts : {$arrayElemAt : ['$reply_facet.total_counts', 0]},
+                evaluations : {$arrayElemAt : ['$evaluation_facet.evaluations', 0]},
+                score_groups : {$arrayElemAt : ['$score_group_facet.score_groups', 0]},
+                total_score_count : {$arrayElemAt : ['$score_group_facet.total_count', 0]}
             }
         }
     ]
@@ -179,9 +214,9 @@ function accomodation_get_local_average_pipe(date_range, local){
         {
             // 1개월 단위로 그류핑 후 조건 그류핑
             $group : {
-                _id: { month: { $month: "$createAt" } },
-                average_price : {$avg: "$price"},
-                average_add_price : { $avg: "$addPrice" }
+                _id: { month: { $month: '$createAt' } },
+                average_price : {$avg: '$price'},
+                average_add_price : { $avg: '$addPrice' }
             }
         }
     ]
