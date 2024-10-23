@@ -4,7 +4,7 @@ const Evaluation = require('../../../models/Evaluation')
 const Accomodation = require('../../../models/Accomodation')
 const error_dto = require('../../../dto/error_dto')
 const {get_detail_evaluation} = require('../../../pipelines/accomodation-pipe')
-const e = require('express')
+const {get_search_data} = require('../../../util_function/search_function')
 
 class common_get_service{
     // =================================================
@@ -54,6 +54,120 @@ class common_get_service{
                 message: '인증절차 중 문제가 발생 하였습니다.',
                 server_state: false,
                 error : e
+            })
+        }
+    }
+
+    // =================================================
+    // 검색어 출력 //
+    async common_get_search_data(search_dto){
+        search_dto.validate_input()
+        try{
+            const result = await get_search_data(search_dto.input)
+            
+            if(result.length){
+                return {
+                    server_state : true,
+                    code:200,
+                    message : '검색어가 존재합니다',
+                    result : result
+                }
+            }
+            else{
+                return {
+                    server_state : true,
+                    code:200,
+                    message : '검색어가 존재하지 않습니다.',
+                    result : null
+                }    
+            }
+
+        }catch(e){    
+            throw new error_dto({
+                code: 401,
+                message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false,
+                error : e
+            })
+        }
+    }
+
+    // =================================================
+    // secret get -> user_id 값으로 조회 secret page(client : host page) 요청 //
+    async get_private_one_accomodation(user_dto, accomodation_dto){
+        if(!user_dto.token){
+            return {
+                user_data : {
+                    code : 200,
+                    message : '로그인 되어 있지 않습니다.'
+                },
+                server_state : true,
+                log_state : false,
+                accomodation : null
+            }
+        }
+        
+        user_dto.validate_token()
+        accomodation_dto.validate_alter_under_id()
+
+        const real_token = user_dto.token.split(' ')[1]
+        try{
+            const verify_token = await admin.auth().verifyIdToken(real_token)
+            const uid = verify_token.uid           
+            const user = await User.findOne({firebase_uid: uid})
+
+            if(!user){
+                return {
+                    user_data : {
+                        code : 200,
+                        message : '유효한 토큰이 아닙니다.'
+                    },
+                    server_state : true,
+                    log_state : false,
+                    accomodation : null
+                }
+            }
+
+            const accomodation = await Accomodation.findOne({
+                _id : accomodation_dto._id
+            })
+
+            if(!accomodation){
+                return {
+                    code : 200,
+                    log_state : false,
+                    server_state : true,
+                    message : 'accomodation를 찾을 수 없습니다.'
+                }
+            }
+
+            return {
+                code : 200,
+                accomodation : accomodation,
+                user_data : {
+                    user : {
+                        _id : user._id || null,
+                        name : user.name || null,
+                        email : user.email || null,
+                        userId : user.userId || null,
+                        isAdmin : user.isAdmin || null,
+                        createdAt : user.createAt || null,
+                        cashInv : user.cashInv || null,
+                        profileImg : user.profileImg || null,
+                        host_text : user.host_text || null,
+                        nickname : user.nickname || null,
+                        host_state : user.host_state || null,
+                        defaultProfile : user.defaultProfile || null
+                    }                    
+                },
+                log_state : true,
+                server_state : true
+            }
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false
             })
         }
     }

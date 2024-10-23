@@ -49,7 +49,7 @@ class accomodation_get_service{
                     code : 200,
                     log_state : false,
                     server_state : true,
-                    message : 'accomodation average를 찾을 수 없습니다.'
+                    message : 'accomodation를 찾을 수 없습니다.'
                 }
             }
 

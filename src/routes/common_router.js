@@ -3,6 +3,7 @@ const express = require('express')
 const Accomodation = require('../models/Accomodation')
 const User = require('../models/User')
 const Search = require('../models/Search')
+const City = require('../models/City')
 const Evaluation = require('../models/Evaluation')
 const expressAsyncHandler = require('express-async-handler')
 const router = express.Router()
@@ -17,6 +18,9 @@ const acc_filter_controller = require('../controllers/common_controller/piece_co
 const acc_limit_controller = require('../controllers/common_controller/piece_controller/acc_limit_controller')
 const acc_skip_controller = require('../controllers/common_controller/piece_controller/acc_skip_controller')
 const acc_sort_controller = require('../controllers/common_controller/piece_controller/acc_sort_controller')
+const {common_get_search_controller} = require('../controllers/common_controller/get/common_get_search_controller')
+const {common_get_private_acc_user_controller} = require('../controllers/common_controller/get/common_get_private_acc_user_controller')
+
 // main controller
 const {acc_subapp_controller} = require('../controllers/common_controller/main_controller/acc_subapp_controller')
 
@@ -29,7 +33,7 @@ const {acc_subapp_controller} = require('../controllers/common_controller/main_c
 // =================================================
 // subapp - main - api //
 router.post('/',expressAsyncHandler(async(req,res,next)=>{
-    const limit = req.body.limit
+    const limit = req.body.counts
     const field = req.body.filter
     const keyword = req.body.keyword      
 
@@ -43,14 +47,7 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
         }else if(req.body.filter && !req.body.keyword){
             // 전체 도시 분류 // limit 있음
             if(req.body.filter === 'city' && limit){
-                const search = await Search.find({}).limit(limit)
-                res.json({
-                    code:200,
-                    search}) 
-            }
-            // 전체 도시 분류 // limit 없음 검색어 컴포넌트에서 사용
-            else if(req.body.filter === 'city' && !limit){
-                const search = await Search.find({})
+                const search = await City.find({}).limit(limit)
                 res.json({
                     code:200,
                     search}) 
@@ -103,6 +100,25 @@ router.post('/submodal', acc_filter_controller, acc_sort_controller, acc_limit_c
 // =================================================
 // 숙소 상세 페이지 //
 router.post('/detail/:house', acc_get_detail_controller)
+
+// =================================================
+// 검색어 출력 api //
+router.post('/search', common_get_search_controller)
+
+// =================================================
+// login check, 숙소 정보 api //
+router.post('/private/accomodation-user/:house', common_get_private_acc_user_controller)
+
+
+
+
+
+
+
+
+
+
+
 
 //////////////////////////////////////////////host페이지 등록 숙소
 router.post('/host', expressAsyncHandler(async(req,res,next)=>{

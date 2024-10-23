@@ -8,7 +8,14 @@ const cookie_parser = require('cookie-parser')
 const fs = require('fs')
 const https = require('https')
 const path = require('path')
-const Structure = require('../src/models/Structure')
+const connect_redis_om = require('../src/config/redis_om_config')
+const get_suggestion_repository = require('../src/config/suggestion_repository_config')
+const {
+    store_search_data,
+    create_part_keywords,
+    split_road_adress
+} = require('../src/util_function/search_function')
+
 // =================================================
 // middlewares //
 const error_middle = require('../src/middlewares/error_handle_middle/error_midle')
@@ -50,6 +57,21 @@ app.use(cors(cors_option))
 app.use(express.json())
 app.use(logger('dev'))
 app.use(cookie_parser())
+
+// =================================================
+// connect redis //
+async function connect_redis(){
+    await connect_redis_om()
+
+    // const suggestion_data1 = create_part_keywords(split_road_adress('서울시 강남구 가로수길 5', '가로수집', '서울'))
+    // const suggestion_data2 = create_part_keywords(split_road_adress('제주특별자치도 제주시 제주대학로 21-1', '제주 흑돼지집', '제주도'))
+    // const suggestion_data3 = create_part_keywords(split_road_adress('대전 동구 대전로316번길 201', '식장산 월출봉', '대전'))
+
+    // await store_search_data(suggestion_data1, '서울')
+    // await store_search_data(suggestion_data2, '제주도')
+    // await store_search_data(suggestion_data3, '대전')
+}
+connect_redis()
 
 // =================================================
 // connect router //

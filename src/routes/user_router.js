@@ -3,7 +3,6 @@ const User = require('../models/User')
 const expressAsyncHandler = require('express-async-handler')
 const {validationResult} = require('express-validator')
 const router = express.Router()
-const {isAdmin, isAuth, generateToken} = require('../jwt/auth')
 const config = require('../config/env_config')
 // =================================================
 // multer //
@@ -39,21 +38,21 @@ const {update_user_token_controller} = require('../controllers/user_controller/u
 
 // =================================================
 // 마일리지 //
-router.post('/mileage', expressAsyncHandler(async (req, res, next)=>{
-    const logUser = await User.findOne({
-        userId : req.body.userId
-    })
-    if(!logUser){
-        res.status(401).json({code:401, message : '아이디 또는 비밀번호를 잘못 입력했습니다.'})
-    }else{
-        const {name, email, userId, isAdmin, createdAt, _id, cashInv, profileImg,createAt,hostText} = logUser
-            res.json({
-                code:200,
-                name, email, userId, isAdmin, createdAt,_id, cashInv,profileImg,createAt,hostText,
-                token : generateToken(logUser)
-            })
-    }
-}))
+// router.post('/mileage', expressAsyncHandler(async (req, res, next)=>{
+//     const logUser = await User.findOne({
+//         userId : req.body.userId
+//     })
+//     if(!logUser){
+//         res.status(401).json({code:401, message : '아이디 또는 비밀번호를 잘못 입력했습니다.'})
+//     }else{
+//         const {name, email, userId, isAdmin, createdAt, _id, cashInv, profileImg,createAt,hostText} = logUser
+//             res.json({
+//                 code:200,
+//                 name, email, userId, isAdmin, createdAt,_id, cashInv,profileImg,createAt,hostText,
+//                 token : generateToken(logUser)
+//             })
+//     }
+// }))
 
 
 // =================================================
@@ -105,19 +104,12 @@ router.post('/hostinitial',host_initial_controller)
 // host text 초기 등록 및 수정 //
 router.post('/hostinformation',host_information_controller)
 
-
-
-
-
-
 // =================================================
 // 회원정보 수정 //
 router.put('/update',validateUserEmail ,expressAsyncHandler(async(req, res, next) => {
 
     // console.log(req.body)
     const errors = validationResult(req)
-
-    console.log(req.body)
 
     if(!errors.isEmpty()){
         res.status(400).json({
@@ -128,7 +120,6 @@ router.put('/update',validateUserEmail ,expressAsyncHandler(async(req, res, next
     }else{
         const user = await User.findOne({
             userId : req.body.userId})  
-            // console.log(user)
         if(!user){
             res.status(404).json({ code: 404, message: '유저를 찾을 수 없습니다'})
         }else{

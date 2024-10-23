@@ -149,13 +149,13 @@ async function is_valid_user(user_dto){
 }
 
 module.exports = {
-    create_code : create_code,
-    send_code_email : send_code_email,
-    check_object : check_object,
-    check_string : check_string,
-    check_array : check_array,
-    check_integer : check_integer,
-    kakao_close_location_fetch : kakao_close_location_fetch,
-    get_files_type : get_files_type,
-    is_valid_user : is_valid_user
+    create_code,
+    send_code_email,
+    check_object,
+    check_string,
+    check_array,
+    check_integer,
+    kakao_close_location_fetch,
+    get_files_type,
+    is_valid_user
 }

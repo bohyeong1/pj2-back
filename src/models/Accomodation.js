@@ -19,7 +19,7 @@ const accomodationSchema = new Schema({
     title : {
         type : String, maxlength : 20
     },
-    //이미지 메인&서브로 분할
+    //이미지 메인&서브
     main_img : {
         type : String
     },
@@ -27,8 +27,7 @@ const accomodationSchema = new Schema({
         {type : String}
     ],
     //주소 메인&서브로 분할 메인주소 => 서브주소까지는 예약 확정된 후 보여주기
-    //검색 필드 => 검색창에서 사용할 키워드
-    //도시 분류   
+    //검색 필드 => 도시 분류 카테고리에서 쓸 필드  
     main_adress : {
         name : {type : String},
         coor : [{type : Number}]
@@ -217,10 +216,6 @@ const accomodationSchema = new Schema({
     type : Date,
     default : Date.now
     },
-    // 숙소 평점
-    avgEvaluation : [
-        {type : Number}
-    ],
     // 등록 완료 & 미완료
     regist_state : {
         type : Boolean,
