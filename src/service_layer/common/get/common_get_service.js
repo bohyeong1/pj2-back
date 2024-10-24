@@ -145,20 +145,18 @@ class common_get_service{
                 code : 200,
                 accomodation : accomodation,
                 user_data : {
-                    user : {
-                        _id : user._id || null,
-                        name : user.name || null,
-                        email : user.email || null,
-                        userId : user.userId || null,
-                        isAdmin : user.isAdmin || null,
-                        createdAt : user.createAt || null,
-                        cashInv : user.cashInv || null,
-                        profileImg : user.profileImg || null,
-                        host_text : user.host_text || null,
-                        nickname : user.nickname || null,
-                        host_state : user.host_state || null,
-                        defaultProfile : user.defaultProfile || null
-                    }                    
+                    _id : user._id || null,
+                    name : user.name || null,
+                    email : user.email || null,
+                    userId : user.userId || null,
+                    isAdmin : user.isAdmin || null,
+                    createdAt : user.createAt || null,
+                    cashInv : user.cashInv || null,
+                    profileImg : user.profileImg || null,
+                    host_text : user.host_text || null,
+                    nickname : user.nickname || null,
+                    host_state : user.host_state || null,
+                    defaultProfile : user.defaultProfile || null                   
                 },
                 log_state : true,
                 server_state : true
