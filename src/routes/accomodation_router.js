@@ -54,23 +54,23 @@ router.post('/registLv0', acc_regist_lv0_controller)
 
 // =================================================
 // regist lv1 //
-router.put('/registLv1', acc_regist_lv1_controller)
+router.put('/registLv1/:house', acc_regist_lv1_controller)
 
 // =================================================
 // regist lv2 //
-router.put('/registLv2', acc_regist_lv2_controller)
+router.put('/registLv2/:house', acc_regist_lv2_controller)
 
 // =================================================
 // regist lv3 //
-router.put('/registLv3', acc_regist_lv3_controller)
+router.put('/registLv3/:house', acc_regist_lv3_controller)
 
 // =================================================
 // regist lv4 //
-router.put('/registLv4', acc_regist_lv4_controller)
+router.put('/registLv4/:house', acc_regist_lv4_controller)
 
 // =================================================
 // regist lv5 //
-router.put('/registLv5', acc_regist_lv5_controller)
+router.put('/registLv5/:house', acc_regist_lv5_controller)
 
 // =================================================
 // regist lv6 //

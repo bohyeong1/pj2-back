@@ -5,15 +5,23 @@ const error_dto = require('../dto/error_dto')
 const {accomodation_get_local_average_pipe} = require('../pipelines/accomodation-pipe')
 
 class accomodation_get_service{
-    // =================================================
-    // public get -> acc_id값으로 조회 / common page(client : detail page) get 요청 유저 + 평점 파이프라인 포함 //
-    async public_get(){
-        
-    }
 
     // =================================================
-    // secret get -> user_id 값으로 조회 secret page(client : host page) 요청 //
+    // client host page, login & cookies & accomodation auth api //
     async secret_get(user_dto, accomodation_dto){
+        if(!user_dto.token){
+            return {
+                user_data : {
+                    code : 200,
+                    message : '로그인 되어 있지 않습니다.'
+                },
+                server_state : true,
+                log_state : false,
+                acc_state : false,
+                accomodation : null
+            }
+        }
+
         user_dto.validate_token()
         accomodation_dto.validate_alter_under_id()
 
@@ -25,17 +33,14 @@ class accomodation_get_service{
 
             if(!user){
                 return {
-                    code : 200,
+                    user_data : {
+                        code : 200,
+                        message : '유효한 토큰이 아닙니다.'
+                    },
+                    server_state : true,
+                    log_state : false,
                     acc_state : false,
-                    message : '유효한 토큰이 아닙니다.'
-                }
-            }
-
-            if(!user.host_state){
-                return {
-                    code : 200,
-                    acc_state : false,
-                    message : 'host_state가 false인데 숙소 업데이트를 진행하려고 시도하는 중입니다.'
+                    accomodation : null
                 }
             }
 
@@ -47,7 +52,8 @@ class accomodation_get_service{
             if(!accomodation){
                 return {
                     code : 200,
-                    log_state : false,
+                    acc_state : false,
+                    log_state : true,
                     server_state : true,
                     message : 'accomodation를 찾을 수 없습니다.'
                 }
@@ -57,22 +63,21 @@ class accomodation_get_service{
                 code : 200,
                 accomodation : accomodation,
                 user_data : {
-                    user : {
-                        _id : user._id || null,
-                        name : user.name || null,
-                        email : user.email || null,
-                        userId : user.userId || null,
-                        isAdmin : user.isAdmin || null,
-                        createdAt : user.createAt || null,
-                        cashInv : user.cashInv || null,
-                        profileImg : user.profileImg || null,
-                        host_text : user.host_text || null,
-                        nickname : user.nickname || null,
-                        host_state : user.host_state || null,
-                        defaultProfile : user.defaultProfile || null
-                    },
-                    log_state : true
+                    _id : user._id || null,
+                    name : user.name || null,
+                    email : user.email || null,
+                    userId : user.userId || null,
+                    isAdmin : user.isAdmin || null,
+                    createdAt : user.createAt || null,
+                    cashInv : user.cashInv || null,
+                    profileImg : user.profileImg || null,
+                    host_text : user.host_text || null,
+                    nickname : user.nickname || null,
+                    host_state : user.host_state || null,
+                    defaultProfile : user.defaultProfile || null                   
                 },
+                log_state : true,
+                acc_state : true,
                 server_state : true
             }
         }catch(e){

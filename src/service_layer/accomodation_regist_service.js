@@ -76,30 +76,10 @@ class accomodation_regist_service{
     // =================================================
     // 숙소 등록 절차 lv1 //
     async regist_lv1(user_dto, accomodation_dto){
-        if(!user_dto.token){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'token 없음'
-            }
-        }
-        if(accomodation_dto.acc_step < 0){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'acc_step 잘못된 값 넣었음'
-            }
-        }
-        if(!accomodation_dto.category){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'category 값 없음'
-            }
-        }
 
         user_dto.validate_token()
         accomodation_dto.validate_acc_step()
+        accomodation_dto.validate_alter_under_id()
         await accomodation_dto.validate_category()
 
         const real_token = user_dto.token.split(' ')[1]
@@ -124,7 +104,8 @@ class accomodation_regist_service{
             }
 
             const accomodation = await Accomodation.findOne({
-                seller : user._id
+                seller : user._id,
+                _id : accomodation_dto._id
             })
 
             // 업데이트 단계 업데이트
@@ -155,30 +136,10 @@ class accomodation_regist_service{
     // =================================================
     // 숙소 등록 절차 lv2 //
     async regist_lv2(user_dto, accomodation_dto){
-        if(!user_dto.token){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'token 없음'
-            }
-        }
-        if(accomodation_dto.acc_step < 0){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'acc_step 잘못된 값 넣었음'
-            }
-        }
-        if(!accomodation_dto.space_category){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'space_category 값 없음'
-            }
-        }
 
         user_dto.validate_token()
         accomodation_dto.validate_acc_step()
+        accomodation_dto.validate_alter_under_id()
         await accomodation_dto.validate_space_category()
 
         const real_token = user_dto.token.split(' ')[1]
@@ -204,7 +165,8 @@ class accomodation_regist_service{
             }
 
             const accomodation = await Accomodation.findOne({
-                seller : user._id
+                seller : user._id,
+                _id : accomodation_dto._id
             })
 
             // 업데이트 단계 업데이트
@@ -236,30 +198,10 @@ class accomodation_regist_service{
     // =================================================
     // 숙소 등록 절차 lv3 //
     async regist_lv3(user_dto, accomodation_dto){
-        if(!user_dto.token){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'token 없음'
-            }
-        }
-        if(accomodation_dto.acc_step < 0){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'acc_step 잘못된 값 넣었음'
-            }
-        }
-        if(accomodation_dto.base_facility.length === 0){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'base_facility 값 없음'
-            }
-        }
 
         user_dto.validate_token()
         accomodation_dto.validate_acc_step()
+        accomodation_dto.validate_alter_under_id()
         await accomodation_dto.validate_base_facility()
 
         const real_token = user_dto.token.split(' ')[1]
@@ -285,6 +227,7 @@ class accomodation_regist_service{
             }
 
             const accomodation = await Accomodation.findOne({
+                _id : accomodation_dto._id,
                 seller : user._id
             })
 
@@ -316,28 +259,7 @@ class accomodation_regist_service{
     // =================================================
     // 숙소 등록 절차 lv4 //
     async regist_lv4(user_dto, accomodation_dto){
-        if(!user_dto.token){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'token 없음'
-            }
-        }
-        if(accomodation_dto.acc_step < 0){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'acc_step 잘못된 값 넣었음'
-            }
-        }
-        if(accomodation_dto.service_facility.length === 0){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'service_facility 값 없음'
-            }
-        }
-
+        accomodation_dto.validate_alter_under_id()
         user_dto.validate_token()
         accomodation_dto.validate_acc_step()
         await accomodation_dto.validate_service_facility()
@@ -365,6 +287,7 @@ class accomodation_regist_service{
             }
 
             const accomodation = await Accomodation.findOne({
+                _id : accomodation_dto._id,
                 seller : user._id
             })
 
@@ -396,14 +319,8 @@ class accomodation_regist_service{
     // =================================================
     // 숙소 등록 절차 lv5 //
     async regist_lv5(user_dto, accomodation_dto){
-        if(!user_dto.token){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'token 없음'
-            }
-        }
 
+        accomodation_dto.validate_alter_under_id()
         user_dto.validate_token()
         accomodation_dto.validate_acc_step()
         accomodation_dto.validate_adress()
@@ -434,7 +351,8 @@ class accomodation_regist_service{
             }
 
             const accomodation = await Accomodation.findOne({
-                seller : user._id
+                seller : user._id,
+                _id : accomodation_dto._id
             })
 
             // 좌표 & 키워드
@@ -503,13 +421,24 @@ class accomodation_regist_service{
                 navigation_inventory.push(created_navigation_data)
             }
 
-            // navigation data schema 생성
-            navigation = new Path({
-                accomodation_id : accomodation._id,
-                navigation_data : navigation_inventory
+            // navigation data 생성
+            const path = await Path.findOne({
+                accomodation_id : accomodation._id
             })
 
-            await navigation.save()
+            if(!path){
+                navigation = new Path({
+                    accomodation_id : accomodation._id,
+                    navigation_data : navigation_inventory
+                })
+    
+                await navigation.save()
+            }else{
+                path.navigation_data = navigation_inventory
+
+                await path.save()
+            }
+
 
             // 가장 짧은 경로 가격&거리 추출
             const near_distance_navigation = navigation_inventory.sort((a,b)=>{

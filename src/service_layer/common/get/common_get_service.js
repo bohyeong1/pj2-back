@@ -93,7 +93,7 @@ class common_get_service{
     }
 
     // =================================================
-    // secret get -> user_id 값으로 조회 secret page(client : host page) 요청 //
+    // user login, cookies, accomodation 인증 요청 //
     async get_private_one_accomodation(user_dto, accomodation_dto){
         if(!user_dto.token){
             return {

@@ -168,15 +168,16 @@ class accomodation_dto{
     // base_facility 형식 & 타입검사 //
     async validate_base_facility(){
         if(this.base_facility){
-            if(!Array.isArray(this.base_facility) || this.base_facility.length === 0){
+            if(!check_array(this.base_facility) || this.base_facility.length === 0){
                 throw new error_dto({
                     code: 400,
                     message: 'base_facility 전달 타입이 잘못 되었습니다',
                     server_state: false
                 })
             }
+
             // 배열 요소 객체인지 검사
-            if(!this.base_facility.every((el) => {return typeof el === 'object' && el !== null && !Array.isArray(item)})){
+            if(!this.base_facility.every((el) => {return check_object(el)})){
                 throw new error_dto({
                     code: 400,
                     message: 'base_facility 배열의 요소들이 객체 타입이 아닙니다',

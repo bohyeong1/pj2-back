@@ -80,7 +80,7 @@ class user_service{
             }
             return {
                 code : 200,
-                user : {
+                user_data : {
                     _id : user._id || null,
                     name : user.name || null,
                     email : user.email || null,
@@ -94,7 +94,8 @@ class user_service{
                     host_state : user.host_state || null,
                     defaultProfile : user.defaultProfile || null
                 },
-                log_state : true
+                log_state : true,
+                server_state : true
             }
         }catch(e){
             throw new Error(e.massage)

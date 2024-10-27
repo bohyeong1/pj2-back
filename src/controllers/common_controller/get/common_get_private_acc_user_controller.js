@@ -4,7 +4,7 @@ const user_dto = require('../../../dto/user_dto')
 const accomodation_dto = require('../../../dto/accomodation_dto')
 
 // =================================================
-// 검색어 컨트롤러 //
+// 예약 페이지 사용자 & 숙소 인증 컨트롤러 //
 async function common_get_private_acc_user_controller(req, res, next){
     const accomodation_id = req.params.house
 
