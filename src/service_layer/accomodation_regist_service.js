@@ -9,6 +9,7 @@ const Path = require('../models/Path')
 const {kakao_close_location_fetch} = require('../util_function/util_function')
 const AWS = require('aws-sdk')
 const {v4 : uuidv4} = require('uuid')
+const {is_valid_user} = require('../util_function/util_function')
 
 class accomodation_regist_service{
     // =================================================
@@ -319,14 +320,13 @@ class accomodation_regist_service{
     // =================================================
     // 숙소 등록 절차 lv5 //
     async regist_lv5(user_dto, accomodation_dto){
-
         accomodation_dto.validate_alter_under_id()
         user_dto.validate_token()
         accomodation_dto.validate_acc_step()
         accomodation_dto.validate_adress()
 
         // error 발생 시 navigation data 삭제
-        let navigation = null
+        let path = null
 
         const real_token = user_dto.token.split(' ')[1]
         try{
@@ -422,12 +422,12 @@ class accomodation_regist_service{
             }
 
             // navigation data 생성
-            const path = await Path.findOne({
+            path = await Path.findOne({
                 accomodation_id : accomodation._id
             })
-
+            
             if(!path){
-                navigation = new Path({
+                path = new Path({
                     accomodation_id : accomodation._id,
                     navigation_data : navigation_inventory
                 })
@@ -453,8 +453,11 @@ class accomodation_regist_service{
             accomodation.main_adress = accomodation_dto.main_adress
             accomodation.sub_adress = accomodation_dto.sub_adress
             accomodation.search_adress = accomodation_dto.search_adress
-            accomodation.navigation_data = navigation._id
-            accomodation.distance_information = {distance : near_distance_navigation.distance, duration : near_distance_navigation.duration}
+            accomodation.navigation_data = path._id
+            accomodation.distance_information = {
+                distance : near_distance_navigation.distance, 
+                duration : near_distance_navigation.duration
+            }
 
             await accomodation.save()
 
@@ -466,7 +469,7 @@ class accomodation_regist_service{
             }
         }catch(e){
             // navigation db와 adress db 사이에 error 발생시 navigation db 삭제
-            if(navigation){
+            if(path){
                 await navigation.deleteOne()
             }
             throw new error_dto({
@@ -481,78 +484,131 @@ class accomodation_regist_service{
     // =================================================
     // 숙소 등록 절차 lv6 //
     async regist_lv6(user_dto, accomodation_dto, files){
-        user_dto.validate_id()
+        user_dto.validate_token()
+        accomodation_dto.validate_acc_step()
         accomodation_dto.validate_alter_under_id()
-        accomodation_dto.validate_main_img()
-        accomodation_dto.validate_sub_img()
-
-        const user = await User.findOne({userId: user_dto.userId})
-
-        if(!user){
-            return {
-                code : 200,
-                acc_state : false,
-                message : '유저를 찾을 수 없습니다.'
-            }
+        if(accomodation_dto.main_img){
+            accomodation_dto.validate_main_img()
+        }
+        if(accomodation_dto.delete_main_img){
+            accomodation_dto.validate_delete_main_img()
+        }
+        if(accomodation_dto.sub_img){
+            accomodation_dto.validate_sub_img()
+        }
+        if(accomodation_dto.delete_sub_img){
+            accomodation_dto.validate_delete_sub_img()
         }
 
-        if(!user.host_state){
-            return {
-                code : 200,
-                acc_state : false,
-                message : 'host_state가 false인데 숙소 업데이트를 진행하려고 시도하는 중입니다.'
-            }
-        }
-
-        // naver object storage 생성 
-        const S3 = new AWS.S3({
-            endpoint: new AWS.Endpoint(config.ENDPOINT),
-            region: 'kr-standard',
-            credentials: {
-                accessKeyId: config.ACCESS_KEY,
-                secretAccessKey: config.SECRET_KEY,
-            },
-        })
-        
-        // storage 전송  
-        // main_img
-        const image_name = uuidv4()
-        await S3.putObject({
-            Bucket: config.BUCKET_NAME,
-            Key: `${image_name}.PNG`,
-            ACL: 'public-read',
-            Body: files.mainImg[0].buffer,
-            ContentType: 'image/png', 
-        }).promise()
-
-        const main_img_url = `${config.ENDPOINT}/${config.BUCKET_NAME}/${image_name}.PNG`
-        const sub_img_urls = []
-
-        // sub_img
-        for(let i = 0; i<files.subImg.length; i++){
-            const image_name = uuidv4()
-
-            await S3.putObject({
-                Bucket: config.BUCKET_NAME,
-                Key: `${image_name}.PNG`,
-                ACL: 'public-read',
-                Body: files.subImg[i].buffer,
-                ContentType: 'image/png', 
-            }).promise()
-
-            sub_img_urls.push(`${config.ENDPOINT}/${config.BUCKET_NAME}/${image_name}.PNG`)
-        }   
-
-        // 문자 url db에 저장하기 
         try{
+            const user_data = await is_valid_user(user_dto)
+
+            if(!user_data.user_state){
+                return user_data
+            }
+
+            const user = user_data.user
+
+            if(!user.host_state){
+                return {
+                    code : 200,
+                    acc_state : false,
+                    message : 'host_state가 false인데 숙소 업데이트를 진행하려고 시도하는 중입니다.'
+                }
+            }
+
+            // naver object storage 생성 
+            const S3 = new AWS.S3({
+                endpoint: new AWS.Endpoint(config.ENDPOINT),
+                region: 'kr-standard',
+                credentials: {
+                    accessKeyId: config.ACCESS_KEY,
+                    secretAccessKey: config.SECRET_KEY,
+                },
+            })
+            
+
+            let main_img_url = null
+            const upload_sub_imgs = []
+            let updated_sub_imgs = []
+
+            // storage 전송  
+            // main img upload
+            if(accomodation_dto.main_img){
+                const image_name = uuidv4()
+                await S3.putObject({
+                    Bucket: config.BUCKET_NAME,
+                    Key: `${image_name}.PNG`,
+                    ACL: 'public-read',
+                    Body: files.mainImg[0].buffer,
+                    ContentType: 'image/png', 
+                }).promise()
+   
+                main_img_url = `${config.ENDPOINT}/${config.BUCKET_NAME}/${image_name}.PNG`
+            }
+
+            // delete prev main img
+            if(accomodation_dto.delete_main_img){
+                const split_url = accomodation_dto.delete_main_img.split('/')
+                const main_img_key = split_url[split_url.length-1]
+
+                await S3.deleteObject({
+                    Bucket: config.BUCKET_NAME,
+                    Key: main_img_key
+                }).promise()
+            }
+
+            // sub img upload
+            if(accomodation_dto.sub_img){
+                for(let i = 0; i<files.subImg.length; i++){
+                    const image_name = uuidv4()
+    
+                    await S3.putObject({
+                        Bucket: config.BUCKET_NAME,
+                        Key: `${image_name}.PNG`,
+                        ACL: 'public-read',
+                        Body: files.subImg[i].buffer,
+                        ContentType: 'image/png', 
+                    }).promise()
+    
+                    upload_sub_imgs.push(`${config.ENDPOINT}/${config.BUCKET_NAME}/${image_name}.PNG`)
+                }   
+            }
+
+            // delete prev sub img
+            if(accomodation_dto.delete_sub_img){
+                const delete_sub_img = accomodation_dto.delete_sub_img
+
+                for(const file of delete_sub_img){
+                    const split_url = file.split('/')
+                    const sub_img_key = split_url[split_url.length-1]
+
+                    await S3.deleteObject({
+                        Bucket: config.BUCKET_NAME,
+                        Key: sub_img_key
+                    }).promise()
+                }
+
+                updated_sub_imgs = accomodation.sub_img.filter((el)=>{
+                    return !delete_sub_img.includes(el)
+                })
+            } 
+
+            const final_sub_img = [...updated_sub_imgs, ...upload_sub_imgs]
+
+            // 문자 url db에 저장하기 
             const accomodation = await Accomodation.findOne({
                 seller : user._id,
                 _id : accomodation_dto._id
             })
 
             if(accomodation){
-                accomodation.main_img = main_img_url
-                accomodation.sub_img = sub_img_urls           
+                // 업데이트 단계 업데이트
+                accomodation.acc_step = accomodation.acc_step !== accomodation_dto.acc_step ? 
+                accomodation_dto.acc_step : accomodation.acc_step
+                // 이미지 업데이트
+                accomodation.main_img = main_img_url ? main_img_url : accomodation.main_img
+                accomodation.sub_img = final_sub_img.length ? final_sub_img : accomodation.sub_img           
 
                 await accomodation.save()
                 
@@ -581,7 +637,6 @@ class accomodation_regist_service{
     // =================================================
     // 숙소 등록 절차 lv7 //
     async regist_lv7(user_dto, accomodation_dto){
-
         user_dto.validate_token()
         accomodation_dto.validate_acc_step()
         accomodation_dto.validate_alter_under_id()
