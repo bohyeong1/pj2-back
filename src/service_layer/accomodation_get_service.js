@@ -154,7 +154,7 @@ class accomodation_get_service{
         }catch(e){
             throw new error_dto({
                 code: 401,
-                message: 'db 탐색ㅈ중 문제가 발생 하였습니다.',
+                message: 'db 탐색중 문제가 발생 하였습니다.',
                 server_state: false
             })
         }

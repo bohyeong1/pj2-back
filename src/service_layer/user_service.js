@@ -69,7 +69,7 @@ class user_service{
         try{
             const verify_token = await admin.auth().verifyIdToken(real_token)
             const uid = verify_token.uid           
-            const user = await User.findOne({firebase_uid: uid})
+            const user = await User.findOne({firebase_uid: uid}).populate('host_text')
             if(!user){
                 return {
                     code : 200,

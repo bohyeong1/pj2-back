@@ -10,9 +10,8 @@ const hostinformationSchema = new Schema({
         type : String,
         required : true
     },
-    host_state : {
-        type : Boolean,
-        require : true
+    impossible_date : {
+        type : Date
     },
     createAt : {
         type : Date,
