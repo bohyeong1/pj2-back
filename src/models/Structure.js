@@ -25,19 +25,35 @@ module.exports = Structure
 
 
 // const acc_structure = new Structure({
-//     name : 'comunication',
+//     name : 'impossible_reservation',
 //     structure : [
 //         {
-//             name : '게스트와 직접 만날 수 없으며, 앱을 통해 소통하는 것을 선호합니다.'
+//             name : '일요일',
+//             data : 0
 //         },
 //         {
-//             name : '게스트를 직접 맞이하고 인사를 나누는 건 좋지만, 그 외의 시간에는 혼자 있는 것을 선호합니다.'
+//             name : '월요일',
+//             data : 1
 //         },
 //         {
-//             name : '사람들과 어울리고 게스트와 함께 시간을 보내는 것을 좋아합니다.'
+//             name : '화요일',
+//             data : 2
 //         },
 //         {
-//             name : '크게 상관없습니다. 게스트 의향에 맞추겠습니다.'
+//             name : '수요일',
+//             data : 3
+//         },
+//         {
+//             name : '목요일',
+//             data : 4
+//         },
+//         {
+//             name : '금요일',
+//             data : 5
+//         },
+//         {
+//             name : '토요일',
+//             data : 6
 //         }
 //     ]
 // })

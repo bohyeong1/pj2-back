@@ -3,7 +3,7 @@ const User = require('../models/User')
 const expressAsyncHandler = require('express-async-handler')
 const {validationResult} = require('express-validator')
 const router = express.Router()
-const config = require('../config/env_config')
+
 // =================================================
 // multer //
 const {user_multer} = require('../middlewares/common_middle/multer_middle')
@@ -27,33 +27,23 @@ const {user_profile_controller} = require('../controllers/user_controller/user_p
 
 // delete
 
+// host
 const {host_initial_controller} = require('../controllers/host_controller/host_initial_controller')
 const {host_information_controller} = require('../controllers/host_controller/host_information_controller')
+const {host_min_reservation_date_controller} = require('../controllers/host_controller/host_min_reservation_date_controller')
+const {host_max_reservation_date_controller} = require('../controllers/host_controller/host_max_reservation_date_controller')
+const {host_possible_date_contoller} = require('../controllers/host_controller/host_possible_date_contoller')
+const {host_reservation_deadline_controller} = require('../controllers/host_controller/host_reservation_deadline_controller')
+const {host_before_date_controller} = require('../controllers/host_controller/host_before_date_controller')
+const {host_impossible_reservation_controller} = require('../controllers/host_controller/host_impossible_reservation_controller')
+
+// refresh token
 const {update_user_token_controller} = require('../controllers/user_controller/update_user_token_controller')
 
 
 // =================================================
-// ================== 라 우 터 =================== //
+// ============= user 라 우 터 =================== //
 // =================================================
-
-// =================================================
-// 마일리지 //
-// router.post('/mileage', expressAsyncHandler(async (req, res, next)=>{
-//     const logUser = await User.findOne({
-//         userId : req.body.userId
-//     })
-//     if(!logUser){
-//         res.status(401).json({code:401, message : '아이디 또는 비밀번호를 잘못 입력했습니다.'})
-//     }else{
-//         const {name, email, userId, isAdmin, createdAt, _id, cashInv, profileImg,createAt,hostText} = logUser
-//             res.json({
-//                 code:200,
-//                 name, email, userId, isAdmin, createdAt,_id, cashInv,profileImg,createAt,hostText,
-//                 token : generateToken(logUser)
-//             })
-//     }
-// }))
-
 
 // =================================================
 // login //
@@ -96,6 +86,12 @@ router.post('/profile', user_multer, user_profile_controller)
 // user 닉네임 업데이트 //
 router.post('/nickname',user_nickname_controller)
 
+
+
+// =================================================
+// ============= host 라 우 터 =================== //
+// =================================================
+
 // =================================================
 // host 자격 등록 //
 router.post('/hostinitial',host_initial_controller)
@@ -103,6 +99,45 @@ router.post('/hostinitial',host_initial_controller)
 // =================================================
 // host text 초기 등록 및 수정 //
 router.post('/hostinformation',host_information_controller)
+
+// =================================================
+// host 최소 숙박 일정 수정 //
+router.put('/min-reservation-date', host_min_reservation_date_controller)
+
+// =================================================
+// host 최대 숙박 일정 수정 //
+router.put('/max-reservation-date', host_max_reservation_date_controller)
+
+// =================================================
+// host 숙박 가능 기간 수정 //
+router.put('/possible-date', host_possible_date_contoller)
+
+// =================================================
+// host 예약 마감 시한 수정 //
+router.put('/reservation-deadline', host_reservation_deadline_controller)
+
+// =================================================
+// host 준비 기간 수정 //
+router.put('/before-date', host_before_date_controller)
+
+// =================================================
+// host 예약 가능일 수정 //
+router.put('/impossible-reservation', host_impossible_reservation_controller)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // =================================================
 // 회원정보 수정 //
