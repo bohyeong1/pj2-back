@@ -603,7 +603,6 @@ class user_service{
                 server_state: false
             })
         }
-
     }
 }
 

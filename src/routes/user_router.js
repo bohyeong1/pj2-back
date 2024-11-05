@@ -36,6 +36,7 @@ const {host_possible_date_contoller} = require('../controllers/host_controller/h
 const {host_reservation_deadline_controller} = require('../controllers/host_controller/host_reservation_deadline_controller')
 const {host_before_date_controller} = require('../controllers/host_controller/host_before_date_controller')
 const {host_impossible_reservation_controller} = require('../controllers/host_controller/host_impossible_reservation_controller')
+const {host_mypage_controller} = require('../controllers/host_controller/host_mypage_controller')
 
 // refresh token
 const {update_user_token_controller} = require('../controllers/user_controller/update_user_token_controller')
@@ -123,6 +124,10 @@ router.put('/before-date', host_before_date_controller)
 // =================================================
 // host 예약 가능일 수정 //
 router.put('/impossible-reservation', host_impossible_reservation_controller)
+
+// =================================================
+// host 마이페이지 수정 //
+router.put('/host-mypage', user_multer, host_mypage_controller)
 
 
 

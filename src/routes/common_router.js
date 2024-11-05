@@ -1,14 +1,9 @@
-// 공통
 const express = require('express')
 const Accomodation = require('../models/Accomodation')
-const User = require('../models/User')
-const Search = require('../models/Search')
 const City = require('../models/City')
-const Evaluation = require('../models/Evaluation')
 const expressAsyncHandler = require('express-async-handler')
 const router = express.Router()
 const mongoose = require('mongoose')
-const { Types: { ObjectId } } = mongoose
 
 // =================================================
 // controller //

@@ -193,7 +193,6 @@ async function get_all_suggestions() {
         citys
     }
 }
-
 // get_all_suggestions().then(result => {
 //     console.log('저장된 검색어 데이터:', result);
 // }).catch(err => {

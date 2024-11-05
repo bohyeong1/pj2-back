@@ -13,6 +13,10 @@ class host_dto{
         this.reservation_deadline = data.reservation_deadline || null
         this.before_date = data.before_date || null
         this.impossible_reservation = data.impossible_reservation || null
+        this.initial_message = data.initial_message || null
+        this.reservation_rule = data.reservation_rule !== null ? data.reservation_rule : null
+        this.refund_rule = data.refund_rule || null
+        this.host_text = data.host_text || null
     }
 
     // =================================================
@@ -207,6 +211,103 @@ class host_dto{
                 throw new error_dto({
                     code: 400,
                     message: 'impossible_reservation 유효한 형식이 아닙니다.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
+    // initial_message 형식 & 타입검사 //
+    validate_initial_message(){
+        if(this.initial_message){
+            if(!check_string(this.initial_message)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'initial_message 유효한 타입이 아닙니다.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
+    // host_text 형식 & 타입검사 //
+    validate_host_text(){
+        if(this.host_text){
+            if(!check_string(this.host_text)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'host_text 유효한 타입이 아닙니다.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
+    // reservation_rule 형식 & 타입검사 //
+    validate_reservation_rule(){
+        if(this.reservation_rule !== null){
+            if(typeof this.reservation_rule !== 'boolean'){
+                throw new error_dto({
+                    code: 400,
+                    message: 'reservation_rule 유효한 타입이 아닙니다.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
+    // refund_rule 형식 & 타입검사 //
+    async validate_refund_rule(){
+        if(this.refund_rule){
+            if(!check_object(this.refund_rule)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'refund_rule 유효한 타입이 아닙니다.',
+                    server_state: false
+                })
+            }
+
+            const refund_rule_structure = await Structure.findOne({
+                name : 'refund_rule'
+            })
+
+            // db에 저장되 있는 refund_rule_structure 항목인지 검사
+            const check_req = _.some(refund_rule_structure.structure, (el)=>{
+                return _.isEqual(this.refund_rule, el)
+            })
+
+            if(!check_req){
+                throw new error_dto({
+                    code: 400,
+                    message: 'refund_rule 유효한 형식이 아닙니다.',
                     server_state: false
                 })
             }

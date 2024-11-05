@@ -1,7 +1,10 @@
 const error_dto = require('../dto/error_dto')
 const mongoose = require('mongoose')
+const config = require('../config/env_config')
+
 // ***********************************************************
 // e-mail 형식은 종류가 많고 복잡하므로 express validator로 검사!
+
 class user_dto{
     constructor(data){ 
         // 구현
@@ -157,7 +160,6 @@ class user_dto{
     }
 
     // =================================================
-    // id 타입 & 형식검사 //
     // 이미지 전체가 아닌 mimetype meta data만 파라미터로 받ㄷ기 //
     validate_img(){
         if(!this.profileImg){
@@ -166,6 +168,29 @@ class user_dto{
         const file_format = ['image/jpeg', 'image/png', 'image/webp']
         if(!file_format.includes(this.profileImg)){
             throw new Error('이미지 파일은 jpeg, png, webg로 넣어 주세요.')
+        }
+    }
+    
+    // =================================================
+    // delete img 형식 & 타입검사 //
+    validate_delete_img(){
+        if(this.delete_img){
+            const file_format = ['PNG', config.ENDPOINT, config.BUCKET_NAME]
+            if(!file_format.every((el)=>{
+                return  this.delete_img.includes(el)
+            })){
+                throw new error_dto({
+                    code: 400,
+                    message: '이미지 파일은 jpeg, png, webg로 넣어 주세요.',
+                    server_state: false
+                })
+            }
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
         }
     }
 
