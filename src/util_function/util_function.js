@@ -82,6 +82,12 @@ function check_array(input_data, length = null){
 }
 
 // =================================================
+// date type check //
+function check_date(input_data){
+    return input_data instanceof Date && !isNaN(input_data)
+}
+
+// =================================================
 // integer type check //
 function check_integer(input_data, start = null, end = null){
     return Number.isInteger(input_data) && 
@@ -157,5 +163,6 @@ module.exports = {
     check_integer,
     kakao_close_location_fetch,
     get_files_type,
-    is_valid_user
+    is_valid_user,
+    check_date
 }

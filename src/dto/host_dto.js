@@ -1,5 +1,4 @@
 const error_dto = require('../dto/error_dto')
-const mongoose = require('mongoose')
 const {check_object, check_string, check_array, check_integer} = require('../util_function/util_function')
 const Structure = require('../models/Structure')
 const _ = require('lodash')

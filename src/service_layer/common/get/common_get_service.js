@@ -130,7 +130,12 @@ class common_get_service{
 
             const accomodation = await Accomodation.findOne({
                 _id : accomodation_dto._id
-            })
+            }).populate(
+                {
+                    path : 'seller',
+                    populate : {path : 'host_text'}
+                }
+            )
 
             if(!accomodation){
                 return {

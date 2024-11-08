@@ -3,125 +3,91 @@ const {Schema} = mongoose
 const {Types:{ObjectId}} = Schema
 
 const reservaitonSchema = new Schema({
-    /////////////제목
-    title:{
-        type:String, maxlength:20
-    },
-    ////이미지 메인&서브로 분할
-    main_img:{
-        type:String
-    }, 
-
-    ////////////판매자
+    //판매자
     seller:{
         type:ObjectId,
         require:true,
         ref:'User'
     },
-
-    // ///////구매자
+    //구매자
     buyer:{
         type:ObjectId,
+        require:true,
         ref:'User'
     },  
-
-    ////////////해당숙소
+    // 찾아오는 길
+    navigation_date : {
+        type: Array,
+        required: true
+    },
+    //해당숙소
     accomodation:{
         type:ObjectId,
-        ref:'Accomodation'
-    },
-
-    // 도시 분류   /////////프론트에선 서브 어드레스 위도경도로 주소정보 보여주기 ㅇ
-    main_adress:{
-        name:{type:String},
-        coor:[{type:Number}]
-    },
-    sub_adress:{
-        name:{type:String},
-        coor:[{type:Number}]
-    },   
-
-    ////////숙소 카테고리
-    category:{
-        name:{
-            type:String
-        },
-        url:{
-            type:String
-        }
+        ref:'Accomodation',
+        require : true
     },       
-    ////////최종가격
-    totalPrice:{
-        type:Number
+    //최종가격
+    total_price:{
+        type:Number,
+        require : true
     },
-
-    // ////수용 인원
+    //수용 인원
     capacity:{
-        type:Number
+        type:Number,
+        require : true
     },
-
-    /////////1박당 가격
-    price:{
-        type:Number
+    //숙박 이용 기간
+    stay_day:{
+        type: Number,
+        require : true
     },
-
-    //////////////숙박일수
-    restDay:{
-        type:Number
+    //체크인
+    checkin : {
+        type : Date,
+        require : true
     },
-
-
-    // //////////숙소설명
-    summary : {
+    // 체크아웃
+    checkout : {
+        type : Date,
+        require : true
+    },
+    // 준비 기간 포함 시작일
+    final_start_date : {
+        type : Date,
+        require : true
+    },
+    // 준비 기간 포함 종료일
+    final_end_date : {
+        type : Date,
+        require : true
+    },
+    //예약 상태  
+    reservation_state:{
         type:String,
-        maxlength:400
+        require:true
     },
-
-    // ///////////숙소 이용규칙
-    rules:   
-        {require:true,
-            type:Array,
-        default :       
-            [{name:'animal',
-            text:'반려동물 동반 가능',
-            state:false,
-            count:0},
-
-            {name:'event',
-            text:'이벤트 허용',
-            state:false},
-
-            {name:'vaping',
-            text:'흡연, 베이핑, 전자담배 허용',
-            state:false},
-
-            {name:'recoding',
-            text:'상업적 사진 및 동영상 촬영 허용',
-            state:false},
-
-            {name:'addrule',
-            text:'추가 규칙',
-            state:false,
-            summary:''}]
-        },
-
-        ////////////이용완료/이용중 state값
-        useState:{
-            type:Boolean,
-            default:false,
-            require:true
-        },
-        ////예약일시
-        createAt:{
-            type:Date,
-            default:Date.now()
-        },
-        lastModifiedAt:{
-            type:Date,
-            default:Date.now()
-        },
+    // 사용 상태
+    use_state : {
+        type : Boolean,
+        default : false,
+        require : true
+    },
+    //예약일시
+    create_at:{
+        type : Date,
+        default : Date.now,
+        require : true
+    },
+    // 결제 날짜
+    payment_at:{
+        type:Date
+    },
+    // 이용완료 날짜
+    completed_use_at:{
+        type:Date
+    }
 })
 
 const Reservaiton = mongoose.model('Reservation', reservaitonSchema)
 
-module.exports = Reservaiton
+module.exports = Reservaiton    

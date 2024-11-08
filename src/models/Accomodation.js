@@ -213,8 +213,8 @@ const accomodationSchema = new Schema({
         default : Date.now
     },
     lastModifiedAt : {
-    type : Date,
-    default : Date.now
+        type : Date,
+        default : Date.now
     },
     // 등록 완료 & 미완료
     regist_state : {

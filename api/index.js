@@ -26,7 +26,7 @@ const notfound_middle = require('../src/middlewares/error_handle_middle/404_midl
 const user_router = require('../src/routes/user_router')
 const register_router = require('../src/routes/accomodation_router')
 const common_router = require('../src/routes/common_router')
-const reserve_router = require('../src/routes/reserve_router')
+const reservation_router = require('../src/routes/reservation_router')
 const evaluation_router = require('../src/routes/evaluate_router')
 
 // =================================================
@@ -78,7 +78,7 @@ connect_redis()
 app.use('/api/users', user_router)
 app.use('/api/accomodation', register_router)
 app.use('/api/common', common_router)
-app.use('/api/reserv', reserve_router)
+app.use('/api/reservation', reservation_router)
 app.use('/api/evalu', evaluation_router)
 
 // =================================================
