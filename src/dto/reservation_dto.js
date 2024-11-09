@@ -1,11 +1,13 @@
 const error_dto = require('../dto/error_dto')
 const Reservation = require('../models/Reservation')
+const mongoose = require('mongoose')
 const {check_object, check_string, check_array, check_integer, check_date} = require('../util_function/util_function')
 const _ = require('lodash')
-const {isWithinInterval, setHours, setMinutes, setSeconds, setMilliseconds, isAfter, addMonths} = require('date-fns')
+const {isWithinInterval, setHours, setMinutes, setSeconds, setMilliseconds, isAfter, addMonths, isToday} = require('date-fns')
 
 class reservation_dto{
     constructor(data){ 
+        this._id = data._id || null
         this.total_price = data.total_price || null
         this.capacity = data.capacity || null
         this.checkin = data.checkin || null
@@ -17,6 +19,7 @@ class reservation_dto{
     // validate reservation regist data 형식 & 타입검사 //
     async validate_reservation_regist_data(host, accomodation){     
         if(this.total_price || this.capacity || this.checkin || this.checkout || host || accomodation){
+            const self = this
             const reservation_list = await Reservation.find(
                 {seller : host.host}
             )
@@ -57,12 +60,13 @@ class reservation_dto{
                 const now_time = new Date()
                 const target_time = setMilliseconds(setSeconds(setMinutes(setHours(new Date(), host.reservation_deadline.data), 0), 0), 0)
                 const deadline_date = addMonths(now_time, 3)
-                if(isAfter(now_time, target_time)){
+                if(isToday(date) && isAfter(now_time, target_time)){
                     return false
                 }
                 if(isAfter(date, deadline_date)){
                     return false
                 }
+                return true
             }
 
             if(is_duplicated_date(this.checkin) || !check_date(this.checkin) || !is_valid_checkin(this.checkin)){
@@ -80,6 +84,7 @@ class reservation_dto{
                 if(isAfter(date, deadline_date)){
                     return false
                 }
+                return true
             }
 
             if(is_duplicated_date(this.checkout) || !is_valid_checkout(this.checkout)){
@@ -93,19 +98,20 @@ class reservation_dto{
             // check total price
             function is_valid_total_price(){
                 let calculate_price = null
-                const add_capacity = this.capacity - 1
+                const add_capacity = self.capacity - 1
                 const discount = accomodation.discount ? accomodation.discount : null
                 
-                if(discount && this.stay_day >= discount.date.date){
-                    calculate_price = (accomodation.price + add_capacity * accomodation.addPrice) * this.stay_day * (100 - discount.rate) / 100
+                if(discount && self.stay_day >= discount.date.date){
+                    calculate_price = (accomodation.price + add_capacity * accomodation.addPrice) * self.stay_day * (100 - discount.rate) / 100
                 }
                 else{
-                    calculate_price = (accomodation.price + add_capacity * accomodation.addPrice) * this.stay_day
+                    calculate_price = (accomodation.price + add_capacity * accomodation.addPrice) * self.stay_day
                 }
 
-                return calculate_price === this.total_price
+                return calculate_price === self.total_price
             }
-            if(!check_integer(this.total_price) || this.total_price <= 0 || !is_valid_total_price(this.total_price)){
+
+            if(!check_integer(this.total_price) || this.total_price <= 0 || !is_valid_total_price()){
                 throw new error_dto({
                     code: 400,
                     message: 'total_price가 유효한 타입, 형식이 아닙니다.',
@@ -113,6 +119,35 @@ class reservation_dto{
                 })
             }
 
+        }else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
+    }
+
+    // =================================================
+    // _id 형식 & 타입검사 & objectId 타입 변환 //
+    validate_alter_under_id(){
+        if(this._id){
+            if(!check_string(this._id)){
+                throw new error_dto({
+                    code: 400,
+                    message: '_id 전달 타입이 잘못 되었습니다',
+                    server_state: false
+                })
+            }
+            try{
+                this._id = new mongoose.Types.ObjectId(this._id)
+            }catch(e){
+                throw new error_dto({
+                    code: 400,
+                    message: '_id가 유효한 ObjectId 형식이 아닙니다.',
+                    server_state: false
+                })
+            }
         }else{
             throw new error_dto({
                 code: 400,

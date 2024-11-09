@@ -15,8 +15,8 @@ async function reservation_regist_accomodation_controller(req, res, next){
         {
             total_price : req.body.total_price,
             capacity : req.body.capacity,
-            checkin : req.body.checkin,
-            checkout : req.body.checkout,
+            checkin : new Date(req.body.checkin),
+            checkout : new Date(req.body.checkout),
             stay_day : req.body.stay_day
         }
     )
