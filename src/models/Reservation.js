@@ -82,6 +82,10 @@ const reservaitonSchema = new Schema({
     payment_at:{
         type:Date
     },
+    // 환불 날짜
+    refund_at:{
+        type:Date
+    },
     // 이용완료 날짜
     completed_use_at:{
         type:Date
