@@ -27,7 +27,7 @@ const evaluationSchema = new Schema({
     //작성일
     createAt:{
         type:Date,
-        default:Date.now()
+        default:Date.now
     },
     //수정일/ => 디폴트 = 작성일
     lastModifiedAt:{

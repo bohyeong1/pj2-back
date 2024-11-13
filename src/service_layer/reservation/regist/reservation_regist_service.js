@@ -1,6 +1,7 @@
 const Accomodation = require('../../../models/Accomodation')
 const Reservation = require('../../../models/Reservation')
-const Hostinformation = require('../../../models/Hostinformation')
+const Message = require('../../../models/Message')
+const MessageRoom = require('../../../models/MessageRoom')
 const User = require('../../../models/User')
 const error_dto = require('../../../dto/error_dto')
 const mongoose = require('mongoose')
@@ -77,6 +78,33 @@ class reservation_regist_service{
 
                 await reservation.save({session})
 
+                // massage room 생성 및 초기 host massage 등록
+                const message_room = new MessageRoom(
+                    {
+                        reservation_id : reservation._id,
+                        participants : [user._id, accomodation.seller._id],
+                        guest_id : user.userId,
+                        host_id : accomodation.seller.userId,
+                        checkin : reservation.checkin,
+                        checkout : reservation.checkout,
+                        last_message : host.initial_message,
+                        reservation_state : reservation.reservation_state,
+                        reservation_main_img : accomodation.main_img,
+                        reservation_title : accomodation.title
+                    }
+                )
+                await message_room.save({session})
+
+                const message = new Message(
+                    {
+                        room_id : message_room._id,
+                        sender_id : accomodation.seller._id,
+                        content : host.initial_message
+                    }
+                )
+                await message.save({session})
+
+                // 결제
                 user.cashInv -= reservation_dto.total_price
                 await user.save({session})
                 await User.findByIdAndUpdate(
@@ -101,7 +129,6 @@ class reservation_regist_service{
 
                 if(e.hasErrorLabel && e.hasErrorLabel('TransientTransactionError')){
                     attempt++
-
                 }else{        
                     throw new error_dto({
                         code: 401,

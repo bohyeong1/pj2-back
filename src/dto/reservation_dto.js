@@ -13,12 +13,42 @@ class reservation_dto{
         this.checkin = data.checkin || null
         this.checkout = data.checkout || null
         this.stay_day = data.stay_day || null
+        this.type = data.type || null
+    }
+
+    // =================================================
+    // validate reservation type 형식 & 타입검사 //
+    validate_reservation_type(){
+        if(this.type){
+            if(!check_string(this.type)){
+                throw new error_dto({
+                    code: 400,
+                    message: 'type data가 유효한 타입이 아닙니다.',
+                    server_state: false
+                })
+            }
+
+            if(this.type !== 'guest' && this.type !== 'host'){
+                throw new error_dto({
+                    code: 400,
+                    message: 'type data가 유효한 형식이 아닙니다.',
+                    server_state: false
+                })
+            }
+        }
+        else{
+            throw new error_dto({
+                code: 400,
+                message: 'client의 data가 제대로 전송되지 않았습니다.',
+                server_state: false
+            })
+        }
     }
 
     // =================================================
     // validate reservation regist data 형식 & 타입검사 //
     async validate_reservation_regist_data(host, accomodation){     
-        if(this.total_price || this.capacity || this.checkin || this.checkout || host || accomodation){
+        if(this.total_price && this.capacity && this.checkin && this.checkout && host && accomodation){
             const self = this
             const reservation_list = await Reservation.find(
                 {seller : host.host}
