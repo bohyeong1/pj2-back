@@ -124,7 +124,7 @@ function get_files_type(files){
 
 // =================================================
 // cookie를 통한 유저 검사 //
-async function is_valid_user(user_dto){
+async function is_valid_user(user_dto, user_type = 'all'){
     const real_token = user_dto.token.split(' ')[1]
     const verify_token = await admin.auth().verifyIdToken(real_token)
     const uid = verify_token.uid           
@@ -134,17 +134,25 @@ async function is_valid_user(user_dto){
         return {
             code : 200,
             user_state : false,
-            acc_state : false,
             message : '유효한 토큰이 아닙니다.'
         }
     }
 
-    if(!user.host_state){
+    if(user_type === 'host'){
+        if(!user.host_state){
+            return {
+                code : 200,
+                user_state : false,
+                message : 'host_state가 false인데 숙소 업데이트를 진행하려고 시도하는 중입니다.'
+            }
+        }
+    }
+
+    if(user_type !== 'host' && user_type !== 'all'){
         return {
             code : 200,
             user_state : false,
-            acc_state : false,
-            message : 'host_state가 false인데 숙소 업데이트를 진행하려고 시도하는 중입니다.'
+            message : '유효한 토큰이 아닙니다.'
         }
     }
 

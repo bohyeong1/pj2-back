@@ -33,8 +33,9 @@ class accomodation_regist_service{
         user_dto.validate_token()
         accomodation_dto.validate_acc_step()
 
-        const real_token = user_dto.token.split(' ')[1]
         try{
+            
+            const real_token = user_dto.token.split(' ')[1]
             const verify_token = await admin.auth().verifyIdToken(real_token)
             const uid = verify_token.uid           
             const user = await User.findOne({firebase_uid: uid})

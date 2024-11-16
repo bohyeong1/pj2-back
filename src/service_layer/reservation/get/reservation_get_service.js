@@ -6,6 +6,7 @@ const Message = require('../../../models/Message')
 const MessageRoom = require('../../../models/MessageRoom')
 const error_dto = require('../../../dto/error_dto')
 const {is_valid_user} = require('../../../util_function/util_function')
+const {get_processed_messages} = require('../../../pipelines/user_pipe')
 
 class reservation_get_service{
     // =================================================
@@ -110,9 +111,33 @@ class reservation_get_service{
         reservation_dto.validate_alter_under_id()
 
         try{
+            const user_data = await is_valid_user(user_dto)
+
+            if(!user_data.user_state){
+                return user_data
+            }
+            const user = user_data.user
+
+            const pipe_line = get_processed_messages(user, reservation_dto._id)
+
+            const message = await MessageRoom.aggregate(
+                pipe_line
+            )
+
+            return {
+                code : 200,
+                server_state : true,
+                message : message[0],
+                user
+            }
 
         }catch(e){
-
+            throw new error_dto({
+                code: 500,
+                message: 'service layer에서 에러가 발생하였습니다.',
+                server_state: false,
+                error : e
+            })
         }
     }
 
@@ -128,7 +153,6 @@ class reservation_get_service{
             if(!user_data.user_state){
                 return user_data
             }
-
             const user = user_data.user
 
             let message_rooms

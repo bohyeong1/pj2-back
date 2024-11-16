@@ -9,6 +9,7 @@ const fs = require('fs')
 const https = require('https')
 const path = require('path')
 const connect_redis_om = require('../src/config/redis_om_config')
+const websocket_server = require('../src/socket/index')
 const get_suggestion_repository = require('../src/config/suggestion_repository_config')
 const {
     store_search_data,
@@ -97,6 +98,9 @@ app.use(error_middle)
 
 // =================================================
 // local port //
-https.createServer(options, app).listen(3700, () => {
+const server = https.createServer(options, app)
+websocket_server(server)
+server.listen(3700, () => {
     console.log('HTTPS 포트 3700')
 })
+

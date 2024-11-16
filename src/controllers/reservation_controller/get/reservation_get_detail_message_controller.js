@@ -6,7 +6,7 @@ const async_handler = require('express-async-handler')
 // =================================================
 // 숙소 host, guest massage //
 async function reservation_get_detail_message_controller(req, res, next){
-    const reservation_id = req.params.house
+    const reservation_id = req.params.reservation
 
     const user = new user_dto({token : req.cookies.auth_token})
     const reservation = new reservation_dto({_id : reservation_id})

@@ -223,9 +223,9 @@ function accomodation_get_local_average_pipe(date_range, local){
 }
 
 module.exports = {
-    accomodation_pipe : accomodation_pipe, 
-    accomodation_sort_pipe : accomodation_sort_pipe,
-    accomodation_get_local_average_pipe : accomodation_get_local_average_pipe,
-    get_detail_evaluation : get_detail_evaluation
+    accomodation_pipe, 
+    accomodation_sort_pipe,
+    accomodation_get_local_average_pipe,
+    get_detail_evaluation
 }
 
