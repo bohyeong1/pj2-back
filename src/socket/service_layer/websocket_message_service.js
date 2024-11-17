@@ -3,20 +3,23 @@ const MessageRoom = require('../../models/MessageRoom')
 const message_dto = require('../../dto/message_dto')
 const User = require('../../models/User')
 const admin = require('../../config/firebase_config')
+const message_room_dto = require('../../dto/message_room_dto')
 
 class websocket_message_service{
 
     // =================================================
     // join message room //
-    async join_message_room(socket, user_dto, message_room_dto){
-        socket.on('join_room', async() => {
+    async join_message_room(socket, user_dto){
+        socket.on('join_room', async(data) => {
+            const message_room_instance = new message_room_dto({_id : data.message_room_id})
+
             user_dto.validate_token()
-            message_room_dto.validate_alter_under_id()
+            message_room_instance.validate_alter_under_id()
 
             try{
                 const message_room = await MessageRoom.findOne(
                     {
-                        _id : message_room_dto._id 
+                        _id : message_room_instance._id 
                     }
                 )
 
@@ -52,6 +55,7 @@ class websocket_message_service{
                     message_room : message_room._id,
                     message : 'message room 연동 성공',
                 })
+
             }catch(e){
                 return socket.emit('error', {
                     code : 500,
@@ -67,7 +71,6 @@ class websocket_message_service{
     async save_message(socket, io){
         socket.on('send_message', async(data) => {
             try{
-                console.log(data)
                 const target_message = new message_dto(
                     {
                         content : data.content,
@@ -75,6 +78,7 @@ class websocket_message_service{
                         sender_id : data.sender_id
                     }
                 )
+                
                 target_message.validate_content()
                 target_message.validate_alter_under_sender_id()
                 target_message.validate_alter_under_room_id()
@@ -87,7 +91,7 @@ class websocket_message_service{
 
                 await message.save()
     
-                io.to(target_message.room_id).emit('new_message', {
+                io.to(data.room_id).emit('new_message', {
                     room_id : message.room_id,
                     sender_id : message.sender_id,
                     message

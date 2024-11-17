@@ -31,6 +31,9 @@ const reservaitonSchema = new Schema({
         type:Number,
         require : true
     },
+    refund_price : {
+        type:Number
+    },
     //수용 인원
     capacity:{
         type:Number,

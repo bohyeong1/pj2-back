@@ -52,6 +52,48 @@ class reservation_get_service{
     }
 
     // =================================================
+    // 숙소 이용 완료 목록 list get //
+    async get_reservation_success_list(user_dto){
+        user_dto.validate_token()
+
+        try{    
+            const user_data = await is_valid_user(user_dto)
+
+            if(!user_data.user_state){
+                return user_data
+            }
+
+            const user = user_data.user
+
+            const reservation = await Reservation.find({
+                buyer : user._id,
+                use_state : true
+            }).populate([
+                {
+                    path : 'seller'
+                },
+                {
+                    path : 'accomodation'
+                }
+            ])
+
+            return {
+                code : 200,
+                server_state : true,
+                reservation
+            }
+
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false,
+                error : e
+            })
+        }
+    }
+
+    // =================================================
     // 숙소 예약목록 target get //
     async get_reservation_target(user_dto, reservation_dto){
         user_dto.validate_token()
