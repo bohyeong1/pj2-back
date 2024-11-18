@@ -12,6 +12,7 @@ const {reservation_get_detail_message_controller} = require('../controllers/rese
 const {reservation_get_success_list_controller} = require('../controllers/reservation_controller/get/reservation_get_success_list_controller')
 // update
 const {reservation_update_refund_controller} = require('../controllers/reservation_controller/update/reservation_update_refund_controller')
+const {reservation_evaluation_controller} = require('../controllers/reservation_controller/update/reservation_evaluation_controller')
 
 // ===================================================
 // =============== regist 라우터 =================== //
@@ -55,5 +56,9 @@ router.get('/get-success-list', reservation_get_success_list_controller)
 // =================================================
 // refund accomodation router //
 router.put('/refund/:house', reservation_update_refund_controller)
+
+// =================================================
+// reservation evaluation router //
+router.post('/evaluation', reservation_evaluation_controller)
 
 module.exports = router

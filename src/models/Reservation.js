@@ -92,6 +92,10 @@ const reservaitonSchema = new Schema({
     // 이용완료 날짜
     completed_use_at:{
         type:Date
+    },
+    // 평가 상태
+    is_evaluation : {
+        type : Boolean
     }
 })
 
