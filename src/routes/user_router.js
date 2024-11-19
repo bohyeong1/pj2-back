@@ -19,6 +19,7 @@ const {user_duplicate_controller} = require('../controllers/user_controller/user
 const {user_login_controller} = require('../controllers/user_controller/user_login_controller')
 const {verification_code_controller} = require('../controllers/user_controller/verification_code_controller')
 const {email_auth_controller} = require('../controllers/user_controller/email_auth_controller')
+const {user_get_password_auth_controller} = require('../controllers/user_controller/get/user_get_password_auth_controller')
 // regist
 const {user_initial_join_controller} = require('../controllers/user_controller/user_initial_join_controller')
 const {user_nickname_controller} = require('../controllers/user_controller/user_nickname_controller')
@@ -86,6 +87,10 @@ router.post('/profile', user_multer, user_profile_controller)
 // =================================================
 // user 닉네임 업데이트 //
 router.post('/nickname',user_nickname_controller)
+
+// =================================================
+// user password auth //
+router.post('/password-auth', user_get_password_auth_controller)
 
 
 

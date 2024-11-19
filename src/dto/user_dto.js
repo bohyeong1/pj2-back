@@ -140,7 +140,12 @@ class user_dto{
             throw new Error('password_confirm type이 잘못되었습니다.')
         }
         if(this.password_confirm !== this.password){
-            throw new Error('비밀번호 확인이랑 비밀번호를 일치하지 않스빈다.')
+            throw new error_dto({
+                code: 403,
+                message: '비밀번호가 일치하지 않습니다.',
+                server_state: false,
+                ui_action : 'retry'
+            })
         }
     }
 

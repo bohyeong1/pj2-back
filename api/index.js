@@ -28,7 +28,6 @@ const user_router = require('../src/routes/user_router')
 const register_router = require('../src/routes/accomodation_router')
 const common_router = require('../src/routes/common_router')
 const reservation_router = require('../src/routes/reservation_router')
-const evaluation_router = require('../src/routes/evaluate_router')
 
 // =================================================
 // https options //
@@ -80,7 +79,6 @@ app.use('/api/users', user_router)
 app.use('/api/accomodation', register_router)
 app.use('/api/common', common_router)
 app.use('/api/reservation', reservation_router)
-app.use('/api/evalu', evaluation_router)
 
 // =================================================
 // test server //
