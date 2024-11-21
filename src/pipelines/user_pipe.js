@@ -90,6 +90,57 @@ function get_processed_messages(self, reservation_id){
     ]
 }
 
+// =================================================
+// user evaluations get pipe line //
+function get_user_evaluations(){
+    return [
+        {
+            $lookup : {
+                from : 'evaluations',
+                localField : '_id',
+                foreignField : 'writerid',
+                as : 'evaluations'
+            }
+        },          
+        {
+            $addFields: {
+                evaluations_counts: {$size: '$evaluations'}
+            }
+        },
+        { 
+            $unwind : {
+                path : '$evaluations', preserveNullAndEmptyArrays : true
+            } 
+        },
+        {
+            $lookup : {
+                from : 'users',
+                localField : 'evaluations.sellerid',
+                foreignField : '_id',
+                as : 'seller'
+            }
+        },
+        {
+            $unwind: {
+                path: '$seller'
+            }
+        },
+        {
+            $addFields: {
+                'evaluations.seller': '$seller'
+            }
+        },
+        {
+            $group : {
+                _id : '$_id',
+                evaluations_counts : {$first : '$evaluations_counts'},
+                evaluations : {$push : '$evaluations'}
+            }
+        }
+    ]
+}
+
 module.exports = {
-    get_processed_messages
+    get_processed_messages,
+    get_user_evaluations
 }

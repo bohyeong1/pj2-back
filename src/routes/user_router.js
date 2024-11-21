@@ -20,11 +20,14 @@ const {user_login_controller} = require('../controllers/user_controller/user_log
 const {verification_code_controller} = require('../controllers/user_controller/verification_code_controller')
 const {email_auth_controller} = require('../controllers/user_controller/email_auth_controller')
 const {user_get_password_auth_controller} = require('../controllers/user_controller/get/user_get_password_auth_controller')
+const {user_get_my_evaluations_controller} = require('../controllers/user_controller/get/user_get_my_evaluations_controller')
 // regist
 const {user_initial_join_controller} = require('../controllers/user_controller/user_initial_join_controller')
 const {user_nickname_controller} = require('../controllers/user_controller/user_nickname_controller')
 const {user_profile_controller} = require('../controllers/user_controller/user_profile_controller')
-// modify
+// update
+const {user_update_password_controller} = require('../controllers/user_controller/update/user_update_password_controller')
+const {user_update_information_controller} = require('../controllers/user_controller/update/user_update_information_controller')
 
 // delete
 
@@ -92,6 +95,18 @@ router.post('/nickname',user_nickname_controller)
 // user password auth //
 router.post('/password-auth', user_get_password_auth_controller)
 
+// =================================================
+// user password update //
+router.post('/update-password', user_update_password_controller)
+
+// =================================================
+// user information update //
+router.post('/update-information', user_multer, user_update_information_controller)
+
+// =================================================
+// get user evaluations //
+router.post('/get-evaluations', user_get_my_evaluations_controller)
+
 
 
 // =================================================
@@ -139,50 +154,6 @@ router.put('/host-mypage', user_multer, host_mypage_controller)
 
 
 
-
-
-
-
-
-
-
-
-
-
-// =================================================
-// 회원정보 수정 //
-router.put('/update',validateUserEmail ,expressAsyncHandler(async(req, res, next) => {
-
-    // console.log(req.body)
-    const errors = validationResult(req)
-
-    if(!errors.isEmpty()){
-        res.status(400).json({
-            code:400,
-            message:'형식에 맞지 않는 데이터입니다',
-            error : errors.array()
-        })
-    }else{
-        const user = await User.findOne({
-            userId : req.body.userId})  
-        if(!user){
-            res.status(404).json({ code: 404, message: '유저를 찾을 수 없습니다'})
-        }else{
-
-            user.name = req.body.name || user.name
-            user.email = req.body.email || user.email
-            user.nickname = req.body.nickname || user.nickname
-            user.hostText = req.body.hostText || user.hostText
-            const updatedUser = await user.save()
-
-            console.log(updatedUser)  
-            res.json({
-                code:200,
-                updatedUser
-            })
-        }
-    }    
-}))
 
 // =================================================
 // 회원탈퇴 //

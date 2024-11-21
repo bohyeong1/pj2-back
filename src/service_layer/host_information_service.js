@@ -504,8 +504,8 @@ class host_information_service{
         }catch(e){
             console.log(e)
             throw new error_dto({
-                code: 401,
-                message: '인증절차 중 문제가 발생 하였습니다.',
+                code: 500,
+                message: '서버에서 에러가 발생 하였습니다.',
                 server_state: false
             })
         }

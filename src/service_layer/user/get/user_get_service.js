@@ -6,10 +6,9 @@ const config = require('../../../config/env_config')
 const {create_code} = require('../../../util_function/util_function')
 const {send_code_email} = require('../../../util_function/util_function')
 const error_dto = require('../../../dto/error_dto')
-const AWS = require('aws-sdk')
-const {v4 : uuidv4} = require('uuid')
 const {is_valid_user} = require('../../../util_function/util_function')
 const _ = require('lodash')
+const {get_user_evaluations} = require('../../../pipelines/user_pipe')
 
 class user_get_service{
     // =================================================
@@ -71,8 +70,48 @@ class user_get_service{
             }
         }   
     }
+    
+    // =================================================
+    // 유저 평가 항목 get //
+    async get_my_evaluations(user_dto){
+        user_dto.validate_alter_under_id()
+
+        try{
+            const pipe_line = get_user_evaluations()
+            const user_evaluations = await User.aggregate([
+                {$match : {_id : user_dto._id}},
+                ...pipe_line
+            ])
+
+            if(!user_evaluations){
+                throw new error_dto({
+                    code : 400,
+                    message : '인증절차 중 문제가 발생 하였습니다.',
+                    server_state : false,
+                    error : e
+                })
+            }
+
+            return {
+                code : 200,
+                server_state : true,
+                user_evaluations : user_evaluations[0]
+            }
+
+        }catch(e){
+            if(e instanceof error_dto){
+                throw e
+            }
+            else{
+                throw new error_dto({
+                    code: 500,
+                    message: '서버에서 문제가 발생 하였습니다.',
+                    server_state: false,
+                    error : e
+                })
+            } 
+        }
+    }
 }
-
-
 
 module.exports = user_get_service

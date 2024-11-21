@@ -1,24 +1,26 @@
 const error_dto = require('../dto/error_dto')
 const mongoose = require('mongoose')
 const config = require('../config/env_config')
+const {check_object, check_string, check_array, check_integer} = require('../util_function/util_function')
 
 // ***********************************************************
 // e-mail 형식은 종류가 많고 복잡하므로 express validator로 검사!
 
 class user_dto{
     constructor(data){ 
-        // 구현
         this.token = data.token || null
         this.userId = data.userId || null 
         this._id = data._id || null
         this.password = data.password || null
         this.password_confirm = data.password_confirm || null
+        this.prev_password = data.prev_password || null
         this.name = data.name || null
         this.nickname = data.nickname || null
         this.defaultProfile = data.defaultProfile || null
         this.profileImg = data.profileImg || null
         this.host_text = data.host_text || null
-        // 폼 타입검사 미적용
+        this.delete_prev_img = data.delete_prev_img || null
+
         this.email = data.email || null
         this.isAdmin = data.isAdmin || null
         this.cashInv = data.cashInv || null
@@ -116,6 +118,42 @@ class user_dto{
     }
 
     // =================================================
+    // prev_password type & form 체크 //
+    validate_prev_password(){
+        if(!this.prev_password){
+            throw new error_dto({
+                code: 401,
+                message: 'prev_password data가 없습니다.',
+                server_state: false
+            })
+        }
+        if(!check_string(this.prev_password)){
+            throw new error_dto({
+                code: 401,
+                message: 'prev_password type이 잘못되었습니다.',
+                server_state: false
+            })
+        }
+        const password_rgx =  /^(?=.*[!@#$%^&*(),.?":{}|<>]).{8,15}$/
+        if(!password_rgx.test(this.prev_password)){
+            throw new error_dto({
+                code: 401,
+                message: '비밀번호는 8~15자 + 최소 한개의 특수문자를 포함하여야 합니다.',
+                server_state: false
+            })
+        }
+
+        if(this.prev_password === this.password){
+            throw new error_dto({
+                code: 401,
+                message: '기존의 비밀번호와 일치하는 비밀번호를 설정할 수 없습니다.',
+                server_state: false,
+                ui_action : 'retry'
+            })
+        }
+    }
+
+    // =================================================
     // password type & form 체크 //
     validate_password(){
         if(!this.password){
@@ -134,17 +172,24 @@ class user_dto{
     // 비밀번호 확인 type & form 체크 //
     validate_password_confirm(){
         if(!this.password_confirm){
-            throw new Error('password_confirm data가 없습니다.')
+            throw new error_dto({
+                code: 401,
+                message: 'password_confirm data가 없습니다.',
+                server_state: false
+            })
         }
         if(typeof this.password_confirm !== 'string'){
-            throw new Error('password_confirm type이 잘못되었습니다.')
+            throw new error_dto({
+                code: 401,
+                message: 'password_confirm type이 잘못되었습니다.',
+                server_state: false
+            })
         }
         if(this.password_confirm !== this.password){
             throw new error_dto({
-                code: 403,
+                code: 401,
                 message: '비밀번호가 일치하지 않습니다.',
-                server_state: false,
-                ui_action : 'retry'
+                server_state: false
             })
         }
     }
@@ -178,11 +223,11 @@ class user_dto{
     
     // =================================================
     // delete img 형식 & 타입검사 //
-    validate_delete_img(){
-        if(this.delete_img){
+    validate_delete_prev_img(){
+        if(this.delete_prev_img){
             const file_format = ['PNG', config.ENDPOINT, config.BUCKET_NAME]
             if(!file_format.every((el)=>{
-                return  this.delete_img.includes(el)
+                return  this.delete_prev_img.includes(el)
             })){
                 throw new error_dto({
                     code: 400,

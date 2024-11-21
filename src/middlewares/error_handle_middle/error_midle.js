@@ -3,6 +3,7 @@ const error_dto = require('../../dto/error_dto')
 function error_middle(err, req, res, next){
 
     if(err instanceof error_dto){
+        console.log(err)
         return res.status(err.code).json({
             code : err.code,
             message : err.message,
