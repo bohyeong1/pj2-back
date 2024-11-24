@@ -10,6 +10,7 @@ const AWS = require('aws-sdk')
 const {v4 : uuidv4} = require('uuid')
 const {is_valid_user} = require('../../../util_function/util_function')
 const _ = require('lodash')
+const Wishlist = require('../../../models/Wishlist')
 
 class user_update_service{
     // =================================================
@@ -155,6 +156,62 @@ class user_update_service{
                 message: '서버에서 에러가 발생 하였습니다.',
                 server_state: false
             })
+        }
+    }
+
+    // =================================================
+    // 유저 찜하기 업데이트 //
+    async update_user_wishlist(user_dto, accomodation_dto){
+        user_dto.validate_alter_under_id()
+        accomodation_dto.validate_alter_under_id()
+
+        try{
+            const wishlist = await Wishlist.findOne(
+                {
+                    user_id : user_dto._id,
+                    accomodation_id : accomodation_dto._id
+                }
+            )
+            
+            if(wishlist){
+                await Wishlist.deleteOne({
+                    user_id : user_dto._id,
+                    accomodation_id : accomodation_dto._id
+                })
+
+                return { 
+                    code : 200,
+                    server_state : true,
+                    wishlist : false
+                }
+            }
+            else{
+                const new_wishlist = await Wishlist.create(
+                    {
+                        user_id : user_dto._id,
+                        accomodation_id : accomodation_dto._id
+                    }
+                )
+                return { 
+                    code : 200,
+                    server_state : true,
+                    wishlist : true
+                }
+            }
+
+        }
+        catch(e){
+            if(e instanceof error_dto){
+                throw e
+            }
+            else{
+                throw new error_dto({
+                    code: 500,
+                    message: '서버에서 문제가 발생 하였습니다.',
+                    server_state: false,
+                    error : e
+                })
+            } 
         }
     }
 }

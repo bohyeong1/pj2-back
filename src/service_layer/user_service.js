@@ -10,46 +10,6 @@ const AWS = require('aws-sdk')
 const {v4 : uuidv4} = require('uuid')
 
 class user_service{
-    // =================================================
-    // 로그인 체크 //
-    async check_user(user_dto){
-        if(!user_dto.token){
-            return {
-                code : 200,
-                log_state : false,
-                server_state : true
-            }
-        }
-
-        user_dto.validate_token()
-
-        const real_token = user_dto.token.split(' ')[1]
-        try{
-            const verify_token = await admin.auth().verifyIdToken(real_token)
-            const uid = verify_token.uid     
-            const user = await admin.auth().getUser(uid)
-            if(verify_token && uid){
-                const filterd_user_id = user.email.split('@')[0]
-                return {
-                    code : 200,
-                    log_state : true,
-                    server_state : true,
-                    user : {
-                        userId : filterd_user_id
-                    }
-                }
-            }
-            else{
-                return {
-                    code : 200,
-                    log_state : false,
-                    server_state : true
-                }
-            }
-        }catch(e){
-            throw new Error(e.massage)
-        }   
-    }
 
     // =================================================
     // 사용자 기본 정보 제공 && 로그인 체크 //

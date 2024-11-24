@@ -13,7 +13,6 @@ const {validateUserEmail} = require('../validation/validator')
 // =================================================
 // controller //
 // get
-const {user_get_login_check_controller} = require('../controllers/user_controller/get/user_get_login_check_controller')
 const {user_getuser_controller} = require('../controllers/user_controller/user_getuser_controller')
 const {user_duplicate_controller} = require('../controllers/user_controller/user_duplicate_controller')
 const {user_login_controller} = require('../controllers/user_controller/user_login_controller')
@@ -21,6 +20,9 @@ const {verification_code_controller} = require('../controllers/user_controller/v
 const {email_auth_controller} = require('../controllers/user_controller/email_auth_controller')
 const {user_get_password_auth_controller} = require('../controllers/user_controller/get/user_get_password_auth_controller')
 const {user_get_my_evaluations_controller} = require('../controllers/user_controller/get/user_get_my_evaluations_controller')
+const {user_get_optimistic_login_check_controller} = require('../controllers/user_controller/get/user_get_optimistic_login_check_controller')
+const {user_get_target_wish_list_controller} = require('../controllers/user_controller/get/user_get_target_wish_list_controller')
+const {user_get_all_wish_list_contoller} = require('../controllers/user_controller/get/user_get_all_wish_list_contoller')
 // regist
 const {user_initial_join_controller} = require('../controllers/user_controller/user_initial_join_controller')
 const {user_nickname_controller} = require('../controllers/user_controller/user_nickname_controller')
@@ -28,8 +30,11 @@ const {user_profile_controller} = require('../controllers/user_controller/user_p
 // update
 const {user_update_password_controller} = require('../controllers/user_controller/update/user_update_password_controller')
 const {user_update_information_controller} = require('../controllers/user_controller/update/user_update_information_controller')
-
+const {user_update_wishlist_controller} = require('../controllers/user_controller/update/user_update_wishlist_controller')
 // delete
+const {user_delete_wish_list_controller} = require('../controllers/user_controller/delete/user_delete_wish_list_controller')
+
+
 
 // host
 const {host_initial_controller} = require('../controllers/host_controller/host_initial_controller')
@@ -63,8 +68,8 @@ router.get('/updateToken',update_user_token_controller)
 router.get('/getuser',user_getuser_controller)
 
 // =================================================
-// 로그인 체크 *사용자 정보 미제공 db조회 안함 //
-router.get('/login-check', user_get_login_check_controller)
+// 로그인 체크 / 비회원, 회원 유무 체크 //
+router.get('/optimistic-user-check', user_get_optimistic_login_check_controller)
 
 // =================================================
 // user id 중복 체크 //
@@ -107,6 +112,24 @@ router.post('/update-information', user_multer, user_update_information_controll
 // get user evaluations //
 router.post('/get-evaluations', user_get_my_evaluations_controller)
 
+// =================================================
+// get user target wish list //
+router.post('/get-wish-list-target', user_get_target_wish_list_controller)
+
+// =================================================
+// update user target wish list //
+router.post('/update-wishlist', user_update_wishlist_controller)
+
+// =================================================
+// get all user wish list //
+router.post('/get-all-wish-list', user_get_all_wish_list_contoller)
+
+// =================================================
+// delete user wish list //
+router.post('/delete-wishlist', user_delete_wish_list_controller)
+
+
+
 
 
 // =================================================
@@ -148,6 +171,9 @@ router.put('/impossible-reservation', host_impossible_reservation_controller)
 // =================================================
 // host 마이페이지 수정 //
 router.put('/host-mypage', user_multer, host_mypage_controller)
+
+
+
 
 
 
