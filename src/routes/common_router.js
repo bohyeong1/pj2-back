@@ -42,10 +42,10 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
         }else if(req.body.filter && !req.body.keyword){
             // 전체 도시 분류 // limit 있음
             if(req.body.filter === 'city' && limit){
-                const search = await City.find({}).limit(limit)
+                const city = await City.find({}).limit(limit)
                 res.json({
                     code:200,
-                    search}) 
+                    city}) 
             }
             // 할인상품
             else if(req.body.filter === 'discount'){

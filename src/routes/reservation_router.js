@@ -10,6 +10,7 @@ const {reservation_get_target_controller} = require('../controllers/reservation_
 const {reservation_get_message_list_controller} = require('../controllers/reservation_controller/get/reservation_get_message_list_controller')
 const {reservation_get_detail_message_controller} = require('../controllers/reservation_controller/get/reservation_get_detail_message_controller')
 const {reservation_get_success_list_controller} = require('../controllers/reservation_controller/get/reservation_get_success_list_controller')
+const {reservation_get_host_list_controller} = require('../controllers/reservation_controller/get/reservation_get_host_list_controller')
 // update
 const {reservation_update_refund_controller} = require('../controllers/reservation_controller/update/reservation_update_refund_controller')
 const {reservation_evaluation_controller} = require('../controllers/reservation_controller/update/reservation_evaluation_controller')
@@ -47,6 +48,10 @@ router.get('/get-message-detail/:reservation', reservation_get_detail_message_co
 // =================================================
 // get reservation success list router //
 router.get('/get-success-list', reservation_get_success_list_controller)
+
+// =================================================
+// get host reservation list //
+router.post('/get-host-reservation-list', reservation_get_host_list_controller)
 
 
 // ===================================================

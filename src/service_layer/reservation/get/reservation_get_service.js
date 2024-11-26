@@ -10,7 +10,7 @@ const {get_processed_messages} = require('../../../pipelines/user_pipe')
 
 class reservation_get_service{
     // =================================================
-    // 숙소 예약목록 list get //
+    // guest 숙소 예약목록 list get //
     async get_reservation_list(user_dto){
         user_dto.validate_token()
 
@@ -25,6 +25,72 @@ class reservation_get_service{
 
             const reservation = await Reservation.find({
                 buyer : user._id,
+                use_state : false
+            }).populate([
+                {
+                    path : 'seller'
+                },
+                {
+                    path : 'accomodation'
+                }
+            ])
+
+            return {
+                code : 200,
+                server_state : true,
+                reservation
+            }
+
+        }catch(e){
+            throw new error_dto({
+                code: 401,
+                message: '인증절차 중 문제가 발생 하였습니다.',
+                server_state: false,
+                error : e
+            })
+        }
+    }
+
+    // =================================================
+    // host 숙소 예약목록 list get //
+    async get_reservation_host_list(user_dto){
+        user_dto.validate_alter_under_id()
+
+        try{               
+            const reservation = await Reservation.find({
+                seller : user_dto._id,
+                use_state : false
+            })
+
+            return {
+                code : 200,
+                server_state : true,
+                reservation
+            }
+
+        }catch(e){
+            if(e instanceof error_dto){
+                throw e
+            }
+            else{
+                throw new error_dto({
+                    code: 500,
+                    message: '서버에서 문제가 발생 하였습니다.',
+                    server_state: false,
+                    error : e
+                })
+            } 
+        }
+    }
+
+    // =================================================
+    // host 숙소 예약목록 detail list get //
+    async get_reservation_host_detail_list(user_dto){
+        user_dto.validate_alter_under_id()
+
+        try{               
+            const reservation = await Reservation.find({
+                seller : user_dto._id,
                 use_state : false
             }).populate([
                 {

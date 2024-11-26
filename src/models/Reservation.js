@@ -101,4 +101,4 @@ const reservaitonSchema = new Schema({
 
 const Reservaiton = mongoose.model('Reservation', reservaitonSchema)
 
-module.exports = Reservaiton    
+module.exports = Reservaiton   

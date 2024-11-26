@@ -30,14 +30,16 @@ class user_service{
             const verify_token = await admin.auth().verifyIdToken(real_token)
             const uid = verify_token.uid           
             const user = await User.findOne({firebase_uid: uid}).populate('host_text')
+            
             if(!user){
                 return {
                     code : 200,
                     log_state : false,
                     server_state : true,
-                message : '유효한 쿠키값이 아닙니다.'
+                    message : '유효한 쿠키값이 아닙니다.'
                 }
             }
+
             return {
                 code : 200,
                 user_data : {

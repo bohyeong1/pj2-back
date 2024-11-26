@@ -5,6 +5,7 @@ const Accomodation = require('../../../models/Accomodation')
 const error_dto = require('../../../dto/error_dto')
 const {get_detail_evaluation} = require('../../../pipelines/accomodation-pipe')
 const {get_search_data} = require('../../../util_function/search_function')
+const Reservation = require('../../../models/Reservation')
 
 class common_get_service{
     // =================================================
@@ -30,13 +31,19 @@ class common_get_service{
                 ...filter_pipe_line
             ])
 
+            const reservation = await Reservation.find({
+                seller : accomodation.seller._id,
+                use_state : false
+            })
+
             if(accomodation){
                 return {
                     server_state : true,
                     code:200,
                     accomodation, 
                     seller : accomodation.seller, 
-                    evaluations
+                    evaluations,
+                    reservation
                 }
             }
             else{

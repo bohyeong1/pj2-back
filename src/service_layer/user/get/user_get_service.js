@@ -148,7 +148,7 @@ class user_get_service{
             return {
                 code : 200,
                 server_state : true,
-                user_evaluations : user_evaluations[0]
+                user_evaluations : user_evaluations.length ? user_evaluations[0] : null
             }
 
         }catch(e){
