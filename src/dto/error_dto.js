@@ -10,19 +10,5 @@ class custom_error extends Error {
 module.exports = custom_error
 
 
-// if (err instanceof CustomError) {
-//     // 커스텀 에러 처리
-//     return res.status(err.code).json({
-//         message: err.message,
-//         code_state: err.code_state
-//     });
-// } else {
-//     // 일반 에러 처리
-//     return res.status(500).json({
-//         message: 'Internal Server Error',
-//         code_state: false
-//     });
-// }
-
 
 

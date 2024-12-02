@@ -131,7 +131,7 @@ class reservation_regist_service{
                     attempt++
                 }else{        
                     throw new error_dto({
-                        code: 401,
+                        code: 400,
                         message: '인증절차 중 문제가 발생 하였습니다.',
                         server_state: false,
                         error : e

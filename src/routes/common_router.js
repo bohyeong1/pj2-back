@@ -9,15 +9,10 @@ const mongoose = require('mongoose')
 // controller //
 // get
 const {acc_get_detail_controller} = require('../controllers/common_controller/get/acc_get_detail_controller')
-const acc_filter_controller = require('../controllers/common_controller/piece_controller/acc_filter_controller')
-const acc_limit_controller = require('../controllers/common_controller/piece_controller/acc_limit_controller')
-const acc_skip_controller = require('../controllers/common_controller/piece_controller/acc_skip_controller')
-const acc_sort_controller = require('../controllers/common_controller/piece_controller/acc_sort_controller')
+const {common_get_list_acc_controller} = require('../controllers/common_controller/get/common_get_list_acc_controller')
 const {common_get_search_controller} = require('../controllers/common_controller/get/common_get_search_controller')
 const {common_get_private_acc_user_controller} = require('../controllers/common_controller/get/common_get_private_acc_user_controller')
-
-// main controller
-const {acc_subapp_controller} = require('../controllers/common_controller/main_controller/acc_subapp_controller')
+const {common_get_search_result_check_contoller} = require('../controllers/common_controller/get/common_get_search_result_check_contoller')
 
 
 
@@ -85,12 +80,8 @@ router.post('/',expressAsyncHandler(async(req,res,next)=>{
 
 
 // =================================================
-// subapp - list - api //
-router.post('/sub', acc_filter_controller, acc_sort_controller, acc_skip_controller, acc_limit_controller, acc_subapp_controller)
-
-// =================================================
-// subapp - modal - api //
-router.post('/submodal', acc_filter_controller, acc_sort_controller, acc_limit_controller, acc_subapp_controller)
+// 숙소 list page //
+router.get('/list', common_get_list_acc_controller)
 
 // =================================================
 // 숙소 상세 페이지 //
@@ -104,6 +95,9 @@ router.post('/search', common_get_search_controller)
 // login check, 숙소 정보 api //
 router.post('/private/accomodation-user/:house', common_get_private_acc_user_controller)
 
+// =================================================
+// 검색어 체크, 유효한 검색어 일 시 검색어 db update //
+router.post('/search-check', common_get_search_result_check_contoller)
 
 
 
@@ -115,24 +109,7 @@ router.post('/private/accomodation-user/:house', common_get_private_acc_user_con
 
 
 
-//////////////////////////////////////////////host페이지 등록 숙소
-router.post('/host', expressAsyncHandler(async(req,res,next)=>{
-    try{
-        const accomodations = await Accomodation.find({
-            seller:req.body.sellerid
-        })
-            res.json({
-            code:200,
-            accomodations})
 
-    }catch(e){
-        console.log(e)
-        res.status(429).json({
-            code:429,
-            message:'서버로 부터 데이터를 받는데 실패하였습니다.'
-        })
-    }
-}))
 
 
 

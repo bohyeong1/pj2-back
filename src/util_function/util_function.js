@@ -237,6 +237,80 @@ function check_reservation_category(category, checkin, total_price, stay_day){
     }
 }
 
+// =================================================
+// get query case //
+function get_query_case(query){
+    const match_query = {}       
+    const sort_query = {}      
+    const limit_query = {}
+    const skip_query = {}
+    const date_query = {}
+
+    for(const value of Object.keys(query)){
+        switch(value){
+            case 'limit' :
+                limit_query['limit'] = parseInt(query['limit'])
+                break
+
+            case 'page' : 
+                skip_query['skip'] = (parseInt(query['page']) - 1) * parseInt(query['limit'])
+                break
+
+            case 'discount' :
+                match_query[value] = {$exists : true}
+                break
+        
+            case 'price-min' :
+                match_query['price'] = {
+                    ...match_query['price'],
+                    $gte : parseInt(query['price-min'])
+                }
+                break
+
+            case 'price-max' :
+                if(query['price-max'] !== '500000'){
+                    match_query['price'] = {
+                        ...match_query['price'],
+                        $lte : parseInt(query['price-max'])
+                    }
+                }
+                break    
+            
+            case 'search-adress' : 
+                match_query['search_adress'] = {$eq : query[value]}
+                break
+
+            case 'capacity' :
+                match_query[value] = {$gte : query['capacity']}
+                break   
+
+            case 'sort' :
+                sort_query[value] = query['sort']
+                break  
+            
+            case 'checkin' :
+                date_query[value] = query['checkin']
+                break
+            
+            case 'checkout' :
+                date_query[value] = query['checkout']
+                break
+
+            default :
+                match_query[`${value}.name`] = {$all : Array.isArray(query[value]) ? [...query[value]] : [query[value]]}
+                break
+        }      
+    }
+
+    return {
+        match_query,
+        sort_query,
+        limit_query,
+        skip_query,
+        date_query : Object.keys(date_query).length ? date_query : false
+    }
+}
+
 module.exports = {
     create_code,
     send_code_email,
@@ -248,5 +322,6 @@ module.exports = {
     get_files_type,
     is_valid_user,
     check_date,
-    check_reservation_category
+    check_reservation_category,
+    get_query_case
 }

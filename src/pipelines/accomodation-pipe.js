@@ -3,7 +3,6 @@
 // 숙소 리스트 평균 평점 & 평가 인원 구하는 파이프라인 //
 function accomodation_pipe(){
     return [
-        // 댓글 & 숙소 조인
         {
             $lookup : {
                 from : 'evaluations',
@@ -12,7 +11,6 @@ function accomodation_pipe(){
                 as : 'replys'
             }
         },
-        // 평가 컬랙션 evaluation필드만 추출
         {
             $addFields : {
                 evaluations : {
@@ -24,7 +22,6 @@ function accomodation_pipe(){
                 }
             }
         },
-        // evaluation 필드 avgGrade값만 추출
         {
             $addFields : {
                 filtered_evaluations : {
@@ -36,7 +33,6 @@ function accomodation_pipe(){
                 }
             }
         },
-        // avgGrade에서 grade(평점)만 추출해서 배열ㅇ담기
         {
             $addFields : {
                 grades : {
@@ -48,7 +44,6 @@ function accomodation_pipe(){
                 }
             }
         },
-        // 평균 & 리뷰 단 사람 숫자 집계
         {
             $addFields : {
                 average : {$avg : '$grades'},
@@ -62,7 +57,36 @@ function accomodation_pipe(){
 // =================================================
 // 정렬 파이프라인 첫번째 정렬 값 null이거나 동일한 값일 시 두번째 정렬 기준 -> 생성 날짜 최신순 //
 // sort = 정렬 기준 / directon = 오름차순 or 내림차순 //
-function accomodation_sort_pipe(sort, direction){
+function accomodation_sort_pipe(key){
+    let sort
+    let direction
+    switch(key){
+        case 'createAt' :
+            sort = 'createAt'
+            direction = -1
+            break
+        
+        case 'price/max' :
+            sort = 'price'
+            direction = -1
+            break
+            
+        case 'price/min' :
+            sort = 'price'
+            direction = 1
+            break
+
+        case 'replay/max' :
+            sort = 'counts_review'
+            direction = -1
+            break
+
+        case 'evaluation/max' :
+            sort = 'average'
+            direction = -1
+            break
+    }
+
     return [
         {
             $addFields : {
@@ -71,16 +95,13 @@ function accomodation_sort_pipe(sort, direction){
                 }
             }
         },
-        // 첫 번째 정렬 기준과 두 번째 정렬 기준 적용
-        // * sort에서는 동적필드 참고할 땐 '$sortField'가 아니라 sortField로 변수 넣듯이 넣을것 문법적 차이 있음
         {
             $sort : {
-                sortField : 1, // null 값을 마지막으로 배치
-                [sort] : direction,
+                sortField : 1,
+                ...(sort !== 'createAt' && {[sort] : direction}),
                 'createAt' : -1 
             }
         },
-        // 필요없는 필드 제거
         {
             $project : {
                 grades : 0,
@@ -201,6 +222,56 @@ function get_detail_evaluation(){
 }
 
 // =================================================
+// 숙소 date filtering 파이프라인 //
+function accomodation_get_possible_date_pipe(checkin, checkout){
+    return [
+        {
+            $addFields : {
+                checkin : new Date(checkin),
+                checkout : new Date(checkout)
+            },
+
+        },
+        {
+            $lookup : {
+                from : 'reservations',
+                let : { 
+                    accommodationId : '$_id', 
+                    checkin : '$checkin', 
+                    checkout : '$checkout' 
+                },
+                pipeline : [
+                    {
+                        $match : {
+                            $expr : {
+                                $and : [
+                                    {$eq : ['$accomodation', '$$accommodationId']},
+                                    {$lt : ['$final_start_date', '$$checkout']},
+                                    {$gt : ['$final_end_date', '$$checkin']}
+                                ]
+                            }
+                        }
+                    }
+                ],
+                as: 'filtering_accomodations'
+            }
+        },
+        {
+            $match : {
+                'filtering_accomodations.0' : {$exists: false}
+            }
+        },
+        {
+            $project : {
+                filtering_accomodations : 0,
+                checkin : 0,
+                checkout : 0
+            }
+        }
+    ]
+}
+
+// =================================================
 // 숙소 평균 평점 & 평점메긴 사람 구하는 파이프라인 //
 function accomodation_get_local_average_pipe(date_range, local){
     return [
@@ -226,6 +297,7 @@ module.exports = {
     accomodation_pipe, 
     accomodation_sort_pipe,
     accomodation_get_local_average_pipe,
-    get_detail_evaluation
+    get_detail_evaluation,
+    accomodation_get_possible_date_pipe
 }
 
